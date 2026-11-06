@@ -129,5 +129,9 @@
     "The block hash does not match its content.": "El hash del bloque no se corresponde con su contenido.",
     "Nothing can rebuild periods of kind :kind to compare them with the books.": "No hay quien reconstruya los períodos de tipo :kind para compararlos con los libros.",
     "The period :period is sealed but its close no longer exists in the books.": "El período :period está sellado pero su cierre ya no existe en los libros.",
-    "The books no longer match what was sealed for :period (:fields).": "Los libros ya no coinciden con lo sellado para :period (:fields)."
+    "The books no longer match what was sealed for :period (:fields).": "Los libros ya no coinciden con lo sellado para :period (:fields).",
+
+    "Bolívares": "Bolívares",
+    "Dollars": "Dólares",
+    "Pesos": "Pesos"
 }
