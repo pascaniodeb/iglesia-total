@@ -27,8 +27,8 @@ export function ScrollToTop() {
         <button
             type="button"
             data-scroll-top
-            aria-label="Back to top"
-            title="Back to top"
+            aria-label="Volver arriba"
+            title="Volver arriba"
             // inert, not aria-hidden: after the click it hides while focused, and inert drops focus cleanly.
             inert={!visible}
             onClick={scrollToTop}

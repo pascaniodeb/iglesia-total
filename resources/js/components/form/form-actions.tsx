@@ -27,7 +27,7 @@ export function FormActions({
                     onClick={onCancel}
                     disabled={processing}
                 >
-                    Cancel
+                    Cancelar
                 </Button>
             )}
             <Button

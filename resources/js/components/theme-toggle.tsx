@@ -19,8 +19,8 @@ export function ThemeToggle() {
             variant="ghost"
             size="icon"
             className="shrink-0 rounded-lg"
-            aria-label="Toggle between light and dark mode"
-            title="Toggle between light and dark mode"
+            aria-label="Cambiar entre modo claro y oscuro"
+            title="Cambiar entre modo claro y oscuro"
             onClick={() =>
                 updateAppearance(
                     resolvedAppearance === 'dark' ? 'light' : 'dark',

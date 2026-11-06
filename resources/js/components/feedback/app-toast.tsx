@@ -61,7 +61,7 @@ function AppToast({
             <button
                 type="button"
                 onClick={() => toast.dismiss(id)}
-                aria-label="Dismiss notification"
+                aria-label="Cerrar notificación"
                 className="absolute top-2.5 right-2.5 grid size-8 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             >
                 <X className="size-4" aria-hidden />

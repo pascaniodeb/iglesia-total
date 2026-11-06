@@ -13,7 +13,8 @@ export function AppFooter({ className }: { className?: string }) {
             )}
         >
             <p>
-                © {new Date().getFullYear()} {name}. All rights reserved.
+                © {new Date().getFullYear()} {name}. Todos los derechos
+                reservados.
             </p>
         </footer>
     );

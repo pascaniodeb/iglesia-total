@@ -10,8 +10,8 @@ type StatusBadgeProps = {
 
 export function StatusBadge({
     active,
-    activeLabel = 'Active',
-    inactiveLabel = 'Inactive',
+    activeLabel = 'Activo',
+    inactiveLabel = 'Inactivo',
 }: StatusBadgeProps) {
     return (
         <span

@@ -22,7 +22,7 @@ function Toaster(props: ToasterProps) {
             mobileOffset={OFFSET}
             gap={12}
             visibleToasts={4}
-            containerAriaLabel="Notifications"
+            containerAriaLabel="Notificaciones"
             {...props}
         />
     );
