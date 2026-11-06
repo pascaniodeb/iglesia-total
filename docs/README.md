@@ -12,6 +12,8 @@ Hard rules for this project. They are binding: if code or a change conflicts wit
 | [rules/architecture.md](rules/architecture.md) | Modular monolith, hexagonal modules, dependency rules     |
 | [rules/components.md](rules/components.md)     | Reusable backend/frontend kit and recipes for new modules |
 
+Plans (not binding rules): [roadmap.md](roadmap.md) — Treasury, Accounting and sealed ledger migration, by module and phase.
+
 ## Adding a rule
 
 1. Put it in the file for its scope (create a new one under `rules/` only if none fits, and list it above).
