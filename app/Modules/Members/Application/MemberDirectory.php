@@ -38,4 +38,18 @@ interface MemberDirectory
      * @return list<string>
      */
     public function idsMatching(string $term): array;
+
+    /**
+     * Members of the registry (not in the trash) by normalized full name: to match a name typed
+     * in a file exactly. A list, because two people can share a name (an ambiguous match must
+     * be refused, never guessed).
+     *
+     * @return array<string, list<string>>
+     */
+    public function registryNameIndex(): array;
+
+    /**
+     * The normalization registryNameIndex() uses: case, accents and repeated spaces ignored.
+     */
+    public function normalizeName(string $name): string;
 }

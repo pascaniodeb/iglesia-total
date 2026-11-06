@@ -81,3 +81,21 @@ export type CategoryOption = {
     label: string;
     is_active: boolean;
 };
+
+/** What an offerings workbook would write (OfferingImportPreview::toArray()). */
+export type OfferingImportPreview = {
+    rows: {
+        line: number;
+        offering_date: string;
+        member_name: string | null;
+        category_name: string;
+        amount_ves: string;
+        amount_usd: string;
+        amount_cop: string;
+    }[];
+    rejected: { line: number; reason: string }[];
+    duplicate_lines: number[];
+    totals: { ves: string; usd: string; cop: string };
+    file_hash: string;
+    can_import: boolean;
+};

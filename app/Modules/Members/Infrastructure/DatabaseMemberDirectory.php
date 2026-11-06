@@ -59,6 +59,22 @@ final class DatabaseMemberDirectory implements MemberDirectory
         return array_values(array_map(strval(...), Member::withTrashed()->search($term)->pluck('id')->all()));
     }
 
+    public function registryNameIndex(): array
+    {
+        $index = [];
+
+        foreach (Member::query()->orderBy('id')->get(['id', 'full_name']) as $member) {
+            $index[$this->normalizeName($member->full_name)][] = $member->id;
+        }
+
+        return $index;
+    }
+
+    public function normalizeName(string $name): string
+    {
+        return Str::lower(Str::ascii((string) preg_replace('/\s+/u', ' ', trim($name))));
+    }
+
     private static function ref(Member $member): MemberRef
     {
         return new MemberRef($member->id, $member->full_name, MemberListing::document($member), ! $member->trashed());

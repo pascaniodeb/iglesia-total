@@ -1,11 +1,12 @@
 import { Head } from '@inertiajs/react';
-import { Plus } from 'lucide-react';
+import { FileSpreadsheet, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { ServerDataTable } from '@/components/data-table/server-data-table';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { offeringColumns } from '@/features/treasury/components/offering-columns';
 import { OfferingFormDialog } from '@/features/treasury/components/offering-form-dialog';
+import { OfferingImportDialog } from '@/features/treasury/components/offering-import-dialog';
 import { OfferingRowActions } from '@/features/treasury/components/offering-row-actions';
 import type {
     CategoryOption,
@@ -51,6 +52,7 @@ export default function OfferingsIndex({
 }: OfferingsIndexProps) {
     const { can } = usePermissions();
     const [isRecording, setIsRecording] = useState(false);
+    const [isImporting, setIsImporting] = useState(false);
 
     return (
         <>
@@ -63,13 +65,23 @@ export default function OfferingsIndex({
                     meta={`${count.format(totals.count)} ${totals.count === 1 ? 'ofrenda' : 'ofrendas'}`}
                     actions={
                         can('offerings.manage') && (
-                            <Button
-                                className="shrink-0"
-                                onClick={() => setIsRecording(true)}
-                            >
-                                <Plus aria-hidden />
-                                Registrar ofrenda
-                            </Button>
+                            <>
+                                <Button
+                                    variant="outline"
+                                    className="shrink-0"
+                                    onClick={() => setIsImporting(true)}
+                                >
+                                    <FileSpreadsheet aria-hidden />
+                                    Importar Excel
+                                </Button>
+                                <Button
+                                    className="shrink-0"
+                                    onClick={() => setIsRecording(true)}
+                                >
+                                    <Plus aria-hidden />
+                                    Registrar ofrenda
+                                </Button>
+                            </>
                         )
                     }
                 />
@@ -148,6 +160,12 @@ export default function OfferingsIndex({
                     }}
                 />
             </div>
+            {can('offerings.manage') && (
+                <OfferingImportDialog
+                    open={isImporting}
+                    onOpenChange={setIsImporting}
+                />
+            )}
             {can('offerings.manage') && (
                 <OfferingFormDialog
                     categories={categories}

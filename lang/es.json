@@ -204,5 +204,22 @@
     "Sent to the trash an offering of :giver on :date.": "Envió a la papelera una ofrenda de :giver del :date.",
     "Offering recorded.": "Ofrenda registrada.",
     "Offering corrected.": "Ofrenda corregida.",
-    "Offering sent to the trash.": "La ofrenda se envió a la papelera."
+    "Offering sent to the trash.": "La ofrenda se envió a la papelera.",
+
+    "The first row must be the template header: :headers.": "La primera fila debe ser el encabezado de la plantilla: :headers.",
+    "The file has more than :max rows; split it.": "El archivo tiene más de :max filas: divídalo en varios.",
+    "The file is not an Excel workbook (.xlsx).": "El archivo no es un libro de Excel (.xlsx).",
+    "The date \":value\" is not valid (use DD/MM/YYYY).": "La fecha «:value» no es válida (use DD/MM/AAAA).",
+    "The date \":value\" is in the future.": "La fecha «:value» es futura.",
+    "The member \":value\" is not in the registry.": "El miembro «:value» no está en el padrón.",
+    "The member \":value\" is ambiguous (more than one person has that name).": "El miembro «:value» es ambiguo (hay más de una persona con ese nombre).",
+    "The category \":value\" is not an active category.": "«:value» no es una categoría activa.",
+    "The concept is longer than :max characters.": "El concepto supera los :max caracteres.",
+    "The :currency amount \":value\" is not valid.": "El monto en :currency «:value» no es válido.",
+    "The line has no amount greater than zero.": "La fila no tiene ningún monto mayor que cero.",
+    "The file has :count lines with errors: fix them and try again. Nothing was imported.": "El archivo tiene :count filas con errores: corríjalas e intente de nuevo. No se importó nada.",
+    "The file has no offerings to import.": "El archivo no tiene ofrendas para importar.",
+    "The file repeats lines exactly; confirm that they are separate offerings.": "El archivo repite filas exactas: confirme que son ofrendas distintas.",
+    "Imported :count offerings from a file.": "Importó :count ofrendas desde un archivo.",
+    "{1} :count offering imported.|[2,*] :count offerings imported.": "{1} Se importó :count ofrenda.|[2,*] Se importaron :count ofrendas."
 }

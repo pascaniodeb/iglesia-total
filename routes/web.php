@@ -7,6 +7,7 @@ use App\Modules\Members\Http\Controllers\MemberController;
 use App\Modules\Treasury\Http\Controllers\ExchangeRateController;
 use App\Modules\Treasury\Http\Controllers\OfferingCategoryController;
 use App\Modules\Treasury\Http\Controllers\OfferingController;
+use App\Modules\Treasury\Http\Controllers\OfferingImportController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -52,6 +53,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::middleware('can:offerings.manage')->group(function () {
             Route::post('/', [OfferingController::class, 'store'])->name('store');
             Route::get('member-options', [OfferingController::class, 'memberOptions'])->name('member-options');
+            Route::get('import/template', [OfferingImportController::class, 'template'])->name('import.template');
+            Route::post('import/preview', [OfferingImportController::class, 'preview'])->middleware('throttle:20,1')->name('import.preview');
+            Route::post('import', [OfferingImportController::class, 'store'])->middleware('throttle:10,1')->name('import.store');
             Route::put('{offering}', [OfferingController::class, 'update'])->whereUuid('offering')->name('update');
             Route::delete('{offering}', [OfferingController::class, 'destroy'])->whereUuid('offering')->name('destroy');
         });

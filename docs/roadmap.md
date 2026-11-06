@@ -1,6 +1,6 @@
 # Roadmap: Treasury, Accounting and the sealed ledger
 
-Migration of the old system's money logic (TanStack/Drizzle, `/Projects/TanStackProjects/iglesiatotal`) into this modular monolith, following the patterns proven in safipuv-v4 (`Accounting`, `Treasury`, `Organization/Audit` modules). Status: **plan approved 2026-11-06; A-F1, A-F2, B-F1, B-F2, C-F1 and C-F1b done**. All decisions (D1–D7) are settled; see section 6.
+Migration of the old system's money logic (TanStack/Drizzle, `/Projects/TanStackProjects/iglesiatotal`) into this modular monolith, following the patterns proven in safipuv-v4 (`Accounting`, `Treasury`, `Organization/Audit` modules). Status: **plan approved 2026-11-06; A-F1, A-F2, B-F1, B-F2, C-F1, C-F1b and C-F2 done**. All decisions (D1–D7) are settled; see section 6.
 
 ## 1. What exists in the old system
 
@@ -158,7 +158,7 @@ Rules that make it understandable:
 - **Rule that keeps the books exact:** a rate only informs, compares and sorts. Money is posted, totalled, closed and sealed in its own currency, and `toBolivares` never feeds an entry, a closure or a balance. The currency exchange movement (B-F3) records the amounts actually exchanged; it can show the day's rate as a reference, but it does not compute amounts from it.
 - Legacy: the old `exchange_rates` table is empty, so there is nothing to import.
 
-**C-F2 Offerings.** Registry screen (server table: week, month, category, member, amount; offset pagination, `search_name` on member via contract), create/edit/delete only while the week is not closed (delete = soft delete before close; after close nothing changes). Generated `week_key`/`month_key`. Anonymous offering allowed (`member_id` nullable). CSV bulk import with template, preview and a single transaction (old `offerings-import`).
+**C-F2 Offerings.** ✅ Done 2026-11-06 (bulk import is Excel `.xlsx`, not CSV, approved by the owner, with OpenSpout; it is all or nothing: one rejected row and nothing is written; the closed-week lock arrives with C-F3). Registry screen (server table: week, month, category, member, amount; offset pagination, `search_name` on member via contract), create/edit/delete only while the week is not closed (delete = soft delete before close; after close nothing changes). Generated `week_key`/`month_key`. Anonymous offering allowed (`member_id` nullable). CSV bulk import with template, preview and a single transaction (old `offerings-import`).
 
 **C-F3 Weekly closures.** Generate (preview totals), close, PDF, photo of the paper book (private storage). Closing in one transaction: snapshot count and totals per currency, lock the week's offerings, then seal the weekly block. A weekly close does **not** post to the journal (D2). A sealing failure never undoes the close; it is reported and retried ("seal pending").
 
