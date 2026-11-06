@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Modules\Accounting\Http\Controllers\AccountingAccountController;
 use App\Modules\Integrity\Http\Controllers\ActivityLogController;
 use App\Modules\Members\Http\Controllers\MemberController;
+use App\Modules\Treasury\Http\Controllers\OfferingCategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -39,6 +40,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/', [AccountingAccountController::class, 'store'])->name('store');
             Route::put('{account}', [AccountingAccountController::class, 'update'])->whereUuid('account')->name('update');
             Route::patch('{account}/active', [AccountingAccountController::class, 'toggle'])->whereUuid('account')->name('toggle');
+        });
+    });
+
+    // Offering categories (Treasury).
+    Route::middleware('can:catalogs.view')->prefix('treasury/offering-categories')->name('treasury.offering-categories.')->group(function () {
+        Route::get('/', [OfferingCategoryController::class, 'index'])->name('index');
+
+        Route::middleware('can:catalogs.manage')->group(function () {
+            Route::post('/', [OfferingCategoryController::class, 'store'])->name('store');
+            Route::put('{category}', [OfferingCategoryController::class, 'update'])->whereUuid('category')->name('update');
+            Route::patch('{category}/active', [OfferingCategoryController::class, 'toggle'])->whereUuid('category')->name('toggle');
         });
     });
 

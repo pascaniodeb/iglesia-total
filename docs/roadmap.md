@@ -146,7 +146,7 @@ Rules that make it understandable:
 
 ### Module C — Treasury (Tesorería)
 
-**C-F1 Catalogs and settings.** Offering categories (each points to an income account, NOT NULL), receipt settings (start number of the physical book). Exchange rates: see C-F1b (D5).
+**C-F1 Catalogs and settings.** ✅ Categories done 2026-11-06 (`ChartOfAccounts` contract; the database checks the account is income; `treasury:import-legacy-categories`). Receipt settings move to C-F4, where they have a caller. Offering categories (each points to an income account, NOT NULL), receipt settings (start number of the physical book). Exchange rates: see C-F1b (D5).
 
 **C-F1b Exchange rates (exact port of safipuv-v4 `Treasury`).**
 

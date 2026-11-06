@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookText, History, LayoutGrid, Users } from 'lucide-react';
+import { BookText, HandCoins, History, LayoutGrid, Users } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -16,6 +16,7 @@ import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { dashboard } from '@/routes';
 import { index as accountsIndex } from '@/routes/accounting/accounts';
 import { index as activityLogIndex } from '@/routes/activity-log';
+import { index as offeringCategoriesIndex } from '@/routes/treasury/offering-categories';
 import { index as membersIndex } from '@/routes/members';
 import type { NavItem } from '@/types';
 
@@ -36,6 +37,12 @@ const mainNavItems: NavItem[] = [
         title: 'Plan de cuentas',
         href: accountsIndex(),
         icon: BookText,
+        permission: 'catalogs.view',
+    },
+    {
+        title: 'Categorías de ofrenda',
+        href: offeringCategoriesIndex(),
+        icon: HandCoins,
         permission: 'catalogs.view',
     },
     {

@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\UserRole;
+use App\Models\User;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -50,6 +52,17 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * Signs in a new user that holds the given role.
+ */
+function signInAs(UserRole $role): User
+{
+    $user = User::factory()->role($role)->create();
+    test()->actingAs($user);
+
+    return $user;
 }
 
 /**

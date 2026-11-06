@@ -164,5 +164,17 @@
     "The account :code is inactive.": "La cuenta :code está inactiva.",
     "A reversal needs a reason.": "Un contraasiento necesita un motivo.",
     "A reversal cannot be reversed: post the corrected entry instead.": "Un contraasiento no se revierte: registre el asiento corregido.",
-    "There is no journal entry :id.": "No existe el asiento :id."
+    "There is no journal entry :id.": "No existe el asiento :id.",
+
+    "Choose an active income account.": "Elija una cuenta de ingreso activa.",
+    "A category with that name already exists.": "Ya existe una categoría con ese nombre.",
+    "Created the offering category :name (:code).": "Creó la categoría de ofrenda :name (:code).",
+    "Updated the offering category :name (:code).": "Actualizó la categoría de ofrenda :name (:code).",
+    "Reactivated the offering category :name.": "Reactivó la categoría de ofrenda :name.",
+    "Deactivated the offering category :name.": "Desactivó la categoría de ofrenda :name.",
+    "Category :name created.": "Se creó la categoría :name.",
+    "Category :name updated.": "Se actualizó la categoría :name.",
+    "Category :name reactivated.": "Se reactivó la categoría :name.",
+    "Category :name deactivated.": "Se desactivó la categoría :name.",
+    "Imported the offering categories of the old system: :created created, :updated updated.": "Importó las categorías de ofrenda del sistema anterior: :created creadas, :updated actualizadas."
 }

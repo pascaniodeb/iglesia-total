@@ -22,14 +22,6 @@ function memberPayload(array $overrides = []): array
     ];
 }
 
-function signInAs(UserRole $role): User
-{
-    $user = User::factory()->role($role)->create();
-    test()->actingAs($user);
-
-    return $user;
-}
-
 dataset('roles that view members', [
     'pastor' => UserRole::Pastor,
     'assistant' => UserRole::Assistant,

@@ -227,6 +227,7 @@ return [
         'children.*.birth_date' => 'fecha de nacimiento del hijo',
         'roles' => 'cargos',
         'role' => 'rol',
+        'account_id' => 'cuenta',
         'roles.*.role' => 'cargo',
         'roles.*.since' => 'fecha de inicio del cargo',
         'roles.*.until' => 'fecha de fin del cargo',
