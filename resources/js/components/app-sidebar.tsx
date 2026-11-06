@@ -6,6 +6,7 @@ import {
     History,
     LayoutGrid,
     Users,
+    Wallet,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
@@ -25,6 +26,7 @@ import { index as accountsIndex } from '@/routes/accounting/accounts';
 import { index as activityLogIndex } from '@/routes/activity-log';
 import { index as exchangeRatesIndex } from '@/routes/treasury/exchange-rates';
 import { index as offeringCategoriesIndex } from '@/routes/treasury/offering-categories';
+import { index as offeringsIndex } from '@/routes/treasury/offerings';
 import { index as membersIndex } from '@/routes/members';
 import type { NavItem } from '@/types';
 
@@ -40,6 +42,12 @@ const mainNavItems: NavItem[] = [
         href: membersIndex(),
         icon: Users,
         permission: 'members.view',
+    },
+    {
+        title: 'Ofrendas',
+        href: offeringsIndex(),
+        icon: Wallet,
+        permission: 'offerings.view',
     },
     {
         title: 'Plan de cuentas',

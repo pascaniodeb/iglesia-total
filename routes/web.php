@@ -6,6 +6,7 @@ use App\Modules\Integrity\Http\Controllers\ActivityLogController;
 use App\Modules\Members\Http\Controllers\MemberController;
 use App\Modules\Treasury\Http\Controllers\ExchangeRateController;
 use App\Modules\Treasury\Http\Controllers\OfferingCategoryController;
+use App\Modules\Treasury\Http\Controllers\OfferingController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -41,6 +42,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/', [AccountingAccountController::class, 'store'])->name('store');
             Route::put('{account}', [AccountingAccountController::class, 'update'])->whereUuid('account')->name('update');
             Route::patch('{account}/active', [AccountingAccountController::class, 'toggle'])->whereUuid('account')->name('toggle');
+        });
+    });
+
+    // Offerings registry (Treasury). Fixed paths go before {offering}.
+    Route::middleware('can:offerings.view')->prefix('treasury/offerings')->name('treasury.offerings.')->group(function () {
+        Route::get('/', [OfferingController::class, 'index'])->name('index');
+
+        Route::middleware('can:offerings.manage')->group(function () {
+            Route::post('/', [OfferingController::class, 'store'])->name('store');
+            Route::get('member-options', [OfferingController::class, 'memberOptions'])->name('member-options');
+            Route::put('{offering}', [OfferingController::class, 'update'])->whereUuid('offering')->name('update');
+            Route::delete('{offering}', [OfferingController::class, 'destroy'])->whereUuid('offering')->name('destroy');
         });
     });
 

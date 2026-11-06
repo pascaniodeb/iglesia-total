@@ -192,5 +192,17 @@
     "Today has a rate recorded by hand: it is kept.": "Hoy tiene una tasa registrada a mano: se conserva.",
     "Choose the date.": "Seleccione la fecha.",
     "Write the bolívares per dollar, greater than zero and with up to 4 decimals.": "Escriba los bolívares por dólar, mayor que cero y con hasta 4 decimales.",
-    "Write the pesos per bolívar, greater than zero and with up to 6 decimals.": "Escriba los pesos por bolívar, mayor que cero y con hasta 6 decimales."
+    "Write the pesos per bolívar, greater than zero and with up to 6 decimals.": "Escriba los pesos por bolívar, mayor que cero y con hasta 6 decimales.",
+
+    "The offering date cannot be in the future.": "La fecha de la ofrenda no puede ser futura.",
+    "Choose an active category.": "Elija una categoría activa.",
+    "Choose a member of the registry or leave the offering anonymous.": "Elija un miembro del padrón o deje la ofrenda como anónima.",
+    "Write at least one amount greater than zero, with up to two decimals and no thousands separators.": "Escriba al menos un monto mayor que cero, con hasta dos decimales y sin separadores de miles.",
+    "anonymous": "anónima",
+    "Recorded an offering of :giver on :date.": "Registró una ofrenda de :giver del :date.",
+    "Corrected an offering of :giver on :date.": "Corrigió una ofrenda de :giver del :date.",
+    "Sent to the trash an offering of :giver on :date.": "Envió a la papelera una ofrenda de :giver del :date.",
+    "Offering recorded.": "Ofrenda registrada.",
+    "Offering corrected.": "Ofrenda corregida.",
+    "Offering sent to the trash.": "La ofrenda se envió a la papelera."
 }
