@@ -26,7 +26,7 @@
 - The old system (TanStack/Drizzle, integer ids) is a read-only source through the `legacy` connection (`LEGACY_DB_*` in `.env`).
 - Imported tables keep a unique `legacy_id`. New rows get a UUIDv7 built from the legacy `created_at`, so id order follows registration order.
 - Importers are idempotent (matched by `legacy_id`), run inside one transaction, and never delete rows in the new database.
-- Members: `php artisan members:import-legacy` (`--dry-run` to preview). Then users: `php artisan users:import-legacy` (see [auth.md](auth.md)).
+- Members: `php artisan members:import-legacy` (`--dry-run` to preview). Then users: `php artisan users:import-legacy` (see [auth.md](auth.md)). Chart of accounts: `php artisan accounting:import-legacy-accounts`.
 
 ## Append-only tables
 

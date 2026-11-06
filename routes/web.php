@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Modules\Accounting\Http\Controllers\AccountingAccountController;
 use App\Modules\Integrity\Http\Controllers\ActivityLogController;
 use App\Modules\Members\Http\Controllers\MemberController;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('{member}', [MemberController::class, 'update'])->whereUuid('member')->name('update');
             Route::delete('{member}', [MemberController::class, 'destroy'])->whereUuid('member')->name('destroy');
             Route::post('{member}/restore', [MemberController::class, 'restore'])->whereUuid('member')->withTrashed()->name('restore');
+        });
+    });
+
+    // Chart of accounts (Accounting). Fixed paths go before {account}.
+    Route::middleware('can:catalogs.view')->prefix('accounting/accounts')->name('accounting.accounts.')->group(function () {
+        Route::get('/', [AccountingAccountController::class, 'index'])->name('index');
+
+        Route::middleware('can:catalogs.manage')->group(function () {
+            Route::post('/', [AccountingAccountController::class, 'store'])->name('store');
+            Route::put('{account}', [AccountingAccountController::class, 'update'])->whereUuid('account')->name('update');
+            Route::patch('{account}/active', [AccountingAccountController::class, 'toggle'])->whereUuid('account')->name('toggle');
         });
     });
 

@@ -133,5 +133,24 @@
 
     "Bolívares": "Bolívares",
     "Dollars": "Dólares",
-    "Pesos": "Pesos"
+    "Pesos": "Pesos",
+
+    "Asset": "Activo",
+    "Equity": "Patrimonio",
+    "Income": "Ingreso",
+    "Expense": "Egreso",
+    "System accounts cannot be edited.": "Las cuentas del sistema no se pueden editar.",
+    "System accounts cannot be deactivated.": "Las cuentas del sistema no se pueden desactivar.",
+    "An account with that code already exists.": "Ya existe una cuenta con ese código.",
+    "The code must start with I- (income) or E- (expense).": "El código debe comenzar con I- (ingreso) o E- (egreso).",
+    "The code must start with I- (income) or E- (expense) followed by three digits.": "El código debe comenzar con I- (ingreso) o E- (egreso) seguido de tres dígitos.",
+    "Created account :code :name.": "Creó la cuenta :code :name.",
+    "Updated account :code :name.": "Actualizó la cuenta :code :name.",
+    "Reactivated account :code :name.": "Reactivó la cuenta :code :name.",
+    "Deactivated account :code :name.": "Desactivó la cuenta :code :name.",
+    "Account :code created.": "Se creó la cuenta :code.",
+    "Account :code updated.": "Se actualizó la cuenta :code.",
+    "Account :code reactivated.": "Se reactivó la cuenta :code.",
+    "Account :code deactivated.": "Se desactivó la cuenta :code.",
+    "Imported the chart of accounts of the old system: :created created, :updated updated.": "Importó el plan de cuentas del sistema anterior: :created creadas, :updated actualizadas."
 }
