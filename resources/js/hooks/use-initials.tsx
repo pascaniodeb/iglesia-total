@@ -14,12 +14,15 @@ export function useInitials(): GetInitialsFn {
             return '';
         }
 
+        const first = names[0] ?? '';
+        const last = names[names.length - 1] ?? '';
+
         if (names.length === 1) {
-            return getInitial(names[0]).toUpperCase();
+            return getInitial(first).toUpperCase();
         }
 
-        const firstInitial = getInitial(names[0]);
-        const lastInitial = getInitial(names[names.length - 1]);
+        const firstInitial = getInitial(first);
+        const lastInitial = getInitial(last);
 
         return `${firstInitial}${lastInitial}`.toUpperCase();
     }, []);
