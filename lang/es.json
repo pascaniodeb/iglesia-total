@@ -152,5 +152,17 @@
     "Account :code updated.": "Se actualizó la cuenta :code.",
     "Account :code reactivated.": "Se reactivó la cuenta :code.",
     "Account :code deactivated.": "Se desactivó la cuenta :code.",
-    "Imported the chart of accounts of the old system: :created created, :updated updated.": "Importó el plan de cuentas del sistema anterior: :created creadas, :updated actualizadas."
+    "Imported the chart of accounts of the old system: :created created, :updated updated.": "Importó el plan de cuentas del sistema anterior: :created creadas, :updated actualizadas.",
+
+    "REVERSAL: :description": "CONTRAASIENTO: :description",
+    "Posted the entry \":description\" of :date.": "Asentó «:description» del :date.",
+    "Reversed the entry \":description\": :reason": "Revirtió el asiento «:description»: :reason",
+    "Verified the journal: :entries entries, balanced in every currency.": "Verificó el Libro Diario: :entries asientos, cuadrado en todas las monedas.",
+    "Verified the journal: it does not balance.": "Verificó el Libro Diario: no cuadra.",
+    "The origin :origin was already posted with different content.": "El origen :origin ya se asentó con otro contenido.",
+    "There is no account :code.": "No existe la cuenta :code.",
+    "The account :code is inactive.": "La cuenta :code está inactiva.",
+    "A reversal needs a reason.": "Un contraasiento necesita un motivo.",
+    "A reversal cannot be reversed: post the corrected entry instead.": "Un contraasiento no se revierte: registre el asiento corregido.",
+    "There is no journal entry :id.": "No existe el asiento :id."
 }
