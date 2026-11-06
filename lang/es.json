@@ -86,5 +86,12 @@
     "Verify your email address": "Verifique su correo electrónico",
     "Please click the button below to verify your email address.": "Haga clic en el botón de abajo para verificar su correo electrónico.",
     "Verify Email Address": "Verificar correo electrónico",
-    "If you did not create an account, no further action is required.": "Si no creó una cuenta, no necesita hacer nada más."
+    "If you did not create an account, no further action is required.": "Si no creó una cuenta, no necesita hacer nada más.",
+
+    "Data": "Datos",
+    "Security": "Seguridad",
+    "Access": "Acceso",
+    "System": "Sistema",
+    "Verified the activity log: :rows entries, chain intact.": "Verificó la bitácora: :rows registros, cadena íntegra.",
+    "Verified the activity log: :count broken links.": "Verificó la bitácora: :count eslabones rotos."
 }
