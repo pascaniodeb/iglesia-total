@@ -30,4 +30,12 @@ Ported from the SAFIPUV v4 visual system (visual only, no business logic).
 - Forms use the `components/form/*` kit (`field`, `text-field`, `form-section`, `form-actions`, ...). Page chrome uses `page-header`, `empty-state`, `status-badge`.
 - Toasts: the server sends flash `toast` with `type` (`success` | `info` | `warning` | `error`) and `message`; `title` and `duration` are optional.
 - Navigation links use Inertia `<Link>` with `prefetch` for primary navigation.
-- UI copy is English. No domain or house-style copy (e.g. forced uppercase) copied from other projects.
+- No domain or house-style copy (e.g. forced uppercase) copied from other projects.
+
+## Language
+
+- The whole application is in **neutral Spanish** (users are in Venezuela), addressing the user as **"usted"** (never voseo or "tú"). `APP_LOCALE` and `APP_FALLBACK_LOCALE` are `es`; faker is `es_VE`.
+- Code, identifiers and comments stay in English. Only user-facing copy is Spanish.
+- Frontend copy is written directly in Spanish in the components (single-language app, no i18n library). Reuse the glossary: "Ajustes" (settings), "Panel" (dashboard), "Llave de acceso" (passkey), "Correo electrónico" (email), "Contraseña" (password), "Iniciar / Cerrar sesión" (log in / out).
+- Backend messages use the Spanish files in `lang/es/` (`auth`, `passwords`, `validation`, `pagination`). Strings written in PHP use `__('English key')` and their translation goes in `lang/es.json`; a missing key silently shows English, so add the translation in the same change. New form fields need an entry in `validation.attributes` so errors read "El campo correo electrónico es obligatorio".
+- Toasts (`Inertia::flash('toast', ['type', 'message'])`) carry the Spanish `message`; they appear top-right.

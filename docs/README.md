@@ -2,11 +2,13 @@
 
 Hard rules for this project. They are binding: if code or a change conflicts with a rule here, either fix the code or change the rule explicitly (with the project owner's agreement), never ignore it.
 
-| File                                   | Scope                                          |
-| -------------------------------------- | ---------------------------------------------- |
-| [rules/workflow.md](rules/workflow.md) | How we work: inline, quality gates, commits    |
-| [rules/stack.md](rules/stack.md)       | Stack, tooling, database, environment          |
-| [rules/frontend.md](rules/frontend.md) | SSR, TypeScript, design system, UI conventions |
+| File                                   | Scope                                                  |
+| -------------------------------------- | ------------------------------------------------------ |
+| [rules/workflow.md](rules/workflow.md) | How we work: inline, quality gates, commits            |
+| [rules/stack.md](rules/stack.md)       | Stack, tooling, database, environment                  |
+| [rules/database.md](rules/database.md) | UUIDv7 ids, columns, search, pagination, legacy import |
+| [rules/auth.md](rules/auth.md)         | Users are members, roles, deactivation, passwords      |
+| [rules/frontend.md](rules/frontend.md) | SSR, TypeScript, design system, UI conventions         |
 
 ## Adding a rule
 
