@@ -113,5 +113,21 @@
     "Disabled two-factor authentication.": "Desactivó la autenticación de dos factores.",
     "Generated new recovery codes.": "Generó nuevos códigos de recuperación.",
     "Changed their password.": "Cambió su contraseña.",
-    "Not signed in": "Sin sesión iniciada"
+    "Not signed in": "Sin sesión iniciada",
+
+    "Opened the sealed ledger from :period.": "Abrió el libro sellado desde :period.",
+    "Sealed :period in the sealed ledger (block :height).": "Selló :period en el libro sellado (bloque :height).",
+    "Verified the sealed ledger: :blocks blocks, intact and matching the books.": "Verificó el libro sellado: :blocks bloques, íntegro y de acuerdo con los libros.",
+    "Verified the sealed ledger: :count issues found.": "Verificó el libro sellado: :count hallazgos.",
+    "The sealed ledger already has its genesis.": "El libro sellado ya tiene su bloque génesis.",
+    "Nothing can seal periods of kind :kind.": "No hay quien selle períodos de tipo :kind.",
+    "The sealed ledger has no genesis yet.": "El libro sellado todavía no tiene su bloque génesis.",
+    "The period :period is not closed.": "El período :period no está cerrado.",
+    "Gap in the chain: expected height :expected, found :found.": "Hueco en la cadena: se esperaba la altura :expected y el bloque dice :found.",
+    "The link does not point to the previous block (expected :expected…, found :found…).": "El eslabón no apunta al bloque anterior (esperado :expected…, encontrado :found…).",
+    "The sealed content does not match its own hash.": "El contenido sellado no coincide con su propio hash.",
+    "The block hash does not match its content.": "El hash del bloque no se corresponde con su contenido.",
+    "Nothing can rebuild periods of kind :kind to compare them with the books.": "No hay quien reconstruya los períodos de tipo :kind para compararlos con los libros.",
+    "The period :period is sealed but its close no longer exists in the books.": "El período :period está sellado pero su cierre ya no existe en los libros.",
+    "The books no longer match what was sealed for :period (:fields).": "Los libros ya no coinciden con lo sellado para :period (:fields)."
 }

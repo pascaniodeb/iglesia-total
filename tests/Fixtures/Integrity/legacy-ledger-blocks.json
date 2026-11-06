@@ -1,153 +1,153 @@
 [
-  {
-    "height": 0,
-    "kind": "genesis",
-    "period_key": null,
-    "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
-    "merkle_root": "0000000000000000000000000000000000000000000000000000000000000000",
-    "payload_hash": "b65d7ad04164725e54d5b6b2dd767b9474892870516fe404e0538c7fc8d8805a",
-    "hash": "5617da7fc22753645c5b1e297517e1ccb69d7146a9b1eb0ac69d8471b137ce12",
-    "payload": {
-      "chain": "libro-sellado",
-      "version": 1,
-      "churchCode": "M07A1985C0001",
-      "firstPeriod": "2025-W01"
-    }
-  },
-  {
-    "height": 1,
-    "kind": "weekly",
-    "period_key": "2025-W01",
-    "prev_hash": "5617da7fc22753645c5b1e297517e1ccb69d7146a9b1eb0ac69d8471b137ce12",
-    "merkle_root": "e05055458e169994d436a030fe55a7e008192d3979e1baf29d17fe1d90499951",
-    "payload_hash": "a143ddc6dfb6f4f5d18835cfd18df4fb6ae3e1f861477dd83c9208efd83f8106",
-    "hash": "6e9ce49f69fd69d5d1705e9f9502cdc96f4873b3e835bf31d0225402a6bb8ea4",
-    "payload": {
-      "kind": "weekly",
-      "status": "closed",
-      "totals": {
-        "cop": "115000.00",
-        "usd": "1.00",
-        "ves": "0.00"
-      },
-      "weekEnd": "2025-01-05",
-      "weekKey": "2025-W01",
-      "monthKey": "2025-01",
-      "weekStart": "2024-12-30",
-      "closureTotals": {
-        "cop": "115000.00",
-        "usd": "1.00",
-        "ves": "0.00"
-      },
-      "offeringsCount": 7
-    }
-  },
-  {
-    "height": 2,
-    "kind": "weekly",
-    "period_key": "2025-W02",
-    "prev_hash": "6e9ce49f69fd69d5d1705e9f9502cdc96f4873b3e835bf31d0225402a6bb8ea4",
-    "merkle_root": "4de1103306593480d25151f7eceb3ffd388384f4a2046fea61e197b1e658997c",
-    "payload_hash": "39b5995ea7e047fb4afafaa4d733d0411e8eb698fba6ea7302af98a5d7968f56",
-    "hash": "75bc3501b69a690509f0e4631597bd8b85971045d3ae69b2504b3aabb6e081f7",
-    "payload": {
-      "kind": "weekly",
-      "status": "closed",
-      "totals": {
-        "cop": "124000.00",
-        "usd": "0.00",
-        "ves": "0.00"
-      },
-      "weekEnd": "2025-01-12",
-      "weekKey": "2025-W02",
-      "monthKey": "2025-01",
-      "weekStart": "2025-01-06",
-      "closureTotals": {
-        "cop": "124000.00",
-        "usd": "0.00",
-        "ves": "0.00"
-      },
-      "offeringsCount": 9
-    }
-  },
-  {
-    "height": 45,
-    "kind": "monthly",
-    "period_key": "2025-10",
-    "prev_hash": "2c8b8bfa4ecf599ac924b6daffd7b2d0b93d378a53fde744032e97a54e81067a",
-    "merkle_root": "04d4679c915cacdce4b8d2f66ab4b83b23f8f50b0f71a4752bc04ce41109f795",
-    "payload_hash": "11baf6b0b66146bdac68fc3e68c3a5033a872800daa7ca08624dd96d5923057a",
-    "hash": "a4f8fd56ec1df9b96e36408b19f5005003fac0be965f96c48c8189f3ac376b21",
-    "payload": {
-      "kind": "monthly",
-      "byCode": [
-        {
-          "cop": "100000.00",
-          "usd": "0.00",
-          "ves": "0.00",
-          "code": "E-021",
-          "entries": 1
-        },
-        {
-          "cop": "400000.00",
-          "usd": "0.00",
-          "ves": "0.00",
-          "code": "E-025",
-          "entries": 1
-        },
-        {
-          "cop": "100000.00",
-          "usd": "0.00",
-          "ves": "0.00",
-          "code": "E-029",
-          "entries": 1
-        },
-        {
-          "cop": "591700.00",
-          "usd": "13.00",
-          "ves": "0.00",
-          "code": "I-001",
-          "entries": 1
-        },
-        {
-          "cop": "478700.00",
-          "usd": "0.00",
-          "ves": "0.00",
-          "code": "I-002",
-          "entries": 1
+    {
+        "height": 0,
+        "kind": "genesis",
+        "period_key": null,
+        "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "merkle_root": "0000000000000000000000000000000000000000000000000000000000000000",
+        "payload_hash": "b65d7ad04164725e54d5b6b2dd767b9474892870516fe404e0538c7fc8d8805a",
+        "hash": "5617da7fc22753645c5b1e297517e1ccb69d7146a9b1eb0ac69d8471b137ce12",
+        "payload": {
+            "chain": "libro-sellado",
+            "version": 1,
+            "churchCode": "M07A1985C0001",
+            "firstPeriod": "2025-W01"
         }
-      ],
-      "income": {
-        "cop": "478700.00",
-        "usd": "0.00",
-        "ves": "0.00"
-      },
-      "status": "closed",
-      "closing": {
-        "cop": "470400.00",
-        "usd": "13.00",
-        "ves": "0.00"
-      },
-      "expense": {
-        "cop": "600000.00",
-        "usd": "0.00",
-        "ves": "0.00"
-      },
-      "opening": {
-        "cop": "591700.00",
-        "usd": "13.00",
-        "ves": "0.00"
-      },
-      "monthEnd": "2025-10-31",
-      "monthKey": "2025-10",
-      "offerings": {
-        "cop": "478700.00",
-        "usd": "0.00",
-        "ves": "0.00",
-        "count": 34
-      },
-      "entryCount": 5,
-      "monthStart": "2025-10-01"
+    },
+    {
+        "height": 1,
+        "kind": "weekly",
+        "period_key": "2025-W01",
+        "prev_hash": "5617da7fc22753645c5b1e297517e1ccb69d7146a9b1eb0ac69d8471b137ce12",
+        "merkle_root": "e05055458e169994d436a030fe55a7e008192d3979e1baf29d17fe1d90499951",
+        "payload_hash": "a143ddc6dfb6f4f5d18835cfd18df4fb6ae3e1f861477dd83c9208efd83f8106",
+        "hash": "6e9ce49f69fd69d5d1705e9f9502cdc96f4873b3e835bf31d0225402a6bb8ea4",
+        "payload": {
+            "kind": "weekly",
+            "status": "closed",
+            "totals": {
+                "cop": "115000.00",
+                "usd": "1.00",
+                "ves": "0.00"
+            },
+            "weekEnd": "2025-01-05",
+            "weekKey": "2025-W01",
+            "monthKey": "2025-01",
+            "weekStart": "2024-12-30",
+            "closureTotals": {
+                "cop": "115000.00",
+                "usd": "1.00",
+                "ves": "0.00"
+            },
+            "offeringsCount": 7
+        }
+    },
+    {
+        "height": 2,
+        "kind": "weekly",
+        "period_key": "2025-W02",
+        "prev_hash": "6e9ce49f69fd69d5d1705e9f9502cdc96f4873b3e835bf31d0225402a6bb8ea4",
+        "merkle_root": "4de1103306593480d25151f7eceb3ffd388384f4a2046fea61e197b1e658997c",
+        "payload_hash": "39b5995ea7e047fb4afafaa4d733d0411e8eb698fba6ea7302af98a5d7968f56",
+        "hash": "75bc3501b69a690509f0e4631597bd8b85971045d3ae69b2504b3aabb6e081f7",
+        "payload": {
+            "kind": "weekly",
+            "status": "closed",
+            "totals": {
+                "cop": "124000.00",
+                "usd": "0.00",
+                "ves": "0.00"
+            },
+            "weekEnd": "2025-01-12",
+            "weekKey": "2025-W02",
+            "monthKey": "2025-01",
+            "weekStart": "2025-01-06",
+            "closureTotals": {
+                "cop": "124000.00",
+                "usd": "0.00",
+                "ves": "0.00"
+            },
+            "offeringsCount": 9
+        }
+    },
+    {
+        "height": 45,
+        "kind": "monthly",
+        "period_key": "2025-10",
+        "prev_hash": "2c8b8bfa4ecf599ac924b6daffd7b2d0b93d378a53fde744032e97a54e81067a",
+        "merkle_root": "04d4679c915cacdce4b8d2f66ab4b83b23f8f50b0f71a4752bc04ce41109f795",
+        "payload_hash": "11baf6b0b66146bdac68fc3e68c3a5033a872800daa7ca08624dd96d5923057a",
+        "hash": "a4f8fd56ec1df9b96e36408b19f5005003fac0be965f96c48c8189f3ac376b21",
+        "payload": {
+            "kind": "monthly",
+            "byCode": [
+                {
+                    "cop": "100000.00",
+                    "usd": "0.00",
+                    "ves": "0.00",
+                    "code": "E-021",
+                    "entries": 1
+                },
+                {
+                    "cop": "400000.00",
+                    "usd": "0.00",
+                    "ves": "0.00",
+                    "code": "E-025",
+                    "entries": 1
+                },
+                {
+                    "cop": "100000.00",
+                    "usd": "0.00",
+                    "ves": "0.00",
+                    "code": "E-029",
+                    "entries": 1
+                },
+                {
+                    "cop": "591700.00",
+                    "usd": "13.00",
+                    "ves": "0.00",
+                    "code": "I-001",
+                    "entries": 1
+                },
+                {
+                    "cop": "478700.00",
+                    "usd": "0.00",
+                    "ves": "0.00",
+                    "code": "I-002",
+                    "entries": 1
+                }
+            ],
+            "income": {
+                "cop": "478700.00",
+                "usd": "0.00",
+                "ves": "0.00"
+            },
+            "status": "closed",
+            "closing": {
+                "cop": "470400.00",
+                "usd": "13.00",
+                "ves": "0.00"
+            },
+            "expense": {
+                "cop": "600000.00",
+                "usd": "0.00",
+                "ves": "0.00"
+            },
+            "opening": {
+                "cop": "591700.00",
+                "usd": "13.00",
+                "ves": "0.00"
+            },
+            "monthEnd": "2025-10-31",
+            "monthKey": "2025-10",
+            "offerings": {
+                "cop": "478700.00",
+                "usd": "0.00",
+                "ves": "0.00",
+                "count": 34
+            },
+            "entryCount": 5,
+            "monthStart": "2025-10-01"
+        }
     }
-  }
 ]
