@@ -1,6 +1,6 @@
 # Roadmap: Treasury, Accounting and the sealed ledger
 
-Migration of the old system's money logic (TanStack/Drizzle, `/Projects/TanStackProjects/iglesiatotal`) into this modular monolith, following the patterns proven in safipuv-v4 (`Accounting`, `Treasury`, `Organization/Audit` modules). Status: **plan approved 2026-11-06, not started**. All decisions (D1–D7) are settled; see section 6.
+Migration of the old system's money logic (TanStack/Drizzle, `/Projects/TanStackProjects/iglesiatotal`) into this modular monolith, following the patterns proven in safipuv-v4 (`Accounting`, `Treasury`, `Organization/Audit` modules). Status: **plan approved 2026-11-06; A-F1 done**. All decisions (D1–D7) are settled; see section 6.
 
 ## 1. What exists in the old system
 
@@ -118,7 +118,7 @@ Rules that make it understandable:
 
 ### Module A — Integrity (Centro de integridad)
 
-**A-F1 Activity log chain.** `activity_log` table: `seq`, `previous_hash`, `hash` computed by a `BEFORE INSERT` trigger under `pg_advisory_xact_lock` (safipuv `audit_logs_chain`), actor id + name/role snapshots, action, subject, before/after/diff (jsonb), request id, ip, user agent. Append-only. `AuditTrail` service used by every Action. `activity:verify` command. Screen for `activity_log.view` (server table, filters by actor/action/date).
+**A-F1 Activity log chain.** ✅ Done 2026-11-06 (also: occurred_at is stamped by the trigger with the real clock; account self-deletion removed, accounts are deactivated; legacy import of the old log is left for the cut-over). `activity_log` table: `seq`, `previous_hash`, `hash` computed by a `BEFORE INSERT` trigger under `pg_advisory_xact_lock` (safipuv `audit_logs_chain`), actor id + name/role snapshots, action, subject, before/after/diff (jsonb), request id, ip, user agent. Append-only. `AuditTrail` service used by every Action. `activity:verify` command. Screen for `activity_log.view` (server table, filters by actor/action/date).
 
 **A-F2 Sealed ledger core (pure domain).** Port the old primitives to PHP: canonical JSON (sorted keys, amounts as strings, integers only for counts, no floats), SHA-256, Merkle root and proof (odd level duplicates the last leaf), block hash, two-pass verifier. **Golden tests:** fixtures produced by the old TypeScript code (a payload, its canonical string, leaves, root, proof, block hash) must give byte-identical results in PHP. `ledger_blocks` table (UUIDv7, `height` unique and gapless, `kind`, `period_key`, `prev_hash`, `merkle_root`, `payload_hash`, `hash`, `payload` jsonb, `sealed_at`, `sealed_by`; CHECKs on hash length; unique `(kind, period_key)`), append-only. `SealableSource` port + registry; `SealPeriod` and `VerifyChain` Actions; `ledger:verify` scheduled daily.
 

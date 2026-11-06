@@ -112,5 +112,6 @@
     "Enabled two-factor authentication.": "Activó la autenticación de dos factores.",
     "Disabled two-factor authentication.": "Desactivó la autenticación de dos factores.",
     "Generated new recovery codes.": "Generó nuevos códigos de recuperación.",
-    "Changed their password.": "Cambió su contraseña."
+    "Changed their password.": "Cambió su contraseña.",
+    "Not signed in": "Sin sesión iniciada"
 }

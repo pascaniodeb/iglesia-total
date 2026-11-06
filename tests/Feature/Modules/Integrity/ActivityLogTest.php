@@ -61,6 +61,7 @@ test('each entry is chained to the previous one by the database', function () {
 
     expect($first->previous_hash)->toBeNull()
         ->and($second->seq)->toBeGreaterThan($first->seq)
+        ->and($second->occurred_at->greaterThan($first->occurred_at))->toBeTrue()
         ->and($second->previous_hash)->toBe($first->hash)
         ->and(strlen($second->hash))->toBe(64);
 
@@ -79,11 +80,13 @@ test('the application cannot choose the chain values', function () {
         'action' => 'forged',
         'summary' => 'Intento de falsificar.',
         'seq' => 999,
+        'occurred_at' => '2000-01-01 00:00:00+00',
         'previous_hash' => str_repeat('a', 64),
         'hash' => str_repeat('b', 64),
     ])->refresh();
 
     expect($entry->seq)->not->toBe(999)
+        ->and($entry->occurred_at->year)->not->toBe(2000)
         ->and($entry->previous_hash)->toBeNull()
         ->and($entry->hash)->not->toBe(str_repeat('b', 64));
 });
