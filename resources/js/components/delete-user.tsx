@@ -26,7 +26,7 @@ export default function DeleteUser() {
                 title="Eliminar cuenta"
                 description="Elimine su cuenta y todos sus datos"
             />
-            <div className="space-y-4 rounded-lg border border-destructive/20 bg-destructive/10 p-4">
+            <div className="space-y-4 rounded-lg border border-destructive-foreground/30 bg-destructive-foreground/10 p-4">
                 <div className="relative space-y-0.5 text-destructive-foreground">
                     <p className="font-medium">Advertencia</p>
                     <p className="text-sm">

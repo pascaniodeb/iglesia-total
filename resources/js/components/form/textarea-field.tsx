@@ -28,7 +28,7 @@ export function TextareaField({
                     className={cn(
                         'w-full min-w-0 rounded-(--control-radius) border-2 border-input bg-card px-(--control-px) py-3 text-(length:--control-font) transition-[color,border-color,box-shadow] outline-none placeholder:text-sm placeholder:text-muted-foreground',
                         'focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-ring/30',
-                        'aria-invalid:border-destructive aria-invalid:ring-destructive/20',
+                        'aria-invalid:border-destructive-foreground aria-invalid:ring-destructive-foreground/25',
                         className,
                     )}
                 />
