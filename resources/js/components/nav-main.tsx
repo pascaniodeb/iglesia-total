@@ -8,10 +8,11 @@ import {
 } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
+import { usePermissions } from '@/hooks/use-permissions';
 import type { NavItem } from '@/types';
 
 export function NavMain({
-    label = 'Platform',
+    label = 'Menú',
     items,
 }: {
     label?: string;
@@ -19,12 +20,21 @@ export function NavMain({
 }) {
     const { isCurrentUrl } = useCurrentUrl();
     const closeMobileNavigation = useMobileNavigation();
+    const { can } = usePermissions();
+
+    const visibleItems = items.filter(
+        (item) => item.permission === undefined || can(item.permission),
+    );
+
+    if (visibleItems.length === 0) {
+        return null;
+    }
 
     return (
         <SidebarGroup className="px-2 py-0">
             <SidebarGroupLabel>{label}</SidebarGroupLabel>
             <SidebarMenu>
-                {items.map((item) => (
+                {visibleItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton
                             asChild
