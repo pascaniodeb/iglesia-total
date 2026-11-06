@@ -1,6 +1,9 @@
 <?php
 
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 /*
@@ -47,4 +50,112 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * The old system lives in another database. In tests it is a `legacy` schema inside
+ * the test database, reached through its own connection, so the import commands run
+ * against real tables with the old integer-id shape.
+ */
+function createLegacySource(): void
+{
+    config(['database.connections.legacy' => [
+        ...config('database.connections.pgsql'),
+        'search_path' => 'legacy',
+    ]]);
+    DB::purge('legacy');
+
+    $legacy = DB::connection('legacy');
+    $legacy->statement('DROP SCHEMA IF EXISTS legacy CASCADE');
+    $legacy->statement('CREATE SCHEMA legacy');
+
+    Schema::connection('legacy')->create('members', function (Blueprint $table) {
+        $table->integer('id')->primary();
+        $table->text('full_name');
+        foreach ([
+            'document_type', 'document_id', 'sex', 'birth_place_city', 'birth_place_state',
+            'phone', 'landline_phone', 'email', 'address_state', 'address_municipality',
+            'address_parish', 'address', 'education_level', 'profession', 'occupation',
+            'marital_status', 'baptism_place', 'baptism_pastor', 'status', 'pastor_notes',
+            'photo_key',
+        ] as $column) {
+            $table->text($column)->nullable();
+        }
+        foreach (['birth_date', 'baptism_date', 'holy_spirit_date', 'joined_date'] as $column) {
+            $table->date($column)->nullable();
+        }
+        $table->integer('spouse_id')->nullable();
+        $table->timestampTz('created_at');
+        $table->timestampTz('updated_at');
+        $table->timestampTz('deleted_at')->nullable();
+    });
+
+    Schema::connection('legacy')->create('member_children', function (Blueprint $table) {
+        $table->integer('id')->primary();
+        $table->integer('member_id');
+        $table->text('name');
+        $table->date('birth_date')->nullable();
+        $table->timestampTz('created_at');
+    });
+
+    Schema::connection('legacy')->create('member_roles', function (Blueprint $table) {
+        $table->integer('id')->primary();
+        $table->integer('member_id');
+        $table->text('role');
+        $table->date('since')->nullable();
+        $table->date('until')->nullable();
+        $table->timestampTz('created_at');
+    });
+
+    Schema::connection('legacy')->create('users', function (Blueprint $table) {
+        $table->integer('id')->primary();
+        $table->text('email');
+        $table->text('name');
+        $table->text('role');
+        $table->boolean('email_verified')->default(false);
+        $table->boolean('is_active')->default(true);
+        $table->integer('member_id')->nullable();
+        $table->timestampTz('created_at');
+        $table->timestampTz('updated_at');
+    });
+}
+
+/**
+ * @param  array<string, mixed>  $attributes
+ */
+function legacyMember(int $id, array $attributes = []): void
+{
+    DB::connection('legacy')->table('members')->insert([
+        'id' => $id,
+        'full_name' => "Legacy Member {$id}",
+        'created_at' => '2026-03-15 10:30:00+00',
+        'updated_at' => '2026-03-16 08:00:00+00',
+        ...$attributes,
+    ]);
+}
+
+/**
+ * @param  array<string, mixed>  $attributes
+ */
+function legacyUser(int $id, array $attributes = []): void
+{
+    DB::connection('legacy')->table('users')->insert([
+        'id' => $id,
+        'email' => "legacy{$id}@example.com",
+        'name' => "Legacy User {$id}",
+        'role' => 'secretaria',
+        'created_at' => '2026-03-15 10:30:00+00',
+        'updated_at' => '2026-03-16 08:00:00+00',
+        ...$attributes,
+    ]);
+}
+
+/**
+ * Drops the legacy schema, only ever in the test database and never in the real old one.
+ */
+function dropLegacySource(): void
+{
+    if (config('database.connections.legacy.database') === config('database.connections.pgsql.database')) {
+        DB::connection('legacy')->statement('DROP SCHEMA IF EXISTS legacy CASCADE');
+    }
 }

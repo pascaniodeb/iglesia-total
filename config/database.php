@@ -97,6 +97,24 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
+            // Session time zone. Eloquent writes dates without an offset, so the database
+            // must read them in the same zone as the application (see config/app.php).
+            'timezone' => env('DB_TIMEZONE', env('APP_TIMEZONE', 'UTC')),
+        ],
+
+        // Read-only source for the one-off import from the old system (members:import-legacy).
+        'legacy' => [
+            'driver' => 'pgsql',
+            'host' => env('LEGACY_DB_HOST', '127.0.0.1'),
+            'port' => env('LEGACY_DB_PORT', '5432'),
+            'database' => env('LEGACY_DB_DATABASE', 'iglesiatotal-db'),
+            'username' => env('LEGACY_DB_USERNAME', 'iglesiatotal_app'),
+            'password' => env('LEGACY_DB_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'search_path' => 'public',
+            'sslmode' => 'prefer',
+            'timezone' => 'UTC',
         ],
 
         'sqlsrv' => [
