@@ -2,7 +2,9 @@
 
 namespace App\Modules\Members\Application\Actions;
 
+use App\Modules\Members\Application\MemberActivity;
 use App\Modules\Members\Infrastructure\Models\Member;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Brings a member back from the trash. The marriage link released when they were deleted is
@@ -10,8 +12,13 @@ use App\Modules\Members\Infrastructure\Models\Member;
  */
 class RestoreMember
 {
+    public function __construct(private readonly MemberActivity $activity) {}
+
     public function __invoke(Member $member): void
     {
-        $member->restore();
+        DB::transaction(function () use ($member): void {
+            $member->restore();
+            $this->activity->restored($member);
+        });
     }
 }

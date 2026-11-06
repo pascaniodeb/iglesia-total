@@ -3,9 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Models\User;
+use App\Modules\Integrity\Application\ActivityLog;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
@@ -77,11 +79,22 @@ class SetUserPassword extends Command
      * The "hashed" cast hashes the value. Rotating the remember token ends any
      * "remember me" session opened with the previous password.
      */
+    /**
+     * Saves the password and records that the operator set it (never the password itself).
+     */
     private function store(User $user, string $password): void
     {
-        $user->forceFill([
-            'password' => $password,
-            'remember_token' => null,
-        ])->save();
+        DB::transaction(function () use ($user, $password): void {
+            $user->forceFill([
+                'password' => $password,
+                'remember_token' => null,
+            ])->save();
+
+            $this->laravel->make(ActivityLog::class)->security(
+                'user.password_set',
+                __('Set the password of :name from the server.', ['name' => $user->name]),
+                $user,
+            );
+        });
     }
 }

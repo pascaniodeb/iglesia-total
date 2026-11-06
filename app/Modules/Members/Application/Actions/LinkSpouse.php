@@ -2,6 +2,7 @@
 
 namespace App\Modules\Members\Application\Actions;
 
+use App\Modules\Members\Application\MemberActivity;
 use App\Modules\Members\Infrastructure\Models\Member;
 use Illuminate\Validation\ValidationException;
 
@@ -20,10 +21,13 @@ use Illuminate\Validation\ValidationException;
  * side effect of editing another record.
  *
  * Must run inside a transaction: it locks the records involved, so two people editing at the
- * same time cannot both claim the same spouse.
+ * same time cannot both claim the same spouse. The partner's side gets its own activity log
+ * entry (the member's own side is recorded by whoever saves the member).
  */
 class LinkSpouse
 {
+    public function __construct(private readonly MemberActivity $activity) {}
+
     /**
      * @throws ValidationException
      */
@@ -39,7 +43,9 @@ class LinkSpouse
         }
 
         if ($previous !== null) {
-            Member::withTrashed()->whereKey($previous)->update(['spouse_id' => null]);
+            $partner = Member::withTrashed()->findOrFail($previous);
+            $partner->forceFill(['spouse_id' => null])->save();
+            $this->activity->spouseReleased($partner, $member);
         }
 
         $member->forceFill(['spouse_id' => null])->save();
@@ -52,6 +58,7 @@ class LinkSpouse
 
         $member->forceFill(['spouse_id' => $spouse->id])->save();
         $spouse->forceFill(['spouse_id' => $member->id])->save();
+        $this->activity->spouseLinked($spouse, $member);
     }
 
     /**

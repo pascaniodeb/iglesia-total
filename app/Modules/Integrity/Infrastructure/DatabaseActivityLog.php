@@ -76,8 +76,9 @@ final readonly class DatabaseActivityLog implements ActivityLog
     }
 
     /**
-     * A data write always has an author: a signed-in user or the operator at the console.
-     * Only security facts (a failed sign-in) may come from someone not signed in.
+     * A data write always has an author: a signed-in user, or the operator or scheduler at
+     * the console. In a web request, only security facts (a failed sign-in) may come from
+     * someone not signed in.
      */
     private function channel(ActivityCategory $category, ?User $actor): ActivityChannel
     {
@@ -85,12 +86,14 @@ final readonly class DatabaseActivityLog implements ActivityLog
             return ActivityChannel::Web;
         }
 
-        if ($this->app->runningInConsole()) {
-            return ActivityChannel::System;
+        if ($this->context->isHttp) {
+            return $category === ActivityCategory::Security
+                ? ActivityChannel::Guest
+                : throw new LogicException("Activity [{$category->value}] cannot be recorded without an actor.");
         }
 
-        if ($category === ActivityCategory::Security) {
-            return ActivityChannel::Guest;
+        if ($this->app->runningInConsole()) {
+            return ActivityChannel::System;
         }
 
         throw new LogicException("Activity [{$category->value}] cannot be recorded without an actor.");

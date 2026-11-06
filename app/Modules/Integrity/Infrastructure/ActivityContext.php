@@ -24,6 +24,9 @@ final class ActivityContext
 
     public ?string $route = null;
 
+    /** Whether the current operation is an HTTP request (as opposed to a command or job). */
+    public bool $isHttp = false;
+
     public function __construct()
     {
         $this->requestId = (string) Str::uuid7();
@@ -31,6 +34,7 @@ final class ActivityContext
 
     public function fromRequest(Request $request): void
     {
+        $this->isHttp = true;
         // An external correlation id is only accepted when it is a UUID: nothing else reaches the log.
         $incoming = (string) $request->headers->get(self::HEADER, '');
         $this->requestId = Str::isUuid($incoming) ? strtolower($incoming) : $this->requestId;

@@ -67,6 +67,11 @@ Where this improves the old system: its checks were scattered `CAN_VIEW` sets, o
 - Only through `App\Actions\Users\ChangeUserRole` (the users screen will call it with the acting user; the `users:set-role {email} {role}` command calls it as the operator).
 - Safeguards: the actor needs `users.manage`; nobody changes their own role; there must always be at least one **active** pastor; a `miembro` account needs its linked member.
 
+## Accounts are never deleted
+
+- There is no "delete account" (approved 2026-11-06). An account that must stop working is **deactivated** (`is_active = false`). Every activity log entry points at its author with `RESTRICT`, and the log is append-only: deleting the account would erase who did what, which is exactly what treasury and the comptroller must be able to prove.
+- Sign-in, sign-out, failed attempts (without the typed email or password), password changes and resets, two-factor changes and role changes are recorded as security facts in the activity log.
+
 ## Sessions and passwords
 
 - A deactivated account (`is_active = false`) cannot use the app, however it authenticated (password, passkey, or a session opened earlier). `EnsureUserIsActive` signs it out on the next request and flashes an error toast.

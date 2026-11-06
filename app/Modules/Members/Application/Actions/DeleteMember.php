@@ -2,6 +2,7 @@
 
 namespace App\Modules\Members\Application\Actions;
 
+use App\Modules\Members\Application\MemberActivity;
 use App\Modules\Members\Infrastructure\Models\Member;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -18,7 +19,10 @@ use Illuminate\Validation\ValidationException;
  */
 class DeleteMember
 {
-    public function __construct(private readonly LinkSpouse $linkSpouse) {}
+    public function __construct(
+        private readonly LinkSpouse $linkSpouse,
+        private readonly MemberActivity $activity,
+    ) {}
 
     /**
      * @throws ValidationException
@@ -34,6 +38,7 @@ class DeleteMember
         DB::transaction(function () use ($member): void {
             ($this->linkSpouse)($member, null);
             $member->delete();
+            $this->activity->trashed($member);
         });
     }
 }

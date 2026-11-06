@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Modules\Integrity\Application\ActivityLog;
 use App\Modules\Members\Infrastructure\Models\Member;
 use App\Modules\Members\Infrastructure\Models\MemberChild;
 use App\Modules\Members\Infrastructure\Models\MemberRole;
@@ -61,6 +62,15 @@ class ImportLegacyMembers extends Command
             $this->linkSpouses($members, $memberIds);
             $this->importChildren($children, $memberIds);
             $this->importRoles($roles, $memberIds);
+
+            $this->laravel->make(ActivityLog::class)->system(
+                'members.imported_legacy',
+                __('Imported the members of the old system: :created created, :updated updated.', [
+                    'created' => $this->created['members'],
+                    'updated' => $this->updated['members'],
+                ]),
+                details: ['created' => $this->created, 'updated' => $this->updated],
+            );
         });
 
         $this->components->twoColumnDetail('Members', $this->summary('members'));

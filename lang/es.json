@@ -93,5 +93,24 @@
     "Access": "Acceso",
     "System": "Sistema",
     "Verified the activity log: :rows entries, chain intact.": "Verificó la bitácora: :rows registros, cadena íntegra.",
-    "Verified the activity log: :count broken links.": "Verificó la bitácora: :count eslabones rotos."
+    "Verified the activity log: :count broken links.": "Verificó la bitácora: :count eslabones rotos.",
+
+    "Registered member :name.": "Registró al miembro :name.",
+    "Updated member :name.": "Actualizó al miembro :name.",
+    "Moved member :name to the trash.": "Envió a la papelera al miembro :name.",
+    "Restored member :name.": "Restauró al miembro :name.",
+    "Recorded the marriage of :name with :spouse.": "Registró el vínculo matrimonial de :name con :spouse.",
+    "Released the marriage of :name with :spouse.": "Liberó el vínculo matrimonial de :name con :spouse.",
+    "Changed the role of :name from :from to :to.": "Cambió el rol de :name de :from a :to.",
+    "Set the password of :name from the server.": "Asignó la contraseña de :name desde el servidor.",
+    "Imported the members of the old system: :created created, :updated updated.": "Importó los miembros del sistema anterior: :created creados, :updated actualizados.",
+    "Imported the user accounts of the old system: :created created, :updated updated.": "Importó las cuentas de usuario del sistema anterior: :created creadas, :updated actualizadas.",
+    "Signed in.": "Inició sesión.",
+    "Signed out.": "Cerró sesión.",
+    "Failed sign-in attempt.": "Intento fallido de inicio de sesión.",
+    "Reset the password with an emailed link.": "Restableció la contraseña con el enlace enviado por correo.",
+    "Enabled two-factor authentication.": "Activó la autenticación de dos factores.",
+    "Disabled two-factor authentication.": "Desactivó la autenticación de dos factores.",
+    "Generated new recovery codes.": "Generó nuevos códigos de recuperación.",
+    "Changed their password.": "Cambió su contraseña."
 }

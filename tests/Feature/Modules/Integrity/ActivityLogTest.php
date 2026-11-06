@@ -7,11 +7,11 @@ use App\Modules\Integrity\Application\ActivityLog;
 use App\Modules\Integrity\Domain\Enums\ActivityCategory;
 use App\Modules\Integrity\Domain\Enums\ActivityChannel;
 use App\Modules\Integrity\Infrastructure\ActivityContext;
-use App\Modules\Integrity\Infrastructure\DatabaseActivityLog;
 use App\Modules\Integrity\Infrastructure\Models\ActivityLogEntry;
 use App\Modules\Members\Infrastructure\Models\Member;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -98,31 +98,17 @@ test('entries cannot be changed, deleted or truncated', function (string $statem
     'truncate' => 'TRUNCATE activity_log',
 ]);
 
-test('a data write without an actor outside the console is refused', function () {
-    app()->instance('env', 'production');
-    $app = Mockery::mock(app())->makePartial();
-    $app->shouldReceive('runningInConsole')->andReturnFalse();
+test('a data write without a signed-in user during a web request is refused', function () {
+    app(ActivityContext::class)->fromRequest(Request::create('/members', 'POST'));
 
-    $log = new DatabaseActivityLog(
-        app('auth'),
-        app(ActivityContext::class),
-        $app,
-    );
-
-    expect(fn () => $log->record('member.updated', 'Sin autor.'))->toThrow(LogicException::class);
+    expect(fn () => activityLog()->record('member.updated', 'Sin autor.'))->toThrow(LogicException::class);
     expect(ActivityLogEntry::query()->count())->toBe(0);
 });
 
-test('a security fact without a signed-in user is recorded as a guest', function () {
-    $app = Mockery::mock(app())->makePartial();
-    $app->shouldReceive('runningInConsole')->andReturnFalse();
+test('a security fact without a signed-in user during a web request is recorded as a guest', function () {
+    app(ActivityContext::class)->fromRequest(Request::create('/login', 'POST'));
 
-    $log = new DatabaseActivityLog(
-        app('auth'),
-        app(ActivityContext::class),
-        $app,
-    );
-    $log->security('auth.failed', 'Intento fallido de inicio de sesión.');
+    activityLog()->security('auth.failed', 'Intento fallido de inicio de sesión.');
 
     expect(ActivityLogEntry::query()->sole()->channel)->toBe(ActivityChannel::Guest);
 });

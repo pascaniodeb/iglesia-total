@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Modules\Integrity\Application\ActivityLog;
 use App\Modules\Members\Infrastructure\Models\Member;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
@@ -93,6 +94,12 @@ class ImportLegacyUsers extends Command
                     'updated_at' => Carbon::parse($row->updated_at),
                 ])->save();
             }
+
+            $this->laravel->make(ActivityLog::class)->system(
+                'users.imported_legacy',
+                __('Imported the user accounts of the old system: :created created, :updated updated.', ['created' => $created, 'updated' => $updated]),
+                details: ['created' => $created, 'updated' => $updated, 'unlinked' => $unlinked],
+            );
         });
 
         $this->components->twoColumnDetail('Users', "{$created} created, {$updated} updated");

@@ -5,16 +5,21 @@ namespace App\Actions\Users;
 use App\Enums\Permission;
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Modules\Integrity\Application\ActivityLog;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 
 /**
  * The only way to change the role of an account. Called by the users screen (with an
- * actor) and by the `users:set-role` command (trusted operator, no actor).
+ * actor) and by the `users:set-role` command (trusted operator, no actor). The change and its
+ * security record in the activity log are written together.
  */
 class ChangeUserRole
 {
+    public function __construct(private readonly ActivityLog $activityLog) {}
+
     /**
      * @throws AuthorizationException when the actor is not allowed to manage users
      * @throws ValidationException when the change breaks a safeguard
@@ -45,7 +50,26 @@ class ChangeUserRole
             ]);
         }
 
-        $user->forceFill(['role' => $role])->save();
+        $previous = $user->role;
+
+        if ($previous === $role) {
+            return $user;
+        }
+
+        DB::transaction(function () use ($user, $role, $previous): void {
+            $user->forceFill(['role' => $role])->save();
+
+            $this->activityLog->security(
+                'user.role_changed',
+                __('Changed the role of :name from :from to :to.', [
+                    'name' => $user->name,
+                    'from' => $previous->label(),
+                    'to' => $role->label(),
+                ]),
+                $user,
+                ['role' => ['from' => $previous->value, 'to' => $role->value]],
+            );
+        });
 
         return $user;
     }

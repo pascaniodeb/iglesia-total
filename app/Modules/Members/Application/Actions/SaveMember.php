@@ -2,6 +2,7 @@
 
 namespace App\Modules\Members\Application\Actions;
 
+use App\Modules\Members\Application\MemberActivity;
 use App\Modules\Members\Infrastructure\Models\Member;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Arr;
@@ -9,11 +10,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 /**
- * Creates or updates a member with their children, roles and spouse, all or nothing.
+ * Creates or updates a member with their children, roles and spouse, all or nothing, and
+ * records what changed in the activity log inside the same transaction.
  */
 class SaveMember
 {
-    public function __construct(private readonly LinkSpouse $linkSpouse) {}
+    public function __construct(
+        private readonly LinkSpouse $linkSpouse,
+        private readonly MemberActivity $activity,
+    ) {}
 
     /**
      * @param  array<string, mixed>  $data  validated input of MemberRequest
@@ -37,6 +42,8 @@ class SaveMember
      */
     private function save(Member $member, array $data): Member
     {
+        $before = $this->activity->snapshot($member);
+
         // The spouse is tied afterwards by LinkSpouse, which writes both sides of the link.
         $member->fill(Arr::except($data, ['children', 'roles', 'spouse_id']))->save();
 
@@ -49,6 +56,9 @@ class SaveMember
 
         ($this->linkSpouse)($member, Arr::get($data, 'spouse_id'));
 
-        return $member->refresh();
+        $member->refresh();
+        $this->activity->saved($member, $before);
+
+        return $member;
     }
 }
