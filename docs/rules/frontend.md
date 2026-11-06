@@ -32,6 +32,19 @@ Ported from the SAFIPUV v4 visual system (visual only, no business logic).
 - Navigation links use Inertia `<Link>` with `prefetch` for primary navigation.
 - No domain or house-style copy (e.g. forced uppercase) copied from other projects.
 
+## Layout: no scrolling surprises
+
+- **Never horizontal scroll**, on any viewport. Every flex/grid child that holds text or inputs gets `min-w-0`; wide content wraps or becomes cards (lists switch from table to cards by container width, not screen width).
+- **From 48rem up the page itself never scrolls vertically.** Pages that fill the screen use the `data-fit-viewport` / `data-fit-scroll` / `data-fit-body` contract in `app.css`: the page is exactly viewport height and only the body inside the card scrolls. On phones the natural page scroll is kept.
+- Forms with many fields are split into sections (steps) sized to fit the card on a laptop (1366×768). A section whose content grows with data (children, roles) may scroll inside the card, never the page.
+- Footers and button groups use container queries (`@container`, `@2xl:`), not `sm:` breakpoints, because the sidebar changes the real available width.
+- Verify with a headless-browser pass at 360, 390, 768, 1366, 1440 and 1920 wide: `scrollWidth <= innerWidth` and `scrollHeight <= innerHeight` from 768 up.
+
+## Data tables
+
+- Lists use the `components/data-table/*` kit (`ServerDataTable`) with `useTableQuery`: search, status, facets, sort and page live in the URL and the server does the work (`App\Http\Tables\TableQuery`). Pages only declare columns and facets.
+- Inertia 3: set breadcrumbs with `setLayoutProps({ breadcrumbs })` or a static `Page.layout = { breadcrumbs }`; function-style layouts that read page props crash.
+
 ## Language
 
 - The whole application is in **neutral Spanish** (users are in Venezuela), addressing the user as **"usted"** (never voseo or "tú"). `APP_LOCALE` and `APP_FALLBACK_LOCALE` are `es`; faker is `es_VE`.

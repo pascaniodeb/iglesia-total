@@ -16,7 +16,8 @@
 ## Lists and filters
 
 - Filtering and pagination happen on the server. Never load a whole table into the client.
-- Lists use keyset (cursor) pagination. The order always ends with `id` as the tiebreaker, e.g. `ORDER BY search_name, id`.
+- Registry-size lists (members) use offset pagination with a total through `App\Http\Tables\TableQuery`: the count runs over a filter-only query (no joins) and presentation data is added only to the page of rows. Unbounded or very large lists use keyset (cursor) pagination. Either way the order always ends with `id` as the tiebreaker, e.g. `ORDER BY search_name, id`.
+- Search, sort, status and facets come from whitelists (`TableQuery::fromRequest`); an unknown URL value falls back to the default, it never reaches the SQL.
 - Indexes for the default list are partial (`WHERE deleted_at IS NULL`). Every foreign key column is indexed.
 - Add an index only for a real query, and check it with `EXPLAIN (ANALYZE)` at volume. No speculative indexes.
 
