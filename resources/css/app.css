@@ -2,6 +2,10 @@
 
 @import 'tw-animate-css';
 
+/* Self-hosted variable fonts: any weight 100-900, no external CDN. */
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
+
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
@@ -9,9 +13,32 @@
 
 @theme {
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Inter Variable', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
+    --font-mono:
+        'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    /*
+     * "Sky Tones" palette: the only 5 brand colors. The semantic tokens below
+     * (:root / .dark) are built from them.
+     *
+     * Measured WCAG contrast (normal text needs >= 4.5):
+     *   brand-900 on brand-50 13.5 · white on brand-700 8.3 -> text and buttons
+     *   brand-500 on brand-50 3.8 -> large text, icons, focus and charts ONLY
+     *   brand-300 on brand-50 2.0 -> decorative ONLY; on brand-900 it works (6.8)
+     */
+    --color-brand-900: #172458;
+    --color-brand-700: #354898;
+    --color-brand-500: #607cbd;
+    --color-brand-300: #95b3d7;
+    --color-brand-50: #f2f6fa;
+
+    /* Fluid headings (they scale with the viewport: no sm:/lg: variants needed). */
+    --text-hero: clamp(2.875rem, 1.4rem + 7vw, 9.5rem);
+    --text-page: clamp(2.75rem, 1.4rem + 5.2vw, 7rem);
+    --text-display: clamp(2.25rem, 1.4rem + 3.6vw, 5rem);
+    --text-title: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -40,6 +67,13 @@
 
     --color-destructive: var(--destructive);
     --color-destructive-foreground: var(--destructive-foreground);
+    --color-on-destructive: var(--on-destructive);
+    --color-success: var(--success);
+    --color-success-foreground: var(--success-foreground);
+    --color-warning: var(--warning);
+    --color-warning-foreground: var(--warning-foreground);
+    --color-positive: var(--positive);
+    --color-negative: var(--negative);
 
     --color-border: var(--border);
     --color-input: var(--input);
@@ -61,75 +95,180 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/*
+ * Semantic tokens derived from the palette. Intermediate tones mix two brand colors:
+ *   #545f85 = 72 % brand-900 + brand-50   (secondary text, 5.8 on the background)
+ *   #c8d8ea = 45 % brand-300 + brand-50   (borders)
+ *   #e1eaf4 = 18 % brand-300 + brand-50   (soft backgrounds / hover)
+ */
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
+    --background: var(--color-brand-50);
+    --foreground: var(--color-brand-900);
+    --card: #ffffff;
+    --card-foreground: var(--color-brand-900);
+    --popover: #ffffff;
+    --popover-foreground: var(--color-brand-900);
+    --primary: var(--color-brand-700);
+    --primary-foreground: #ffffff;
+    --secondary: #e1eaf4;
+    --secondary-foreground: var(--color-brand-900);
+    --muted: #e1eaf4;
+    --muted-foreground: #545f85;
+    --accent: #e1eaf4;
+    --accent-foreground: var(--color-brand-900);
     --destructive: oklch(0.577 0.245 27.325);
     --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.87 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
+    /* Text on a destructive or success background (AA contrast in both themes). */
+    --on-destructive: #ffffff;
+    --success: #15803d;
+    --success-foreground: #ffffff;
+    /* Warning: dark amber with white text (AA) in light; vivid amber with dark ink in dark. */
+    --warning: #b45309;
+    --warning-foreground: #ffffff;
+    /*
+     * Figures and states: what comes in or goes well, and what goes out or goes wrong. They are
+     * text and chart colors, never a solid background with text on top (that is what success and
+     * destructive are for). AA contrast also holds on their own 12 % tint.
+     */
+    --positive: #166534;
+    --negative: #b91c1c;
+    --border: #c8d8ea;
+    --input: #c8d8ea;
+    --ring: var(--color-brand-500);
+    --chart-1: var(--color-brand-900);
+    --chart-2: var(--color-brand-700);
+    --chart-3: var(--color-brand-500);
+    --chart-4: var(--color-brand-300);
+    --chart-5: #545f85;
     --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.87 0 0);
+    /* Shape of fields and buttons: rounded corners (not a pill). Shape only, no color. */
+    --control-radius: 0.75rem;
+    /*
+     * Size of fields, buttons and labels. Large and comfortable on the page, compact inside a modal
+     * or a sheet (see @layer base). Components only read these tokens.
+     */
+    --control-height: 3.5rem;
+    --control-px: 1.25rem;
+    --control-font: 1rem;
+    --label-font: 1rem;
+    /* The sidebar is the brand navy band in both themes. */
+    --sidebar: var(--color-brand-900);
+    --sidebar-foreground: var(--color-brand-50);
+    --sidebar-primary: var(--color-brand-300);
+    --sidebar-primary-foreground: var(--color-brand-900);
+    --sidebar-accent: var(--color-brand-700);
+    --sidebar-accent-foreground: var(--color-brand-50);
+    --sidebar-border: #243370;
+    --sidebar-ring: var(--color-brand-500);
 }
 
+/*
+ * Dark: a navy deeper than brand-900 (#0d1535) so surfaces stay readable.
+ *   #131e4a = 60 % brand-900 + #0d1535   (cards)
+ *   #1f2c62 = 45 % brand-700 + #0d1535   (borders and soft backgrounds)
+ *   #acc4e0 = 75 % brand-300 + brand-50  (secondary text, 10.0 on the background)
+ *   #7b98ca = 50 % brand-500 + brand-300 (charts: brand-700 gave 1.9 on cards, this gives 5.5)
+ */
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.145 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.145 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.985 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
+    --background: #0d1535;
+    --foreground: var(--color-brand-50);
+    --card: #131e4a;
+    --card-foreground: var(--color-brand-50);
+    --popover: #131e4a;
+    --popover-foreground: var(--color-brand-50);
+    --primary: var(--color-brand-300);
+    --primary-foreground: var(--color-brand-900);
+    --secondary: #1f2c62;
+    --secondary-foreground: var(--color-brand-50);
+    --muted: #1f2c62;
+    --muted-foreground: #acc4e0;
+    --accent: #1f2c62;
+    --accent-foreground: var(--color-brand-50);
     --destructive: oklch(0.396 0.141 25.723);
     --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
-    --input: oklch(0.269 0 0);
-    --ring: oklch(0.439 0 0);
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.985 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(0.269 0 0);
-    --sidebar-ring: oklch(0.439 0 0);
+    --on-destructive: #ffffff;
+    --success: #15803d;
+    --success-foreground: #ffffff;
+    --warning: #f59e0b;
+    --warning-foreground: #1c1206;
+    /* Measured: green 8.3 and red 5.8 on cards; 6.9 and 4.8 on soft backgrounds. */
+    --positive: #34d399;
+    --negative: #f87171;
+    --border: #1f2c62;
+    --input: #1f2c62;
+    --ring: var(--color-brand-500);
+    --chart-1: var(--color-brand-300);
+    --chart-2: var(--color-brand-500);
+    --chart-3: #7b98ca;
+    --chart-4: #acc4e0;
+    --chart-5: var(--color-brand-50);
+    --sidebar: var(--color-brand-900);
+    --sidebar-foreground: var(--color-brand-50);
+    --sidebar-primary: var(--color-brand-300);
+    --sidebar-primary-foreground: var(--color-brand-900);
+    --sidebar-accent: var(--color-brand-700);
+    --sidebar-accent-foreground: var(--color-brand-50);
+    --sidebar-border: #243370;
+    --sidebar-ring: var(--color-brand-500);
+}
+
+/* Headings: heavy, tight, editorial. */
+@utility heading-hero {
+    font-size: var(--text-hero);
+    font-weight: 900;
+    line-height: 0.88;
+    letter-spacing: -0.075em;
+    text-wrap: balance;
+}
+
+@utility heading-page {
+    font-size: var(--text-page);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -0.07em;
+    text-wrap: balance;
+}
+
+@utility heading-display {
+    font-size: var(--text-display);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.055em;
+    text-wrap: balance;
+}
+
+@utility heading-title {
+    font-size: var(--text-title);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+}
+
+/* Heading of the sign-in screens: smaller than display because it lives in a narrow column. */
+@utility auth-display {
+    font-size: clamp(2.5rem, 1.6rem + 3.4vw, 4.25rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.06em;
+    text-wrap: balance;
+}
+
+/* Small label above headings: mono, uppercase, letter-spaced. */
+@utility eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/*
+ * Pushes a label-less control (e.g. a remove-row button) down to the height of the fields in its
+ * row: it skips the label (--label-font with leading-tight) and the gap to the control.
+ */
+@utility field-offset {
+    margin-top: calc(var(--label-font) * 1.25 + 0.5rem);
 }
 
 @layer base {
@@ -139,5 +278,129 @@
 
     body {
         @apply bg-background text-foreground;
+    }
+
+    /* Every modal uses compact controls: the same standard in any dialog of the system. */
+    [data-slot='dialog-content'],
+    [data-slot='sheet-content'] {
+        --control-height: 2.75rem;
+        --control-px: 0.875rem;
+        --control-font: 0.9375rem;
+        --label-font: 0.875rem;
+    }
+
+    /* In the mobile sheet the text stays at 16 px: anything smaller makes iOS zoom on focus. */
+    [data-slot='sheet-content'] {
+        --control-font: 1rem;
+    }
+}
+
+/*
+ * Toasts. The type arrives from the server (data-toast-type) and picks its color token: the
+ * component does not choose colors, it only uses --toast-accent (left border, icon and the bar
+ * showing the time left; it pauses on hover, just like the toast).
+ */
+@layer components {
+    .app-toast {
+        --toast-accent: var(--primary);
+        --toast-accent-foreground: var(--primary-foreground);
+    }
+
+    .app-toast[data-toast-type='success'] {
+        --toast-accent: var(--success);
+        --toast-accent-foreground: var(--success-foreground);
+    }
+
+    .app-toast[data-toast-type='warning'] {
+        --toast-accent: var(--warning);
+        --toast-accent-foreground: var(--warning-foreground);
+    }
+
+    /* --destructive-foreground is the red that stays readable on the surface in both themes. */
+    .app-toast[data-toast-type='error'] {
+        --toast-accent: var(--destructive-foreground);
+        --toast-accent-foreground: var(--on-destructive);
+    }
+
+    .app-toast-icon {
+        background: var(--toast-accent);
+        color: var(--toast-accent-foreground);
+    }
+
+    .app-toast-progress {
+        background: var(--toast-accent);
+        transform-origin: left;
+        animation: toast-progress linear forwards;
+    }
+
+    [data-sonner-toaster]:hover .app-toast-progress {
+        animation-play-state: paused;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .app-toast-progress {
+            animation: none;
+        }
+    }
+}
+
+@keyframes toast-progress {
+    from {
+        transform: scaleX(1);
+    }
+
+    to {
+        transform: scaleX(0);
+    }
+}
+
+/*
+ * Listings: on tablet and desktop the page is exactly as tall as the screen and only the table
+ * scrolls, with a sticky column header; title, filters and pagination stay in view. A listing opts
+ * in with data-fit-viewport. On phones the natural page scroll is kept.
+ */
+@media (width >= 48rem) {
+    /* Content panel (sidebar inset: 0.5 rem margin above and below). */
+    [data-slot='sidebar-inset']:has([data-fit-viewport]) {
+        height: calc(100svh - 1rem);
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    [data-slot='sidebar-inset']:has([data-fit-viewport]) > :not(header),
+    [data-fit-viewport],
+    [data-fit-viewport] [data-fit-scroll],
+    [data-fit-viewport] [data-fit-body] {
+        min-height: 0;
+    }
+
+    [data-fit-viewport],
+    [data-fit-viewport] [data-fit-scroll] {
+        display: flex;
+        flex: 1 1 0%;
+        flex-direction: column;
+    }
+
+    [data-fit-viewport] [data-fit-body] {
+        flex: 1 1 0%;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    [data-fit-viewport] [data-fit-table],
+    [data-fit-viewport] [data-fit-table] [data-slot='table-container'] {
+        height: 100%;
+    }
+
+    [data-fit-viewport] [data-fit-table] [data-slot='table-container'] {
+        overflow: auto;
+        overscroll-behavior: contain;
+    }
+
+    [data-fit-viewport] [data-slot='table-header'] th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: var(--card);
     }
 }

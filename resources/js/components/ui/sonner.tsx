@@ -1,8 +1,15 @@
-import { useFlashToast } from '@/hooks/use-flash-toast';
-import { useAppearance } from '@/hooks/use-appearance';
 import { Toaster as Sonner, type ToasterProps } from 'sonner';
+import { useAppearance } from '@/hooks/use-appearance';
+import { useFlashToast } from '@/hooks/use-flash-toast';
 
-function Toaster({ ...props }: ToasterProps) {
+/** Distance to the screen edges: matches the page margin. */
+const OFFSET = 16;
+
+/**
+ * Toast container: top right; on phones, full width with the same margin. The look of each
+ * toast comes from AppToast.
+ */
+function Toaster(props: ToasterProps) {
     const { appearance } = useAppearance();
 
     useFlashToast();
@@ -10,15 +17,12 @@ function Toaster({ ...props }: ToasterProps) {
     return (
         <Sonner
             theme={appearance}
-            className="toaster group"
-            position="bottom-right"
-            style={
-                {
-                    '--normal-bg': 'var(--popover)',
-                    '--normal-text': 'var(--popover-foreground)',
-                    '--normal-border': 'var(--border)',
-                } as React.CSSProperties
-            }
+            position="top-right"
+            offset={OFFSET}
+            mobileOffset={OFFSET}
+            gap={12}
+            visibleToasts={4}
+            containerAriaLabel="Notifications"
             {...props}
         />
     );

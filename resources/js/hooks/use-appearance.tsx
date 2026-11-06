@@ -29,12 +29,35 @@ const setCookie = (name: string, value: string, days = 365): void => {
     document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
 };
 
+const APPEARANCES: readonly string[] = ['light', 'dark', 'system'];
+
+/** The browser may deny storage (private mode, blocked data): the theme still works, it just is not remembered. */
+const readStored = (): string | null => {
+    try {
+        return localStorage.getItem('appearance');
+    } catch {
+        return null;
+    }
+};
+
+const writeStored = (mode: Appearance): void => {
+    try {
+        localStorage.setItem('appearance', mode);
+    } catch {
+        // The cookie remains: the theme is still applied on this page.
+    }
+};
+
 const getStoredAppearance = (): Appearance => {
     if (typeof window === 'undefined') {
         return 'system';
     }
 
-    return (localStorage.getItem('appearance') as Appearance) || 'system';
+    const stored = readStored();
+
+    return stored !== null && APPEARANCES.includes(stored)
+        ? (stored as Appearance)
+        : 'system';
 };
 
 const isDarkMode = (appearance: Appearance): boolean => {
@@ -75,8 +98,8 @@ export function initializeTheme(): void {
         return;
     }
 
-    if (!localStorage.getItem('appearance')) {
-        localStorage.setItem('appearance', 'system');
+    if (!readStored()) {
+        writeStored('system');
         setCookie('appearance', 'system');
     }
 
@@ -102,7 +125,7 @@ export function useAppearance(): UseAppearanceReturn {
         currentAppearance = mode;
 
         // Store in localStorage for client-side persistence...
-        localStorage.setItem('appearance', mode);
+        writeStored(mode);
 
         // Store in cookie for SSR...
         setCookie('appearance', mode);

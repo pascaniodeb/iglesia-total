@@ -13,6 +13,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
@@ -38,13 +39,19 @@ const footerNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const closeMobileNavigation = useMobileNavigation();
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link
+                                href={dashboard()}
+                                prefetch
+                                onBefore={closeMobileNavigation}
+                            >
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

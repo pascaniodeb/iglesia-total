@@ -12,7 +12,7 @@ const buttonVariants = cva(
         default:
           "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
         destructive:
-          "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
+          "bg-destructive text-on-destructive shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
         outline:
           "border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground",
         secondary:
@@ -21,9 +21,12 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        sm: "h-8 rounded-md px-3 has-[>svg]:px-2.5",
-        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+        // Forms: same height and font as the fields (--control-*): 56 px on the page and
+        // compact inside a modal, with rounded corners like the fields.
+        default: "h-(--control-height) rounded-(--control-radius) px-8 text-(length:--control-font) font-bold has-[>svg]:px-7 active:translate-y-px",
+        // Compact for bars, menus and tables.
+        sm: "h-9 rounded-lg px-4 has-[>svg]:px-3",
+        lg: "h-16 rounded-(--control-radius) px-10 text-lg font-bold has-[>svg]:px-9 active:translate-y-px",
         icon: "size-9",
       },
     },
