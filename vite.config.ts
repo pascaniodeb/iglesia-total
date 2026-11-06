@@ -23,6 +23,10 @@ export default defineConfig({
         }),
     ]),
     server: {
+        // Not the default 5173: another local project uses it. strictPort makes Vite fail loudly
+        // instead of silently moving to a random port if this one is ever taken.
+        port: 5183,
+        strictPort: true,
         watch: {
             ignored: [
                 '**/.agents/**',
