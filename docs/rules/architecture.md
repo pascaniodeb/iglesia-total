@@ -13,37 +13,32 @@
 - Shared kernel: only generic, business-free code goes in `Shared` (table query, enum helpers, form/table UI kit). If it names a business concept, it belongs to a module.
 - Permissions are checked with Gates (`members.view`), never by role. Roles are mapped to permissions in one place (`App\Enums\UserRole`).
 
-## Layer map (what each piece is, and where the code lives today)
-
-| Hexagonal role               | Piece                                                                     | Today's location (flat layout)              |
-| ---------------------------- | ------------------------------------------------------------------------- | ------------------------------------------- |
-| Driving adapter (HTTP)       | Controller: transport only (auth, validation, status codes)               | `app/Http/Controllers/MemberController.php` |
-| Driving adapter (input)      | `FormRequest`: validation and authorization at the boundary               | `app/Http/Requests/MemberRequest.php`       |
-| Driving adapter (output)     | API/Inertia `Resource`: the shape sent to the UI                          | `app/Http/Resources/MemberResource.php`     |
-| Read model                   | `Listing` + `TableQuery`: sort/search/filter whitelists and the row shape | `app/Http/Tables/`                          |
-| Application (use case)       | Invokable `Action`: one business operation, one transaction               | `app/Actions/Members/*`                     |
-| Domain                       | Enums with behavior (`label()`), rules that do not need the framework     | `app/Enums/*`                               |
-| Driven adapter (persistence) | Eloquent model, migration                                                 | `app/Models/*`, `database/migrations`       |
-| Frontend                     | Feature folder: columns, forms, dialogs of one module                     | `resources/js/features/<module>/`           |
-
-## Status (be honest about it)
-
-- The code written so far (Members, Users/Auth) lives in the **flat Laravel layout** above. It already follows the roles in the table: controllers are thin, business rules live in invokable Actions (`SaveMember`, `LinkSpouse`, `DeleteMember`, `RestoreMember`), and listings are declared in a `Listing` class.
-- It has **not** been moved into per-module folders yet and Actions still use Eloquent models directly (no repository ports). That is acceptable until a module needs a second adapter or its rules need to run without the framework.
-
-## Proposed module layout (not yet agreed: confirm before moving code)
+## Module layout (agreed)
 
 ```text
 app/Modules/<Module>/
-├── Domain/          # enums, value objects, pure rules, port interfaces
-├── Application/     # use cases (invokable Actions), DTOs
-├── Infrastructure/  # Eloquent models, repositories, migrations helpers
-└── Http/            # controllers, requests, resources, listings
-app/Modules/Shared/  # TableQuery, HasOptions, other business-free kernel
-resources/js/features/<module>/   # UI of the module
+├── Domain/Enums/            # enums with behavior, value objects, pure rules, port interfaces
+├── Application/Actions/     # use cases: one invokable Action per business operation
+├── Infrastructure/Models/   # Eloquent models (persistence adapter)
+└── Http/
+    ├── Controllers/         # transport only (auth, validation, status codes)
+    ├── Requests/            # FormRequest: validation + authorize() at the boundary
+    ├── Resources/           # the shape sent to the UI
+    └── Tables/              # <Module>Listing: sort/search/filter whitelists and the row shape
+app/Modules/Shared/          # business-free kernel
+├── Tables/TableQuery.php
+└── Concerns/HasOptions.php
+resources/js/features/<module>/   # UI of the module (columns, forms, dialogs)
 ```
 
-When this is agreed, move one module at a time (Members first), keep the namespace change in its own commit, and update this file.
+Factories (`database/factories`), migrations, console commands (`app/Console/Commands`), routes and the generic UI kit stay where Laravel and the tooling expect them. Models point to their factory with `#[UseFactory]` because the default factory-name guess does not know about modules.
+
+## Status (be honest about it)
+
+- **Members** is the first module in this layout (`app/Modules/Members`).
+- **Not modularized yet**: Users/Auth/Permissions (`app/Models/User.php`, `app/Actions/Users`, `app/Enums/Permission|UserRole`, Fortify) and the settings pages. They will become an Auth/Users module when it is worked on.
+- **Known couplings to remove later**: `User` has a `member()` relation and `Member` a `user()` relation (users are members, see [auth.md](auth.md)); `DeleteMember` checks `$member->user()`. When Auth/Users becomes a module, replace these with a contract owned by one side.
+- Actions still use Eloquent models directly (no repository ports) and `label()` on enums uses the translation helper. That is acceptable until a module needs a second adapter or its rules must run without the framework.
 
 ## Adding a module
 

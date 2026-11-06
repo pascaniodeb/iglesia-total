@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Enums\UserRole;
-use App\Models\Member;
 use App\Models\User;
+use App\Modules\Members\Infrastructure\Models\Member;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;

@@ -2,8 +2,8 @@
 
 use App\Actions\Users\ChangeUserRole;
 use App\Enums\UserRole;
-use App\Models\Member;
 use App\Models\User;
+use App\Modules\Members\Infrastructure\Models\Member;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Validation\ValidationException;
 

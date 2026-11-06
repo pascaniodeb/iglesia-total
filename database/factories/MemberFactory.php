@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Enums\MemberMaritalStatus;
-use App\Enums\MemberSex;
-use App\Enums\MemberStatus;
-use App\Models\Member;
+use App\Modules\Members\Domain\Enums\MemberMaritalStatus;
+use App\Modules\Members\Domain\Enums\MemberSex;
+use App\Modules\Members\Domain\Enums\MemberStatus;
+use App\Modules\Members\Infrastructure\Models\Member;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

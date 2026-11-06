@@ -42,7 +42,7 @@ Ported from the SAFIPUV v4 visual system (visual only, no business logic).
 
 ## Data tables
 
-- Lists use the `components/data-table/*` kit (`ServerDataTable`) with `useTableQuery`: search, status, facets, sort and page live in the URL and the server does the work (`App\Http\Tables\TableQuery`). Pages only declare columns and facets.
+- Lists use the `components/data-table/*` kit (`ServerDataTable`) with `useTableQuery`: search, status, facets, sort and page live in the URL and the server does the work (`App\Modules\Shared\Tables\TableQuery`). Pages only declare columns and facets.
 - Inertia 3: set breadcrumbs with `setLayoutProps({ breadcrumbs })` or a static `Page.layout = { breadcrumbs }`; function-style layouts that read page props crash.
 
 ## Language

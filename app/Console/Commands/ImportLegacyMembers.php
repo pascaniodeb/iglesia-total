@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Member;
-use App\Models\MemberChild;
-use App\Models\MemberRole;
+use App\Modules\Members\Infrastructure\Models\Member;
+use App\Modules\Members\Infrastructure\Models\MemberChild;
+use App\Modules\Members\Infrastructure\Models\MemberRole;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;

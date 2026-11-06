@@ -1,8 +1,8 @@
 <?php
 
 use App\Enums\UserRole;
-use App\Models\Member;
 use App\Models\User;
+use App\Modules\Members\Infrastructure\Models\Member;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Ramsey\Uuid\Uuid;

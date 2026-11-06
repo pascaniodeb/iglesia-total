@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Permission;
 use App\Enums\UserRole;
+use App\Modules\Members\Infrastructure\Models\Member;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
