@@ -16,3 +16,11 @@ Schedule::command('ledger:verify')->dailyAt('03:15')->withoutOverlapping();
 
 // Accounting: the journal's arithmetic is recomputed every night.
 Schedule::command('journal:verify')->dailyAt('03:05')->withoutOverlapping();
+
+// Treasury: official rates change on business days; synced hourly in Venezuelan office hours.
+Schedule::command('treasury:sync-rates')
+    ->weekdays()
+    ->hourly()
+    ->between('7:00', '20:00')
+    ->timezone((string) config('treasury.rates.timezone'))
+    ->withoutOverlapping();

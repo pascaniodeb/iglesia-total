@@ -1,6 +1,6 @@
 # Roadmap: Treasury, Accounting and the sealed ledger
 
-Migration of the old system's money logic (TanStack/Drizzle, `/Projects/TanStackProjects/iglesiatotal`) into this modular monolith, following the patterns proven in safipuv-v4 (`Accounting`, `Treasury`, `Organization/Audit` modules). Status: **plan approved 2026-11-06; A-F1, A-F2, B-F1 and B-F2 done**. All decisions (D1–D7) are settled; see section 6.
+Migration of the old system's money logic (TanStack/Drizzle, `/Projects/TanStackProjects/iglesiatotal`) into this modular monolith, following the patterns proven in safipuv-v4 (`Accounting`, `Treasury`, `Organization/Audit` modules). Status: **plan approved 2026-11-06; A-F1, A-F2, B-F1, B-F2, C-F1 and C-F1b done**. All decisions (D1–D7) are settled; see section 6.
 
 ## 1. What exists in the old system
 
@@ -148,7 +148,7 @@ Rules that make it understandable:
 
 **C-F1 Catalogs and settings.** ✅ Categories done 2026-11-06 (`ChartOfAccounts` contract; the database checks the account is income; `treasury:import-legacy-categories`). Receipt settings move to C-F4, where they have a caller. Offering categories (each points to an income account, NOT NULL), receipt settings (start number of the physical book). Exchange rates: see C-F1b (D5).
 
-**C-F1b Exchange rates (exact port of safipuv-v4 `Treasury`).**
+**C-F1b Exchange rates (exact port of safipuv-v4 `Treasury`).** ✅ Done 2026-11-06 (read with `catalogs.view`, sync and correct with `catalogs.manage`; the dashboard widget moves to C-F6 with the other widgets).
 
 - Table `exchange_rates`: one row per Venezuelan date (`rate_date` unique). `usd_rate` numeric(14,4) Bs per USD (BCV), `cop_rate` numeric(16,6) COP per Bs, `eur_rate` numeric(14,4) Bs per EUR (BCV, nullable), `trm_cop_usd` numeric(14,4) COP per USD (TRM Colombia, nullable). `origin` is `market`, `manual` or `legacy`; a `market` row must have EUR and TRM. CHECK that every rate is positive. Rows are never deleted (trigger); each change is audited with its previous value.
 - Domain (pure): `Rate` (exact, positive, with its scale) and `DailyRates`. `fromMarket` computes `cop_rate = TRM ÷ BCV` with 6 decimals, rounding HALF_UP. `toBolivares` gives a Bs equivalent with 2 decimals: USD is multiplied, COP is divided, VES stays the same.

@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Modules\Accounting\Http\Controllers\AccountingAccountController;
 use App\Modules\Integrity\Http\Controllers\ActivityLogController;
 use App\Modules\Members\Http\Controllers\MemberController;
+use App\Modules\Treasury\Http\Controllers\ExchangeRateController;
 use App\Modules\Treasury\Http\Controllers\OfferingCategoryController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,6 +52,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/', [OfferingCategoryController::class, 'store'])->name('store');
             Route::put('{category}', [OfferingCategoryController::class, 'update'])->whereUuid('category')->name('update');
             Route::patch('{category}/active', [OfferingCategoryController::class, 'toggle'])->whereUuid('category')->name('toggle');
+        });
+    });
+
+    // Exchange rates (Treasury): they inform and compare, never feed the books.
+    Route::middleware('can:catalogs.view')->prefix('treasury/exchange-rates')->name('treasury.exchange-rates.')->group(function () {
+        Route::get('/', [ExchangeRateController::class, 'index'])->name('index');
+
+        Route::middleware('can:catalogs.manage')->group(function () {
+            Route::post('/', [ExchangeRateController::class, 'store'])->name('store');
+            Route::post('sync', [ExchangeRateController::class, 'sync'])->middleware('throttle:6,1')->name('sync');
         });
     });
 

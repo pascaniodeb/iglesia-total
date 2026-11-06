@@ -176,5 +176,21 @@
     "Category :name updated.": "Se actualizó la categoría :name.",
     "Category :name reactivated.": "Se reactivó la categoría :name.",
     "Category :name deactivated.": "Se desactivó la categoría :name.",
-    "Imported the offering categories of the old system: :created created, :updated updated.": "Importó las categorías de ofrenda del sistema anterior: :created creadas, :updated actualizadas."
+    "Imported the offering categories of the old system: :created created, :updated updated.": "Importó las categorías de ofrenda del sistema anterior: :created creadas, :updated actualizadas.",
+
+    "BCV and TRM": "BCV y TRM",
+    "Manual": "Manual",
+    "Old system": "Sistema anterior",
+    "Rates are not recorded for a day that has not come yet.": "No se registran tasas de un día que todavía no llega.",
+    "Updated the rates of :date from the BCV and the TRM.": "Actualizó las tasas del :date desde el BCV y la TRM.",
+    "Corrected by hand the rates of :date.": "Corrigió a mano las tasas del :date.",
+    "Recorded by hand the rates of :date.": "Registró a mano las tasas del :date.",
+    "The rates of :date were saved. The sync no longer changes them.": "Se guardaron las tasas del :date. La sincronización ya no las cambia.",
+    "The BCV or the TRM did not answer. Try again in a few minutes or record the rate by hand.": "El BCV o la TRM no respondieron. Intente de nuevo en unos minutos o registre la tasa a mano.",
+    "Today's rates were updated from the BCV and the TRM.": "Se actualizaron las tasas de hoy desde el BCV y la TRM.",
+    "Today's rates were already up to date.": "Las tasas de hoy ya estaban al día.",
+    "Today has a rate recorded by hand: it is kept.": "Hoy tiene una tasa registrada a mano: se conserva.",
+    "Choose the date.": "Seleccione la fecha.",
+    "Write the bolívares per dollar, greater than zero and with up to 4 decimals.": "Escriba los bolívares por dólar, mayor que cero y con hasta 4 decimales.",
+    "Write the pesos per bolívar, greater than zero and with up to 6 decimals.": "Escriba los pesos por bolívar, mayor que cero y con hasta 6 decimales."
 }
