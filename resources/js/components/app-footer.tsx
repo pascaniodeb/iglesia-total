@@ -8,7 +8,7 @@ export function AppFooter({ className }: { className?: string }) {
         <footer
             data-app-footer
             className={cn(
-                'flex flex-col items-center gap-1 px-4 py-5 text-center text-xs text-muted-foreground sm:flex-row sm:justify-between sm:gap-4 sm:text-left',
+                'flex flex-col items-center gap-1 px-4 py-5 text-center text-xs text-muted-foreground sm:flex-row sm:justify-between sm:gap-4 sm:text-left md:py-3',
                 className,
             )}
         >
