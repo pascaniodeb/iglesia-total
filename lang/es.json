@@ -266,5 +266,8 @@
     "Expense recorded.": "Egreso registrado.",
     "Currency exchange recorded.": "Cambio de divisas registrado.",
     "Movement voided with a reversal.": "Movimiento anulado con un contraasiento.",
-    "Movement corrected: the original was reversed and the correction recorded.": "Movimiento corregido: se revirtió el original y se registró la corrección."
+    "Movement corrected: the original was reversed and the correction recorded.": "Movimiento corregido: se revirtió el original y se registró la corrección.",
+
+    "The support file was altered after it was uploaded.": "El archivo del soporte se alteró después de subirlo.",
+    "Opened the support of \":description\".": "Abrió el soporte de «:description»."
 }

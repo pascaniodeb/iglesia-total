@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { ArrowLeftRight, Minus, Plus } from 'lucide-react';
+import { ArrowLeftRight, Minus, Paperclip, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { ServerDataTable } from '@/components/data-table/server-data-table';
 import type { DataTableColumn } from '@/components/data-table/types';
@@ -26,7 +26,7 @@ import { formatShortDate } from '@/features/treasury/rates';
 import { cn } from '@/lib/utils';
 import { formatAmount, isZeroAmount } from '@/lib/money';
 import { formatMonth } from '@/lib/month';
-import { index as journalIndex } from '@/routes/accounting/journal';
+import { index as journalIndex, support } from '@/routes/accounting/journal';
 import type { Paginated, TableFilters } from '@/types';
 
 type JournalIndexProps = JournalPageProps & {
@@ -119,7 +119,20 @@ export default function JournalIndex(props: JournalIndexProps) {
                         {entry.reversal_reason &&
                             ` · Motivo: ${entry.reversal_reason}`}
                         {entry.is_reversed && ' · anulado'}
+                        {entry.receipt_number &&
+                            ` · Recibo ${entry.receipt_number}`}
                     </span>
+                    {entry.has_file && (
+                        <a
+                            href={support(entry.id).url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex w-fit items-center gap-1 text-xs font-semibold text-primary underline-offset-4 hover:underline"
+                        >
+                            <Paperclip aria-hidden className="size-3.5" />
+                            Ver soporte
+                        </a>
+                    )}
                 </span>
             ),
         },

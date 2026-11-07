@@ -42,12 +42,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Journal (Accounting): step 3 of the month circuit. Fixed paths go before {entry}.
     Route::middleware('can:accounting.view')->prefix('accounting/journal')->name('accounting.journal.')->group(function () {
         Route::get('/', [JournalController::class, 'index'])->name('index');
+        Route::get('{entry}/support', [JournalController::class, 'support'])->whereUuid('entry')->name('support');
 
         Route::middleware(['can:accounting.manage', 'throttle:30,1'])->group(function () {
             Route::post('/', [JournalController::class, 'store'])->name('store');
             Route::post('exchange', [JournalController::class, 'exchange'])->name('exchange');
             Route::post('{entry}/cancel', [JournalController::class, 'cancel'])->whereUuid('entry')->name('cancel');
-            Route::put('{entry}', [JournalController::class, 'correct'])->whereUuid('entry')->name('correct');
+            // POST, not PUT: a corrected movement may carry a file, and multipart PUT is not parsed.
+            Route::post('{entry}/correct', [JournalController::class, 'correct'])->whereUuid('entry')->name('correct');
         });
     });
 

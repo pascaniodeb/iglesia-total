@@ -1,9 +1,11 @@
 import { useForm } from '@inertiajs/react';
 import type { FormEvent } from 'react';
 import { DateField } from '@/components/form/date-field';
+import { Field } from '@/components/form/field';
 import { SelectField } from '@/components/form/select-field';
 import { TextField } from '@/components/form/text-field';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
     Dialog,
     DialogClose,
@@ -47,6 +49,8 @@ type MovementData = {
     description: string;
     token: string;
     reason: string;
+    receipt_number: string;
+    support: File | null;
 };
 
 function initial(
@@ -74,6 +78,8 @@ function initial(
         description: entry?.description ?? '',
         token: crypto.randomUUID(),
         reason: '',
+        receipt_number: entry?.receipt_number ?? '',
+        support: null,
     };
 }
 
@@ -203,6 +209,46 @@ export function MovementDialog({
                         error={form.errors.description}
                         required
                     />
+
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <TextField
+                            name="receipt_number"
+                            label="N.º de recibo o factura"
+                            description="Opcional."
+                            autoComplete="off"
+                            value={form.data.receipt_number}
+                            onChange={(event) =>
+                                form.setData(
+                                    'receipt_number',
+                                    event.target.value,
+                                )
+                            }
+                            error={form.errors.receipt_number}
+                        />
+                        <Field
+                            label="Foto o PDF del soporte"
+                            description={
+                                entry?.has_file
+                                    ? 'Si no adjunta otro, se conserva el actual.'
+                                    : 'Opcional. JPG, PNG, WebP o PDF, hasta 10 MB.'
+                            }
+                            error={form.errors.support}
+                        >
+                            {(control) => (
+                                <Input
+                                    {...control}
+                                    type="file"
+                                    accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf"
+                                    onChange={(event) =>
+                                        form.setData(
+                                            'support',
+                                            event.target.files?.[0] ?? null,
+                                        )
+                                    }
+                                />
+                            )}
+                        </Field>
+                    </div>
 
                     {entry && (
                         <TextField

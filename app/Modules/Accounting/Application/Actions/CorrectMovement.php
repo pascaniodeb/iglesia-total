@@ -7,6 +7,7 @@ use App\Modules\Accounting\Application\Cash\MovementGuard;
 use App\Modules\Accounting\Domain\Enums\MovementKind;
 use App\Modules\Accounting\Domain\Enums\SystemFunction;
 use App\Modules\Accounting\Domain\Journal\LedgerConflict;
+use App\Modules\Accounting\Domain\Journal\SupportInput;
 use App\Modules\Accounting\Infrastructure\Models\AccountingPeriod;
 use App\Modules\Accounting\Infrastructure\Models\JournalEntry;
 use App\Modules\Shared\Money\Currency;
@@ -37,7 +38,7 @@ final readonly class CorrectMovement
      *
      * @throws ValidationException
      */
-    public function __invoke(JournalEntry $original, array $data): JournalEntry
+    public function __invoke(JournalEntry $original, array $data, ?SupportInput $support = null): JournalEntry
     {
         if ($original->origin_type !== 'manual_movement' || $original->reversal_of !== null || $original->reversal()->exists()) {
             throw ValidationException::withMessages(['entry' => __('Only an income or expense recorded by hand, not voided, can be corrected.')]);
@@ -52,7 +53,10 @@ final readonly class CorrectMovement
         $this->guard->assertOpenDate($reversalDate, 'entry');
         $this->guard->assertOpenDate($data['entry_date']);
 
-        return DB::transaction(function () use ($original, $data, $kind, $reversalDate): JournalEntry {
+        // Without a new support, the correction keeps the original's (same file, same fingerprint).
+        $support ??= self::carried($original);
+
+        return DB::transaction(function () use ($original, $data, $kind, $reversalDate, $support): JournalEntry {
             $before = $this->cashByCurrency($original);
             $newCurrency = Currency::from($data['currency']);
             $currencies = array_unique([...array_keys($before), $newCurrency->value]);
@@ -83,7 +87,7 @@ final readonly class CorrectMovement
                 'entry_date' => $data['entry_date'],
                 'description' => $data['description'],
                 'token' => $data['token'],
-            ]);
+            ], $support);
 
             $after = $this->cashByCurrency($corrected);
 
@@ -98,6 +102,20 @@ final readonly class CorrectMovement
 
             return $corrected;
         });
+    }
+
+    private static function carried(JournalEntry $original): ?SupportInput
+    {
+        $previous = $original->support()->first();
+
+        return $previous === null ? null : new SupportInput(
+            $previous->receipt_number,
+            $previous->file_path,
+            $previous->file_name,
+            $previous->mime_type,
+            $previous->size_bytes,
+            $previous->sha256,
+        );
     }
 
     /**

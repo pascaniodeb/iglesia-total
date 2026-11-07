@@ -31,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @property-read JournalEntry|null $original
  * @property-read JournalEntry|null $reversal
  * @property-read User|null $author
+ * @property-read JournalEntrySupport|null $support
  */
 #[Fillable([
     'entry_date', 'month', 'description', 'origin_type', 'origin_id', 'origin_purpose',
@@ -64,6 +65,14 @@ class JournalEntry extends Model
     public function reversal(): HasOne
     {
         return $this->hasOne(self::class, 'reversal_of');
+    }
+
+    /**
+     * @return HasOne<JournalEntrySupport, $this>
+     */
+    public function support(): HasOne
+    {
+        return $this->hasOne(JournalEntrySupport::class);
     }
 
     /**

@@ -9,10 +9,13 @@ use App\Modules\Accounting\Domain\Enums\MovementKind;
 use App\Modules\Accounting\Domain\Journal\JournalEntryDraft;
 use App\Modules\Accounting\Domain\Journal\JournalLine;
 use App\Modules\Accounting\Domain\Journal\LedgerConflict;
+use App\Modules\Accounting\Domain\Journal\SupportInput;
 use App\Modules\Accounting\Infrastructure\Models\AccountingAccount;
 use App\Modules\Accounting\Infrastructure\Models\JournalEntry;
+use App\Modules\Accounting\Infrastructure\Models\JournalEntrySupport;
 use App\Modules\Shared\Money\Currency;
 use App\Modules\Shared\Money\Money;
+use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
@@ -27,14 +30,14 @@ use InvalidArgumentException;
  */
 final readonly class RecordManualMovement
 {
-    public function __construct(private PostJournalEntry $post, private MovementGuard $guard) {}
+    public function __construct(private PostJournalEntry $post, private MovementGuard $guard, private AuthFactory $auth) {}
 
     /**
      * @param  array{kind: string, account_code: string, currency: string, amount: string, entry_date: string, description: string, token: string}  $data
      *
      * @throws ValidationException
      */
-    public function __invoke(array $data): JournalEntry
+    public function __invoke(array $data, ?SupportInput $support = null): JournalEntry
     {
         $kind = MovementKind::from($data['kind']);
         $currency = Currency::from($data['currency']);
@@ -43,7 +46,7 @@ final readonly class RecordManualMovement
 
         $this->guard->assertOpenDate($data['entry_date']);
 
-        return DB::transaction(function () use ($kind, $currency, $amount, $account, $data): JournalEntry {
+        return DB::transaction(function () use ($kind, $currency, $amount, $account, $data, $support): JournalEntry {
             AvailableCash::lock($currency);
             $available = $this->guard->availableBefore($currency, $data['entry_date']);
 
@@ -68,8 +71,24 @@ final readonly class RecordManualMovement
                 $this->guard->assertNoOverdraft($currency, $data['entry_date'], $available, $amount);
             }
 
-            return $entry;
+            if ($support !== null && $entry->wasRecentlyCreated) {
+                self::attach($entry, $support, $this->auth->guard()->id());
+            }
+
+            return $entry->load('support');
         });
+    }
+
+    /**
+     * Records the support of a just-posted entry.
+     */
+    public static function attach(JournalEntry $entry, SupportInput $support, int|string|null $uploadedBy): void
+    {
+        (new JournalEntrySupport)->forceFill([
+            'journal_entry_id' => $entry->id,
+            ...$support->toColumns(),
+            'uploaded_by' => $uploadedBy === null ? null : (string) $uploadedBy,
+        ])->save();
     }
 
     /**

@@ -82,7 +82,7 @@ test('exchange, void and correct go through the screen', function () {
     $this->post(route('accounting.journal.cancel', $expense), ['reason' => 'Otra vez'])->assertSessionHasErrors('entry');
 
     $income = JournalEntry::query()->where('origin_purpose', 'income')->sole();
-    $this->put(route('accounting.journal.correct', $income), [
+    $this->post(route('accounting.journal.correct', $income), [
         'account_code' => 'I-007', 'currency' => 'USD', 'amount' => '120', 'entry_date' => '2026-11-10',
         'description' => 'Aporte', 'token' => (string) Str::uuid7(), 'reason' => 'Eran 120',
     ])->assertSessionHasNoErrors();

@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\DB;
  * What a closed accounting month seals: its cash statement per currency (opening, income,
  * expense, capital, exchange, closing: the equation that ties a month to the next), the net of
  * every income and expense code, the month's closed offerings, and one Merkle leaf per journal
- * line of the month, ordered by entry and line. Rebuilt on every verification: an entry or line
+ * line of the month, ordered by entry and line, carrying the entry's receipt number and the
+ * fingerprint of its support file when it has one. Rebuilt on every verification: an entry or line
  * that moves behind the database guards shows up as drift.
  */
 final readonly class MonthlySealableSource implements SealableSource
@@ -38,10 +39,12 @@ final readonly class MonthlySealableSource implements SealableSource
 
         $lines = DB::select(<<<'SQL'
             SELECT e.id::text AS entry, l.line_number AS line, a.code, l.currency,
-                   l.debit::text AS debit, l.credit::text AS credit, e.reversal_of::text AS reversal_of
+                   l.debit::text AS debit, l.credit::text AS credit, e.reversal_of::text AS reversal_of,
+                   s.receipt_number, s.sha256
             FROM journal_entry_lines l
             JOIN journal_entries e ON e.id = l.journal_entry_id
             JOIN accounting_accounts a ON a.id = l.account_id
+            LEFT JOIN journal_entry_supports s ON s.journal_entry_id = e.id
             WHERE e.month = ?
             ORDER BY e.id, l.line_number
         SQL, [$periodKey]);
@@ -58,6 +61,8 @@ final readonly class MonthlySealableSource implements SealableSource
                 'debit' => (string) $line['debit'],
                 'credit' => (string) $line['credit'],
                 'reversalOf' => $line['reversal_of'] === null ? null : (string) $line['reversal_of'],
+                'receipt' => $line['receipt_number'] === null ? null : (string) $line['receipt_number'],
+                'supportSha256' => $line['sha256'] === null ? null : (string) $line['sha256'],
             ]);
         }
 

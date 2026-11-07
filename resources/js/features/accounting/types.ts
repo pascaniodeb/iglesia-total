@@ -75,6 +75,8 @@ export type JournalEntryRow = {
     codes: { code: string; name: string }[];
     /** Net effect on CAJA per currency (positive = money in). */
     cash: Record<CurrencyCode, string>;
+    receipt_number: string | null;
+    has_file: boolean;
     reversal_reason: string | null;
     is_reversed: boolean;
     can_void: boolean;

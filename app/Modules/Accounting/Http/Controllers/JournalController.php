@@ -13,10 +13,13 @@ use App\Modules\Accounting\Application\Periods\PeriodSchedule;
 use App\Modules\Accounting\Application\Queries\MonthSummary;
 use App\Modules\Accounting\Domain\Enums\AccountType;
 use App\Modules\Accounting\Domain\Enums\SystemFunction;
+use App\Modules\Accounting\Domain\Journal\SupportInput;
 use App\Modules\Accounting\Infrastructure\Models\AccountingAccount;
 use App\Modules\Accounting\Infrastructure\Models\AccountingPeriod;
 use App\Modules\Accounting\Infrastructure\Models\JournalEntry;
 use App\Modules\Accounting\Infrastructure\Models\JournalEntryLine;
+use App\Modules\Accounting\Infrastructure\Supports\SupportStorage;
+use App\Modules\Integrity\Application\ActivityLog;
 use App\Modules\Shared\Money\Currency;
 use App\Modules\Shared\Money\Money;
 use App\Modules\Shared\Tables\TableQuery;
@@ -25,9 +28,13 @@ use App\Modules\Shared\Time\Month;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 /**
  * The journal (Libro Diario): a month's cash statement, its income and expense by code, its
@@ -50,7 +57,7 @@ class JournalController extends Controller
         $entries = $table->paginate(
             JournalEntry::query()->where('journal_entries.month', $month->key()),
             [fn (Builder $query, string $pattern) => $query->whereRaw('lower(immutable_unaccent(journal_entries.description)) like ?', [$pattern])],
-            fn (Builder $query) => $query->with(['lines.account', 'reversal']),
+            fn (Builder $query) => $query->with(['lines.account', 'reversal', 'support']),
         );
 
         return Inertia::render('accounting/journal/index', [
@@ -78,8 +85,14 @@ class JournalController extends Controller
         ]);
     }
 
-    public function store(Request $request, RecordManualMovement $record): RedirectResponse
+    private const array SUPPORT_RULES = [
+        'receipt_number' => ['nullable', 'string', 'max:60'],
+        'support' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:10240'],
+    ];
+
+    public function store(Request $request, RecordManualMovement $record, SupportStorage $storage): RedirectResponse
     {
+        $request->validate(self::SUPPORT_RULES);
         $data = $request->validate([
             'kind' => ['required', Rule::in(['income', 'expense'])],
             'account_code' => ['required', 'string', 'max:10'],
@@ -90,7 +103,7 @@ class JournalController extends Controller
             'token' => ['required', 'uuid'],
         ]);
 
-        $record($data);
+        $this->withSupport($request, $storage, fn (?SupportInput $support) => $record($data, $support));
         Inertia::flash('toast', ['type' => 'success', 'message' => $data['kind'] === 'income' ? __('Income recorded.') : __('Expense recorded.')]);
 
         return back();
@@ -124,8 +137,9 @@ class JournalController extends Controller
         return back();
     }
 
-    public function correct(Request $request, JournalEntry $entry, CorrectMovement $correct): RedirectResponse
+    public function correct(Request $request, JournalEntry $entry, CorrectMovement $correct, SupportStorage $storage): RedirectResponse
     {
+        $request->validate(self::SUPPORT_RULES);
         $data = $request->validate([
             'account_code' => ['required', 'string', 'max:10'],
             'currency' => ['required', Rule::in(['VES', 'USD', 'COP'])],
@@ -136,10 +150,51 @@ class JournalController extends Controller
             'reason' => ['required', 'string', 'max:250'],
         ]);
 
-        $correct($entry, $data);
+        $this->withSupport($request, $storage, fn (?SupportInput $support) => $correct($entry, $data, $support));
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Movement corrected: the original was reversed and the correction recorded.')]);
 
         return back();
+    }
+
+    /**
+     * Opens the support file of an entry, after checking that the stored bytes still have the
+     * fingerprint recorded when it was uploaded. Every opening is recorded as an access.
+     */
+    public function support(JournalEntry $entry, ActivityLog $activityLog): StreamedResponse
+    {
+        $support = $entry->support()->first();
+
+        abort_if($support === null || $support->file_path === null || ! Storage::disk(SupportStorage::DISK)->exists($support->file_path), 404);
+
+        $bytes = (string) Storage::disk(SupportStorage::DISK)->get($support->file_path);
+
+        abort_unless(hash_equals((string) $support->sha256, hash('sha256', $bytes)), 409, __('The support file was altered after it was uploaded.'));
+
+        $activityLog->access('journal_support.opened', __('Opened the support of ":description".', ['description' => $entry->description]), $entry);
+
+        return response()->streamDownload(fn () => print ($bytes), (string) $support->file_name, [
+            'Content-Type' => (string) $support->mime_type,
+            'Cache-Control' => 'private, no-store',
+        ], 'inline');
+    }
+
+    /**
+     * Stores the uploaded file (if any) before the write, and removes it again if the write fails.
+     *
+     * @param  callable(SupportInput|null): mixed  $write
+     */
+    private function withSupport(Request $request, SupportStorage $storage, callable $write): void
+    {
+        $file = $request->file('support');
+        $stored = $file instanceof UploadedFile ? $storage->store($file) : null;
+
+        try {
+            $write(SupportInput::from($request->string('receipt_number')->toString(), $stored));
+        } catch (Throwable $exception) {
+            $storage->delete($stored);
+
+            throw $exception;
+        }
     }
 
     private function requestedMonth(Request $request): ?Month
@@ -214,6 +269,8 @@ class JournalController extends Controller
             'origin_purpose' => $entry->origin_purpose,
             'codes' => array_map(fn (string $code, string $name) => ['code' => $code, 'name' => $name], array_keys($codes), $codes),
             'cash' => array_map(fn (Money $money) => $money->amount(), $cash),
+            'receipt_number' => $entry->support?->receipt_number,
+            'has_file' => $entry->support?->file_path !== null,
             'reversal_reason' => $entry->reversal_reason,
             'is_reversed' => $entry->reversal !== null,
             'can_void' => $isManual && $isActive,

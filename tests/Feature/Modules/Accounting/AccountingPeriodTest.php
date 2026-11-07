@@ -183,6 +183,26 @@ test('without a genesis the month closes pending a seal, and a journal line chan
     expect($issues->where('type', BlockIssue::DRIFT)->pluck('periodKey')->all())->toContain('2026-10');
 });
 
+test('a support changed after the month was sealed is drift', function () {
+    app(CreateLedgerGenesis::class)('M07A1985C0001', '2026-W40');
+    settleOctoberOfferings();
+    DB::table('journal_entry_supports')->insert([
+        'journal_entry_id' => DB::table('journal_entries')->where('month', '2026-10')->value('id'),
+        'receipt_number' => 'R-0001',
+    ]);
+    app(ClosePeriod::class)(Month::fromKey('2026-10'));
+
+    expect(app(VerifyLedgerChain::class)()['matches_books'])->toBeTrue();
+
+    DB::statement('ALTER TABLE journal_entry_supports DISABLE TRIGGER journal_entry_supports_no_update');
+    DB::statement("UPDATE journal_entry_supports SET receipt_number = 'R-9999'");
+    DB::statement('ALTER TABLE journal_entry_supports ENABLE TRIGGER journal_entry_supports_no_update');
+
+    $issues = collect(app(VerifyLedgerChain::class)()['issues']);
+
+    expect($issues->where('type', BlockIssue::DRIFT)->pluck('periodKey')->all())->toContain('2026-10');
+});
+
 test('the screen shows the month to close with its statement and blocker; only who manages accounting closes it', function () {
     settleOctoberOfferings();
 
