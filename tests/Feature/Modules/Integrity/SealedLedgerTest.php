@@ -117,7 +117,7 @@ test('refuses to seal without a genesis, a period without a close or an unknown 
 
         return app(SealPeriod::class)('weekly', '2026-W46');
     }, 'is not closed'],
-    'unknown kind' => [fn () => app(SealPeriod::class)('monthly', '2026-11'), 'Nothing can seal'],
+    'unknown kind' => [fn () => app(SealPeriod::class)('yearly', '2026'), 'Nothing can seal'],
 ]);
 
 test('the database refuses a block that does not continue the head or carries a forged hash', function () {

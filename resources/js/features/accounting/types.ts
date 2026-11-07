@@ -20,3 +20,44 @@ export type AccountingAccountFilters =
     TableFilters<AccountingAccountSortKey> & {
         type: string;
     };
+
+export type CurrencyCode = 'VES' | 'USD' | 'COP';
+
+/** The cash statement of a month in one currency (MonthSummary). */
+export type CashStatement = {
+    opening: string;
+    income: string;
+    expense: string;
+    capital: string;
+    exchange: string;
+    closing: string;
+};
+
+export type MonthSummary = {
+    month: string;
+    currencies: Record<CurrencyCode, CashStatement>;
+    by_code: {
+        code: string;
+        name: string;
+        type: string;
+        entries: number;
+        ves: string;
+        usd: string;
+        cop: string;
+    }[];
+};
+
+/** A closed accounting month. */
+export type AccountingPeriodRow = {
+    id: string;
+    month: string;
+    closed_at: string;
+    currencies: Record<CurrencyCode, CashStatement>;
+    seal: { height: number; hash: string } | null;
+};
+
+export type NextPeriod = {
+    month: string;
+    summary: MonthSummary;
+    blocker: string | null;
+};

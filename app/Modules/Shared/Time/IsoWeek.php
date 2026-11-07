@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Treasury\Domain;
+namespace App\Modules\Shared\Time;
 
 use DateTimeImmutable;
 use InvalidArgumentException;

@@ -4,7 +4,7 @@ namespace App\Modules\Treasury\Application\Actions;
 
 use App\Modules\Integrity\Application\ActivityLog;
 use App\Modules\Members\Application\MemberDirectory;
-use App\Modules\Treasury\Domain\IsoWeek;
+use App\Modules\Shared\Time\IsoWeek;
 use App\Modules\Treasury\Infrastructure\Models\Offering;
 use App\Modules\Treasury\Infrastructure\Models\WeeklyClosure;
 use Illuminate\Support\Facades\DB;

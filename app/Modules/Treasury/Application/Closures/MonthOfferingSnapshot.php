@@ -2,7 +2,7 @@
 
 namespace App\Modules\Treasury\Application\Closures;
 
-use App\Modules\Treasury\Domain\Month;
+use App\Modules\Shared\Time\Month;
 use Illuminate\Support\Facades\DB;
 
 /**

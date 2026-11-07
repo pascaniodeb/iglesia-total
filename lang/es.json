@@ -238,5 +238,13 @@
     "Months close in order: the next one to close is :month.": "Los meses se cierran en orden: el próximo a cerrar es :month.",
     "Close first the weeks of the month that are still open: :weeks.": "Cierre primero las semanas del mes que siguen abiertas: :weeks.",
     "Closed the offerings of :month: :count offerings posted to the journal.": "Cerró las ofrendas de :month: :count ofrendas asentadas en el Libro Diario.",
-    "The offerings of :month were closed and posted to the journal.": "Se cerraron las ofrendas de :month y se asentaron en el Libro Diario."
+    "The offerings of :month were closed and posted to the journal.": "Se cerraron las ofrendas de :month y se asentaron en el Libro Diario.",
+
+    "The month :month is already closed.": "El mes :month ya está cerrado.",
+    ":month has not finished yet: it can be closed from :date.": ":month no ha terminado: se puede cerrar desde el :date.",
+    "The offerings of :month are not closed yet (step 2).": "Las ofrendas de :month todavía no están cerradas (paso 2).",
+    "Closed the accounting month :month.": "Cerró la contabilidad del mes :month.",
+    "The month :month was closed and sealed. The next month opens with its closing balance.": "Se cerró y se selló el mes :month. El mes siguiente arranca con su saldo final.",
+    "The month :month was closed; its seal is pending: :reason": "Se cerró el mes :month; su sello quedó pendiente: :reason",
+    "The month :month is sealed (block :height).": "El mes :month quedó sellado (bloque :height)."
 }

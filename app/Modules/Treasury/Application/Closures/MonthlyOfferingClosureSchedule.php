@@ -2,8 +2,8 @@
 
 namespace App\Modules\Treasury\Application\Closures;
 
-use App\Modules\Treasury\Domain\IsoWeek;
-use App\Modules\Treasury\Domain\Month;
+use App\Modules\Shared\Time\IsoWeek;
+use App\Modules\Shared\Time\Month;
 use App\Modules\Treasury\Infrastructure\Models\MonthlyOfferingClosure;
 use App\Modules\Treasury\Infrastructure\Models\Offering;
 use App\Modules\Treasury\Infrastructure\Models\WeeklyClosure;

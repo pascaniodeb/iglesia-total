@@ -6,7 +6,7 @@ use App\Modules\Integrity\Application\ActivityLog;
 use App\Modules\Integrity\Domain\ChangeSet;
 use App\Modules\Members\Application\MemberDirectory;
 use App\Modules\Shared\Time\ChurchCalendar;
-use App\Modules\Treasury\Domain\IsoWeek;
+use App\Modules\Shared\Time\IsoWeek;
 use App\Modules\Treasury\Domain\OfferingAmounts;
 use App\Modules\Treasury\Infrastructure\Models\Offering;
 use App\Modules\Treasury\Infrastructure\Models\OfferingCategory;

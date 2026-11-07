@@ -2,7 +2,7 @@
 
 namespace App\Modules\Treasury\Application\Closures;
 
-use App\Modules\Treasury\Domain\IsoWeek;
+use App\Modules\Shared\Time\IsoWeek;
 use Illuminate\Support\Facades\DB;
 
 /**

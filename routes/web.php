@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Modules\Accounting\Http\Controllers\AccountingAccountController;
+use App\Modules\Accounting\Http\Controllers\AccountingPeriodController;
 use App\Modules\Integrity\Http\Controllers\ActivityLogController;
 use App\Modules\Members\Http\Controllers\MemberController;
 use App\Modules\Treasury\Http\Controllers\ExchangeRateController;
@@ -34,6 +35,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('{member}', [MemberController::class, 'update'])->whereUuid('member')->name('update');
             Route::delete('{member}', [MemberController::class, 'destroy'])->whereUuid('member')->name('destroy');
             Route::post('{member}/restore', [MemberController::class, 'restore'])->whereUuid('member')->withTrashed()->name('restore');
+        });
+    });
+
+    // Accounting close (Accounting): step 4 of the month circuit. A closed month never reopens.
+    Route::middleware('can:accounting.view')->prefix('accounting/periods')->name('accounting.periods.')->group(function () {
+        Route::get('/', [AccountingPeriodController::class, 'index'])->name('index');
+
+        Route::middleware(['can:accounting.manage', 'throttle:10,1'])->group(function () {
+            Route::post('/', [AccountingPeriodController::class, 'store'])->name('store');
+            Route::post('seal', [AccountingPeriodController::class, 'seal'])->name('seal');
         });
     });
 

@@ -3,6 +3,7 @@ import {
     ArrowLeftRight,
     BookCheck,
     BookText,
+    CalendarCheck,
     HandCoins,
     History,
     LayoutGrid,
@@ -25,6 +26,7 @@ import {
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { dashboard } from '@/routes';
 import { index as accountsIndex } from '@/routes/accounting/accounts';
+import { index as periodsIndex } from '@/routes/accounting/periods';
 import { index as activityLogIndex } from '@/routes/activity-log';
 import { index as exchangeRatesIndex } from '@/routes/treasury/exchange-rates';
 import { index as offeringCategoriesIndex } from '@/routes/treasury/offering-categories';
@@ -64,6 +66,12 @@ const mainNavItems: NavItem[] = [
         href: monthlyOfferingClosuresIndex(),
         icon: BookCheck,
         permission: 'closures.view',
+    },
+    {
+        title: 'Cierre contable',
+        href: periodsIndex(),
+        icon: CalendarCheck,
+        permission: 'accounting.view',
     },
     {
         title: 'Plan de cuentas',
