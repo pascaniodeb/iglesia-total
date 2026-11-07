@@ -35,17 +35,19 @@ export default function AuthSplitLayout({
             </aside>
 
             <div className="flex min-w-0 flex-col">
-                <main className="flex min-w-0 flex-1 items-center justify-center px-6 py-12 sm:px-12">
-                    <div className="flex w-full max-w-md flex-col gap-8">
+                <main className="flex min-w-0 flex-1 items-center justify-center px-6 py-12 sm:px-12 short:py-6">
+                    <div className="flex w-full max-w-md flex-col gap-8 short:gap-5">
                         <Link href={home()} className="text-primary lg:hidden">
-                            <AppLogoIcon className="size-12" />
+                            <AppLogoIcon className="size-12 short:size-10" />
                         </Link>
 
-                        <header className="flex flex-col gap-4">
+                        <header className="flex flex-col gap-4 short:gap-2">
                             {eyebrow}
-                            <h1 className="auth-display">{title}</h1>
+                            <h1 className="auth-display short:text-[clamp(2.25rem,1.4rem+2.4vw,3.25rem)]">
+                                {title}
+                            </h1>
                             {description && (
-                                <p className="text-lg text-muted-foreground">
+                                <p className="text-lg text-muted-foreground short:text-base">
                                     {description}
                                 </p>
                             )}

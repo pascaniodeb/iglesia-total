@@ -11,6 +11,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Viewports with little height (a laptop once the browser takes its share): the auth screens
+   tighten their vertical rhythm so the form fits without scrolling. */
+@custom-variant short (@media (max-height: 880px));
+
 @theme {
     --font-sans:
         'Inter Variable', ui-sans-serif, system-ui, sans-serif,
