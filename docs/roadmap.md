@@ -172,9 +172,17 @@ Rules that make it understandable:
 
 **C-F7 Legacy import.** Categories → offerings (775 live, 6 soft-deleted skipped) → weekly closures (96, all closed, sealed in the new chain; posting happens in the monthly offering closures, D2) → receipt settings. Legacy PDFs are regenerated, not copied (D6). Totals per week must equal the legacy closure totals and the legacy sealed weekly payload (A-F3), or the import stops.
 
+### Module D — Church identity and documents (added 2026-11-07)
+
+The old `church_settings` table (one row: congregation name, pastor, code, RIF, denomination header, registration note, logos) was not in any phase; every official PDF needs it for its letterhead.
+
+**D-F1 Church settings.** A single-row settings record (CHECK id = 1, as in the old system) with the congregation identity and the light/dark logos and favicon in private storage. Screen for `church_settings.manage` (pastor, secretary); every change recorded in the activity log. `church:import-legacy-settings` brings the one legacy row.
+
+**D-F2 PDF documents** (`setasign/fpdf`, approved). A shared letterhead (church identity, logos, verification code and the sealed-ledger head hash), then the documents in one batch: weekly closure (with the photo of the paper book, private storage, SHA-256), monthly offering closure, monthly accounting report, receipts (IPUV paper 612×396 pt), tithes reports and audit reports. Each document is regenerated from the data (D6), never stored as the evidence.
+
 ### Cut-over (one command, ordered, idempotent, `--dry-run`)
 
-`members → users → account codes → categories → offerings → weekly closures (seal) → monthly offering closures (legacy consolidated entries) → other accounting entries → monthly accounting closes (seal) → legacy chain archive + reconciliation → activity log → audits/acknowledgements`. Output: a report per step (imported, skipped with reason, differences = 0). The run is rejected unless every difference is 0.00 per currency (section 4.3).
+`members → users → church settings → account codes → categories → offerings → weekly closures (seal) → monthly offering closures (legacy consolidated entries) → other accounting entries → monthly accounting closes (seal) → legacy chain archive + reconciliation → activity log → audits/acknowledgements`. Output: a report per step (imported, skipped with reason, differences = 0). The run is rejected unless every difference is 0.00 per currency (section 4.3).
 
 ## 4. Cent-exact verification (every entry, income, expense and balance)
 
@@ -228,6 +236,7 @@ Output: one row per check and period with legacy, SQL, PHP and difference column
 5. C-F4, C-F5, C-F6 (receipts, tithes, dashboards)
 6. B-F5, C-F7, A-F3, B-F6 + cut-over command (gated by B-F6)
 7. A-F4, A-F5, A-F6 (integrity center, audits, anchoring)
+8. D-F1, D-F2 (church settings and the PDF batch; D-F1 can move earlier if the PDFs are needed sooner)
 
 Each phase ends with the quality gates of [rules/workflow.md](rules/workflow.md) green and its own commit(s).
 
