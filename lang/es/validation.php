@@ -228,6 +228,8 @@ return [
         'roles' => 'cargos',
         'role' => 'rol',
         'offering_date' => 'fecha',
+        'receipt_number' => 'número de recibo o factura',
+        'support' => 'soporte',
         'offering_category_id' => 'categoría',
         'member_id' => 'miembro',
         'concept' => 'concepto',
