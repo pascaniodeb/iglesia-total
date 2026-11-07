@@ -246,5 +246,25 @@
     "Closed the accounting month :month.": "Cerró la contabilidad del mes :month.",
     "The month :month was closed and sealed. The next month opens with its closing balance.": "Se cerró y se selló el mes :month. El mes siguiente arranca con su saldo final.",
     "The month :month was closed; its seal is pending: :reason": "Se cerró el mes :month; su sello quedó pendiente: :reason",
-    "The month :month is sealed (block :height).": "El mes :month quedó sellado (bloque :height)."
+    "The month :month is sealed (block :height).": "El mes :month quedó sellado (bloque :height).",
+
+    "Choose a valid date.": "Elija una fecha válida.",
+    "A movement cannot be dated in the future.": "Un movimiento no puede tener fecha en el futuro.",
+    "The month :month is not open for movements.": "El mes :month no está abierto para movimientos.",
+    "Only :from and :to are open for movements.": "Solo :from y :to están abiertos para movimientos.",
+    "There is not enough :currency: available :available, missing :missing.": "No alcanza en :currency: disponible :available, faltan :missing.",
+    "Write an amount greater than zero, with up to two decimals and no thousands separators.": "Escriba un monto mayor que cero, con hasta dos decimales y sin separadores de miles.",
+    "Choose an active expense account.": "Elija una cuenta de egreso activa.",
+    "An exchange goes from one currency to another.": "Un cambio va de una moneda a otra.",
+    "Only movements recorded by hand can be voided here.": "Aquí solo se anulan movimientos registrados a mano.",
+    "This movement was already voided.": "Este movimiento ya se anuló.",
+    "Write why the movement is voided.": "Escriba por qué se anula el movimiento.",
+    "Only an income or expense recorded by hand, not voided, can be corrected.": "Solo se corrige un ingreso o egreso registrado a mano y no anulado.",
+    "Write why the movement is corrected.": "Escriba por qué se corrige el movimiento.",
+
+    "Income recorded.": "Ingreso registrado.",
+    "Expense recorded.": "Egreso registrado.",
+    "Currency exchange recorded.": "Cambio de divisas registrado.",
+    "Movement voided with a reversal.": "Movimiento anulado con un contraasiento.",
+    "Movement corrected: the original was reversed and the correction recorded.": "Movimiento corregido: se revirtió el original y se registró la corrección."
 }

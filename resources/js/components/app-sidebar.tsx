@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import {
     ArrowLeftRight,
     BookCheck,
+    BookOpen,
     BookText,
     CalendarCheck,
     HandCoins,
@@ -26,6 +27,7 @@ import {
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { dashboard } from '@/routes';
 import { index as accountsIndex } from '@/routes/accounting/accounts';
+import { index as journalIndex } from '@/routes/accounting/journal';
 import { index as periodsIndex } from '@/routes/accounting/periods';
 import { index as activityLogIndex } from '@/routes/activity-log';
 import { index as exchangeRatesIndex } from '@/routes/treasury/exchange-rates';
@@ -66,6 +68,12 @@ const mainNavItems: NavItem[] = [
         href: monthlyOfferingClosuresIndex(),
         icon: BookCheck,
         permission: 'closures.view',
+    },
+    {
+        title: 'Libro Diario',
+        href: journalIndex(),
+        icon: BookOpen,
+        permission: 'accounting.view',
     },
     {
         title: 'Cierre contable',

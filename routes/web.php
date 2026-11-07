@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Modules\Accounting\Http\Controllers\AccountingAccountController;
 use App\Modules\Accounting\Http\Controllers\AccountingPeriodController;
+use App\Modules\Accounting\Http\Controllers\JournalController;
 use App\Modules\Integrity\Http\Controllers\ActivityLogController;
 use App\Modules\Members\Http\Controllers\MemberController;
 use App\Modules\Treasury\Http\Controllers\ExchangeRateController;
@@ -35,6 +36,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('{member}', [MemberController::class, 'update'])->whereUuid('member')->name('update');
             Route::delete('{member}', [MemberController::class, 'destroy'])->whereUuid('member')->name('destroy');
             Route::post('{member}/restore', [MemberController::class, 'restore'])->whereUuid('member')->withTrashed()->name('restore');
+        });
+    });
+
+    // Journal (Accounting): step 3 of the month circuit. Fixed paths go before {entry}.
+    Route::middleware('can:accounting.view')->prefix('accounting/journal')->name('accounting.journal.')->group(function () {
+        Route::get('/', [JournalController::class, 'index'])->name('index');
+
+        Route::middleware(['can:accounting.manage', 'throttle:30,1'])->group(function () {
+            Route::post('/', [JournalController::class, 'store'])->name('store');
+            Route::post('exchange', [JournalController::class, 'exchange'])->name('exchange');
+            Route::post('{entry}/cancel', [JournalController::class, 'cancel'])->whereUuid('entry')->name('cancel');
+            Route::put('{entry}', [JournalController::class, 'correct'])->whereUuid('entry')->name('correct');
         });
     });
 

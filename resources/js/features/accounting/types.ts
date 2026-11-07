@@ -61,3 +61,37 @@ export type NextPeriod = {
     summary: MonthSummary;
     blocker: string | null;
 };
+
+export type JournalAccountOption = { code: string; name: string };
+
+/** A row of the journal (JournalController::row()). */
+export type JournalEntryRow = {
+    id: string;
+    entry_date: string;
+    description: string;
+    /** manual_movement, currency_exchange, monthly_offering_closure, reversal… */
+    origin: string;
+    origin_purpose: string;
+    codes: { code: string; name: string }[];
+    /** Net effect on CAJA per currency (positive = money in). */
+    cash: Record<CurrencyCode, string>;
+    reversal_reason: string | null;
+    is_reversed: boolean;
+    can_void: boolean;
+    can_correct: boolean;
+};
+
+export type JournalPageProps = {
+    month: string;
+    status: 'open' | 'closed' | 'unavailable';
+    is_opening_provisional: boolean;
+    summary: MonthSummary;
+    available: Record<CurrencyCode, string> | null;
+    months: string[];
+    window: { min: string | null; max: string };
+    accounts: {
+        income: JournalAccountOption[];
+        expense: JournalAccountOption[];
+    };
+    can_manage: boolean;
+};
