@@ -5,9 +5,11 @@ import {
     BookOpen,
     BookText,
     CalendarCheck,
+    ChartColumn,
     HandCoins,
     History,
     LayoutGrid,
+    Library,
     Lock,
     Users,
     Wallet,
@@ -28,7 +30,9 @@ import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { dashboard } from '@/routes';
 import { index as accountsIndex } from '@/routes/accounting/accounts';
 import { index as journalIndex } from '@/routes/accounting/journal';
+import { index as ledgerIndex } from '@/routes/accounting/ledger';
 import { index as periodsIndex } from '@/routes/accounting/periods';
+import { index as reportsIndex } from '@/routes/accounting/reports';
 import { index as activityLogIndex } from '@/routes/activity-log';
 import { index as exchangeRatesIndex } from '@/routes/treasury/exchange-rates';
 import { index as offeringCategoriesIndex } from '@/routes/treasury/offering-categories';
@@ -79,6 +83,18 @@ const mainNavItems: NavItem[] = [
         title: 'Cierre contable',
         href: periodsIndex(),
         icon: CalendarCheck,
+        permission: 'accounting.view',
+    },
+    {
+        title: 'Libro Mayor',
+        href: ledgerIndex(),
+        icon: Library,
+        permission: 'accounting.view',
+    },
+    {
+        title: 'Reporte contable',
+        href: reportsIndex(),
+        icon: ChartColumn,
         permission: 'accounting.view',
     },
     {

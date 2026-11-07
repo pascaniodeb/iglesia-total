@@ -13,8 +13,10 @@ const CURRENCIES: { code: CurrencyCode; label: string }[] = [
  */
 export function CashStatementTable({
     currencies,
+    caption = 'Estado de caja del mes por moneda',
 }: {
     currencies: Record<CurrencyCode, CashStatement>;
+    caption?: string;
 }) {
     const has = (key: keyof CashStatement) =>
         CURRENCIES.some(({ code }) => !isZeroAmount(currencies[code][key]));
@@ -42,9 +44,7 @@ export function CashStatementTable({
 
     return (
         <table className="w-full table-fixed text-xs sm:text-sm">
-            <caption className="sr-only">
-                Estado de caja del mes por moneda
-            </caption>
+            <caption className="sr-only">{caption}</caption>
             <thead>
                 <tr className="border-b text-left text-xs text-muted-foreground uppercase">
                     <th scope="col" className="w-2/5 py-2 pr-3 font-medium">

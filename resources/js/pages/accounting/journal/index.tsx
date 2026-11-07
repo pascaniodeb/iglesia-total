@@ -17,6 +17,7 @@ import { CodeTable } from '@/features/accounting/components/code-table';
 import { ExchangeDialog } from '@/features/accounting/components/exchange-dialog';
 import { JournalEntryRowActions } from '@/features/accounting/components/journal-entry-row-actions';
 import { MovementDialog } from '@/features/accounting/components/movement-dialog';
+import { ORIGIN_LABELS } from '@/features/accounting/origins';
 import type {
     CurrencyCode,
     JournalEntryRow,
@@ -32,13 +33,6 @@ import type { Paginated, TableFilters } from '@/types';
 type JournalIndexProps = JournalPageProps & {
     entries: Paginated<JournalEntryRow>;
     filters: TableFilters<'date'> & { month: string };
-};
-
-const ORIGINS: Record<string, string> = {
-    manual_movement: 'Manual',
-    currency_exchange: 'Cambio de divisas',
-    monthly_offering_closure: 'Ofrendas del mes',
-    reversal: 'Contraasiento',
 };
 
 const CURRENCIES: CurrencyCode[] = ['VES', 'USD', 'COP'];
@@ -113,7 +107,7 @@ export default function JournalIndex(props: JournalIndexProps) {
                         {entry.description}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                        {ORIGINS[entry.origin] ?? entry.origin}
+                        {ORIGIN_LABELS[entry.origin] ?? entry.origin}
                         {entry.codes.length > 0 &&
                             ` · ${entry.codes.map((code) => code.code).join(', ')}`}
                         {entry.reversal_reason &&

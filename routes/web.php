@@ -3,7 +3,9 @@
 use App\Http\Controllers\DashboardController;
 use App\Modules\Accounting\Http\Controllers\AccountingAccountController;
 use App\Modules\Accounting\Http\Controllers\AccountingPeriodController;
+use App\Modules\Accounting\Http\Controllers\GeneralLedgerController;
 use App\Modules\Accounting\Http\Controllers\JournalController;
+use App\Modules\Accounting\Http\Controllers\PeriodReportController;
 use App\Modules\Integrity\Http\Controllers\ActivityLogController;
 use App\Modules\Members\Http\Controllers\MemberController;
 use App\Modules\Treasury\Http\Controllers\ExchangeRateController;
@@ -61,6 +63,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/', [AccountingPeriodController::class, 'store'])->name('store');
             Route::post('seal', [AccountingPeriodController::class, 'seal'])->name('seal');
         });
+    });
+
+    // General ledger and period reports (Accounting): read only.
+    Route::middleware('can:accounting.view')->group(function () {
+        Route::get('accounting/ledger', [GeneralLedgerController::class, 'index'])->name('accounting.ledger.index');
+        Route::get('accounting/reports', [PeriodReportController::class, 'index'])->name('accounting.reports.index');
     });
 
     // Chart of accounts (Accounting). Fixed paths go before {account}.

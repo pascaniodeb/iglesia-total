@@ -97,3 +97,51 @@ export type JournalPageProps = {
     };
     can_manage: boolean;
 };
+
+/** Mirrors App\Modules\Shared\Time\ReportPeriod::GRANULARITIES. */
+export type Granularity = 'month' | 'quarter' | 'semester' | 'year' | 'range';
+
+export type PeriodOption = { key: string; label: string };
+
+/** Periods there is something to report on, newest first (ReadsReportPeriod::periodOptions()). */
+export type PeriodOptions = Record<
+    Exclude<Granularity, 'range'>,
+    PeriodOption[]
+>;
+
+export type ReportMonth = { month: string; is_closed: boolean };
+
+/** The accounting report of a period (PeriodReport::of()). */
+export type PeriodReport = {
+    granularity: Granularity;
+    period: string;
+    label: string;
+    short_label: string;
+    first_day: string;
+    last_day: string;
+    months: ReportMonth[];
+    is_draft: boolean;
+    currencies: Record<CurrencyCode, CashStatement>;
+    by_code: MonthSummary['by_code'];
+};
+
+/** One entry of an account's general ledger (GeneralLedger::of()). */
+export type LedgerEntry = {
+    id: string;
+    entry_date: string;
+    description: string;
+    origin: string;
+    is_reversal: boolean;
+    is_reversed: boolean;
+    /** On the account's normal side: positive is what the account holds. */
+    amounts: Record<CurrencyCode, string>;
+    balances: Record<CurrencyCode, string>;
+};
+
+export type GeneralLedger = {
+    account: { code: string; name: string; type: AccountType };
+    opening: Record<CurrencyCode, string>;
+    movement: Record<CurrencyCode, string>;
+    closing: Record<CurrencyCode, string>;
+    entries: LedgerEntry[];
+};
