@@ -85,9 +85,10 @@ final class OfferingListing
 
     /**
      * @param  array<string, MemberRef>  $members  by id
+     * @param  array<string, int>  $closedWeeks  week keys of the page that are closed (as keys)
      * @return array<string, mixed>
      */
-    public static function row(Offering $offering, array $members): array
+    public static function row(Offering $offering, array $members, array $closedWeeks = []): array
     {
         $member = $offering->member_id === null ? null : ($members[$offering->member_id] ?? null);
 
@@ -103,6 +104,7 @@ final class OfferingListing
             'amount_usd' => $offering->amount_usd,
             'amount_cop' => $offering->amount_cop,
             'is_deleted' => $offering->trashed(),
+            'is_locked' => isset($closedWeeks[$offering->week_key]),
         ];
     }
 }

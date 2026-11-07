@@ -8,6 +8,7 @@ use App\Modules\Treasury\Http\Controllers\ExchangeRateController;
 use App\Modules\Treasury\Http\Controllers\OfferingCategoryController;
 use App\Modules\Treasury\Http\Controllers\OfferingController;
 use App\Modules\Treasury\Http\Controllers\OfferingImportController;
+use App\Modules\Treasury\Http\Controllers\WeeklyClosureController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -58,6 +59,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('import', [OfferingImportController::class, 'store'])->middleware('throttle:10,1')->name('import.store');
             Route::put('{offering}', [OfferingController::class, 'update'])->whereUuid('offering')->name('update');
             Route::delete('{offering}', [OfferingController::class, 'destroy'])->whereUuid('offering')->name('destroy');
+        });
+    });
+
+    // Weekly closures (Treasury): step 1 of the month circuit. A closed week never reopens.
+    Route::middleware('can:closures.view')->prefix('treasury/weekly-closures')->name('treasury.weekly-closures.')->group(function () {
+        Route::get('/', [WeeklyClosureController::class, 'index'])->name('index');
+
+        Route::middleware('can:closures.manage')->group(function () {
+            Route::post('/', [WeeklyClosureController::class, 'store'])->middleware('throttle:10,1')->name('store');
+            Route::post('seal', [WeeklyClosureController::class, 'seal'])->middleware('throttle:10,1')->name('seal');
         });
     });
 

@@ -59,6 +59,8 @@ export type OfferingRow = {
     amount_usd: string;
     amount_cop: string;
     is_deleted: boolean;
+    /** Its week is closed: it can no longer change. */
+    is_locked: boolean;
 };
 
 export type OfferingSortKey = 'date' | 'ves' | 'usd' | 'cop';
@@ -98,4 +100,29 @@ export type OfferingImportPreview = {
     totals: { ves: string; usd: string; cop: string };
     file_hash: string;
     can_import: boolean;
+};
+
+/** A closed week (WeeklyClosureController::index()). */
+export type WeeklyClosureRow = {
+    id: string;
+    week_key: string;
+    week_start: string;
+    week_end: string;
+    offerings_count: number;
+    total_ves: string;
+    total_usd: string;
+    total_cop: string;
+    closed_at: string;
+    /** The block that seals it, or null while the seal is pending. */
+    seal: { height: number; hash: string } | null;
+};
+
+/** The next week to close, with what it holds now and why it cannot close yet (if so). */
+export type NextWeek = {
+    week_key: string;
+    week_start: string;
+    week_end: string;
+    months: string[];
+    snapshot: { count: number; ves: string; usd: string; cop: string };
+    blocker: string | null;
 };

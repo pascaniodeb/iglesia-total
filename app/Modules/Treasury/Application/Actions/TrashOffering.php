@@ -4,8 +4,11 @@ namespace App\Modules\Treasury\Application\Actions;
 
 use App\Modules\Integrity\Application\ActivityLog;
 use App\Modules\Members\Application\MemberDirectory;
+use App\Modules\Treasury\Domain\IsoWeek;
 use App\Modules\Treasury\Infrastructure\Models\Offering;
+use App\Modules\Treasury\Infrastructure\Models\WeeklyClosure;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Sends an offering recorded by mistake to the trash. It is never physically deleted: the row
@@ -15,8 +18,17 @@ final readonly class TrashOffering
 {
     public function __construct(private MemberDirectory $members, private ActivityLog $activityLog) {}
 
+    /**
+     * @throws ValidationException when the offering's week is closed
+     */
     public function __invoke(Offering $offering): void
     {
+        $weekKey = IsoWeek::containing($offering->offering_date->toDateTimeImmutable())->key();
+
+        if (WeeklyClosure::isClosed($weekKey)) {
+            throw ValidationException::withMessages(['offering' => __('The week :week is closed: its offerings can no longer change.', ['week' => $weekKey])]);
+        }
+
         DB::transaction(function () use ($offering): void {
             $offering->delete();
 

@@ -8,8 +8,11 @@ use App\Modules\Shared\Money\Money;
 use App\Modules\Shared\Spreadsheets\SpreadsheetReader;
 use App\Modules\Shared\Time\ChurchCalendar;
 use App\Modules\Treasury\Domain\Import\ImportedValues;
+use App\Modules\Treasury\Domain\IsoWeek;
 use App\Modules\Treasury\Domain\OfferingAmounts;
 use App\Modules\Treasury\Infrastructure\Models\OfferingCategory;
+use App\Modules\Treasury\Infrastructure\Models\WeeklyClosure;
+use DateTimeImmutable;
 use InvalidArgumentException;
 use Throwable;
 
@@ -43,12 +46,13 @@ final readonly class PreviewOfferingImport
         $people = $this->members->registryNameIndex();
         $categories = OfferingCategory::query()->where('is_active', true)->get()->keyBy(fn (OfferingCategory $category) => $this->members->normalizeName($category->name));
         $today = ChurchCalendar::today()->format('Y-m-d');
+        $closedWeeks = array_flip(array_map(strval(...), WeeklyClosure::query()->pluck('week_key')->all()));
 
         $rows = [];
         $rejected = [];
 
         foreach ($sheet as $line => $cells) {
-            $result = $this->row($cells, $line, $people, $categories->all(), $today);
+            $result = $this->row($cells, $line, $people, $categories->all(), $today, $closedWeeks);
 
             is_string($result) ? $rejected[] = ['line' => $line, 'reason' => $result] : $rows[] = $result;
         }
@@ -60,9 +64,10 @@ final readonly class PreviewOfferingImport
      * @param  array<string, mixed>  $cells  by header
      * @param  array<string, list<string>>  $people
      * @param  array<string, OfferingCategory>  $categories
+     * @param  array<string, int>  $closedWeeks  closed week keys (as keys)
      * @return array{line: int, offering_date: string, member_id: string|null, member_name: string|null, offering_category_id: string, category_name: string, concept: string|null, amount_ves: string, amount_usd: string, amount_cop: string}|string
      */
-    private function row(array $cells, int $line, array $people, array $categories, string $today): array|string
+    private function row(array $cells, int $line, array $people, array $categories, string $today, array $closedWeeks): array|string
     {
         $fecha = SpreadsheetReader::dateText($cells['fecha'] ?? null);
         $miembro = SpreadsheetReader::text($cells['miembro'] ?? null);
@@ -77,6 +82,10 @@ final readonly class PreviewOfferingImport
 
         if ($date > $today) {
             return __('The date ":value" is in the future.', ['value' => $fecha]);
+        }
+
+        if (isset($closedWeeks[IsoWeek::containing(new DateTimeImmutable($date))->key()])) {
+            return __('The week of :date is closed: its offerings can no longer change.', ['date' => (new DateTimeImmutable($date))->format('d/m/Y')]);
         }
 
         $memberId = null;

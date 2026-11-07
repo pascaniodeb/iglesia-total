@@ -13,9 +13,11 @@ use App\Modules\Treasury\Http\Requests\OfferingRequest;
 use App\Modules\Treasury\Http\Tables\OfferingListing;
 use App\Modules\Treasury\Infrastructure\Models\Offering;
 use App\Modules\Treasury\Infrastructure\Models\OfferingCategory;
+use App\Modules\Treasury\Infrastructure\Models\WeeklyClosure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -44,8 +46,13 @@ class OfferingController extends Controller
             $page->items(),
         ))));
 
+        $closedWeeks = array_flip(array_map(strval(...), WeeklyClosure::query()
+            ->whereIn('week_key', array_map(fn (Offering $offering): string => $offering->week_key, $page->items()))
+            ->pluck('week_key')
+            ->all()));
+
         return Inertia::render('treasury/offerings/index', [
-            'offerings' => $page->through(fn (Offering $offering) => OfferingListing::row($offering, $people)),
+            'offerings' => $page->through(fn (Offering $offering) => OfferingListing::row($offering, $people, $closedWeeks)),
             'filters' => $table->filters(),
             'totals' => $totals,
             'categories' => OfferingCategory::query()->orderBy('name')->get()->map(fn (OfferingCategory $category) => [
@@ -82,7 +89,13 @@ class OfferingController extends Controller
 
     public function destroy(Offering $offering, TrashOffering $trash): RedirectResponse
     {
-        $trash($offering);
+        try {
+            $trash($offering);
+        } catch (ValidationException $exception) {
+            Inertia::flash('toast', ['type' => 'error', 'message' => (string) collect($exception->errors())->flatten()->first()]);
+
+            return back();
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Offering sent to the trash.')]);
 

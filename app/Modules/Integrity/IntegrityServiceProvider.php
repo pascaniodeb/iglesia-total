@@ -4,8 +4,10 @@ namespace App\Modules\Integrity;
 
 use App\Modules\Integrity\Application\ActivityLog;
 use App\Modules\Integrity\Application\Ledger\SealableSources;
+use App\Modules\Integrity\Application\SealedPeriods;
 use App\Modules\Integrity\Infrastructure\ActivityContext;
 use App\Modules\Integrity\Infrastructure\DatabaseActivityLog;
+use App\Modules\Integrity\Infrastructure\DatabaseSealedPeriods;
 use App\Modules\Integrity\Infrastructure\Listeners\RecordSecurityEvents;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Support\Facades\Event;
@@ -25,6 +27,7 @@ class IntegrityServiceProvider extends ServiceProvider
 
         // Treasury and Accounting register their SealableSource here from their own providers.
         $this->app->singleton(SealableSources::class);
+        $this->app->bind(SealedPeriods::class, DatabaseSealedPeriods::class);
     }
 
     public function boot(): void

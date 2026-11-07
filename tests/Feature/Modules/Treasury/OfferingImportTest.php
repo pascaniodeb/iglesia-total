@@ -11,10 +11,6 @@ use App\Modules\Treasury\Infrastructure\Models\OfferingCategory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
-use OpenSpout\Common\Entity\Cell;
-use OpenSpout\Common\Entity\Row;
-use OpenSpout\Common\Entity\Style\Style;
-use OpenSpout\Writer\XLSX\Writer;
 
 beforeEach(function () {
     Carbon::setTestNow('2026-11-06 14:00:00');
@@ -25,34 +21,6 @@ beforeEach(function () {
 afterEach(function () {
     Carbon::setTestNow();
 });
-
-/**
- * Writes a real .xlsx with the template header and the given rows; returns its path.
- *
- * @param  list<list<mixed>>  $rows
- * @param  list<string>|null  $header
- */
-function offeringWorkbook(array $rows, ?array $header = null): string
-{
-    $path = tempnam(sys_get_temp_dir(), 'ofrendas').'.xlsx';
-    $writer = new Writer;
-    $writer->openToFile($path);
-    $writer->addRow(Row::fromValues($header ?? PreviewOfferingImport::HEADERS));
-
-    // Dates go in as real Excel date cells (with a date format), as Excel writes a typed date.
-    $dateStyle = (new Style)->withFormat('dd/mm/yyyy');
-
-    foreach ($rows as $row) {
-        $writer->addRow(new Row(array_map(
-            fn (mixed $value) => $value instanceof DateTimeInterface ? Cell::fromValue($value, $dateStyle) : Cell::fromValue($value),
-            $row,
-        )));
-    }
-
-    $writer->close();
-
-    return $path;
-}
 
 function previewOf(string $path): array
 {

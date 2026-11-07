@@ -5,6 +5,7 @@ import {
     HandCoins,
     History,
     LayoutGrid,
+    Lock,
     Users,
     Wallet,
 } from 'lucide-react';
@@ -27,6 +28,7 @@ import { index as activityLogIndex } from '@/routes/activity-log';
 import { index as exchangeRatesIndex } from '@/routes/treasury/exchange-rates';
 import { index as offeringCategoriesIndex } from '@/routes/treasury/offering-categories';
 import { index as offeringsIndex } from '@/routes/treasury/offerings';
+import { index as weeklyClosuresIndex } from '@/routes/treasury/weekly-closures';
 import { index as membersIndex } from '@/routes/members';
 import type { NavItem } from '@/types';
 
@@ -48,6 +50,12 @@ const mainNavItems: NavItem[] = [
         href: offeringsIndex(),
         icon: Wallet,
         permission: 'offerings.view',
+    },
+    {
+        title: 'Cierres semanales',
+        href: weeklyClosuresIndex(),
+        icon: Lock,
+        permission: 'closures.view',
     },
     {
         title: 'Plan de cuentas',

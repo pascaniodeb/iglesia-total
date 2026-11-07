@@ -6,9 +6,11 @@ use App\Modules\Integrity\Application\ActivityLog;
 use App\Modules\Integrity\Domain\ChangeSet;
 use App\Modules\Members\Application\MemberDirectory;
 use App\Modules\Shared\Time\ChurchCalendar;
+use App\Modules\Treasury\Domain\IsoWeek;
 use App\Modules\Treasury\Domain\OfferingAmounts;
 use App\Modules\Treasury\Infrastructure\Models\Offering;
 use App\Modules\Treasury\Infrastructure\Models\OfferingCategory;
+use App\Modules\Treasury\Infrastructure\Models\WeeklyClosure;
 use DateTimeImmutable;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Support\Arr;
@@ -18,7 +20,8 @@ use Illuminate\Validation\ValidationException;
 /**
  * Records or corrects an offering.
  *
- * The date is never in the future (church calendar), the category must be active (a category
+ * The week (the offering's and the one it moves to) must be open, the date is never in the
+ * future (church calendar), the category must be active (a category
  * already on the offering may stay even if it was deactivated later), the giver must be a
  * member of the registry or nobody (anonymous), and at least one amount is positive. Changes
  * are recorded in the activity log in the same transaction.
@@ -44,6 +47,14 @@ final readonly class SaveOffering
 
         if ($date === false || $date > ChurchCalendar::today()) {
             throw ValidationException::withMessages(['offering_date' => __('The offering date cannot be in the future.')]);
+        }
+
+        // A closed week never changes (the database refuses it too): say it plainly, both for the
+        // week the offering is in and for the week it would move to.
+        foreach (array_filter([$offering === null ? null : IsoWeek::containing($offering->offering_date->toDateTimeImmutable())->key(), IsoWeek::containing($date)->key()]) as $weekKey) {
+            if (WeeklyClosure::isClosed($weekKey)) {
+                throw ValidationException::withMessages(['offering_date' => __('The week :week is closed: its offerings can no longer change.', ['week' => $weekKey])]);
+            }
         }
 
         $category = OfferingCategory::query()->find($data['offering_category_id']);

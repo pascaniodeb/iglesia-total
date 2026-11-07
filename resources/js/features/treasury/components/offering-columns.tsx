@@ -26,6 +26,7 @@ export const offeringColumns: DataTableColumn<OfferingRow, OfferingSortKey>[] =
                     </span>
                     <span className="text-xs text-muted-foreground">
                         Semana {offering.week_key.slice(-2)}
+                        {offering.is_locked && ' · cerrada'}
                     </span>
                 </span>
             ),

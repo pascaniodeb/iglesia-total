@@ -221,5 +221,16 @@
     "The file has no offerings to import.": "El archivo no tiene ofrendas para importar.",
     "The file repeats lines exactly; confirm that they are separate offerings.": "El archivo repite filas exactas: confirme que son ofrendas distintas.",
     "Imported :count offerings from a file.": "Importó :count ofrendas desde un archivo.",
-    "{1} :count offering imported.|[2,*] :count offerings imported.": "{1} Se importó :count ofrenda.|[2,*] Se importaron :count ofrendas."
+    "{1} :count offering imported.|[2,*] :count offerings imported.": "{1} Se importó :count ofrenda.|[2,*] Se importaron :count ofrendas.",
+
+    "The week :week is already closed.": "La semana :week ya está cerrada.",
+    "Weeks close in order: the next one to close is :week.": "Las semanas se cierran en orden: la próxima a cerrar es :week.",
+    "The week :week ends on :date; it can be closed from that day.": "La semana :week termina el :date; se puede cerrar desde ese día.",
+    "Closed the week :week (:from to :to): :count offerings.": "Cerró la semana :week (:from al :to): :count ofrendas.",
+    "The week :week was closed and sealed.": "Se cerró y se selló la semana :week.",
+    "The week :week was closed; its seal is pending: :reason": "Se cerró la semana :week; su sello quedó pendiente: :reason",
+    "The week :week is sealed (block :height).": "La semana :week quedó sellada (bloque :height).",
+    "That is not a valid week.": "Esa no es una semana válida.",
+    "The week :week is closed: its offerings can no longer change.": "La semana :week está cerrada: sus ofrendas ya no pueden cambiar.",
+    "The week of :date is closed: its offerings can no longer change.": "La semana del :date está cerrada: sus ofrendas ya no pueden cambiar."
 }

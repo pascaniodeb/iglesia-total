@@ -32,7 +32,7 @@ export function OfferingRowActions({
     const [isEditing, setIsEditing] = useState(false);
     const [isConfirming, setIsConfirming] = useState(false);
 
-    if (!can('offerings.manage') || offering.is_deleted) {
+    if (!can('offerings.manage') || offering.is_deleted || offering.is_locked) {
         return null;
     }
 
