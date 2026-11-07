@@ -1,4 +1,4 @@
-import { Link, router } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import {
     ArrowLeftRight,
     BookCheck,
@@ -12,7 +12,6 @@ import {
     Users,
     Wallet,
 } from 'lucide-react';
-import { useEffect } from 'react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -24,7 +23,6 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    useSidebar,
 } from '@/components/ui/sidebar';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { dashboard } from '@/routes';
@@ -111,14 +109,6 @@ const mainNavItems: NavItem[] = [
 
 export function AppSidebar() {
     const closeMobileNavigation = useMobileNavigation();
-    const { setOpenMobile } = useSidebar();
-
-    // On a phone the sidebar is a sheet over the page: once a link takes you to another page, close it
-    // so the page you chose is what you see.
-    useEffect(
-        () => router.on('navigate', () => setOpenMobile(false)),
-        [setOpenMobile],
-    );
 
     return (
         <Sidebar collapsible="icon" variant="inset">
