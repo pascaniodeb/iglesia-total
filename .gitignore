@@ -44,3 +44,6 @@ yarn-error.log
 /opencode.json
 /opencode.jsonc
 /.atl
+
+# Working notes of coding agents
+/odd

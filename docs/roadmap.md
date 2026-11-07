@@ -1,6 +1,6 @@
 # Roadmap: Treasury, Accounting and the sealed ledger
 
-Migration of the old system's money logic (TanStack/Drizzle, `/Projects/TanStackProjects/iglesiatotal`) into this modular monolith, following the patterns proven in safipuv-v4 (`Accounting`, `Treasury`, `Organization/Audit` modules). Status: **plan approved 2026-11-06; A-F1, A-F2, B-F1, B-F2, B-F3, B-F4 (screens), C-F1, C-F1b, C-F2, C-F3 (core) and C-F3b done**. All decisions (D1–D7) are settled; see section 6.
+Migration of the old system's money logic (TanStack/Drizzle, `/Projects/TanStackProjects/iglesiatotal`) into this modular monolith, following the patterns proven in safipuv-v4 (`Accounting`, `Treasury`, `Organization/Audit` modules). Status: **plan approved 2026-11-06; A-F1, A-F2, B-F1, B-F2, B-F3, B-F4 (screens), C-F1, C-F1b, C-F2, C-F3 (core), C-F3b and D-F1 done**. All decisions (D1–D7) are settled; see section 6.
 
 ## 1. What exists in the old system
 
@@ -176,7 +176,7 @@ Rules that make it understandable:
 
 The old `church_settings` table (one row: congregation name, pastor, code, RIF, denomination header, registration note, logos) was not in any phase; every official PDF needs it for its letterhead.
 
-**D-F1 Church settings.** A single-row settings record (CHECK id = 1, as in the old system) with the congregation identity and the light/dark logos and favicon in private storage. Screen for `church_settings.manage` (pastor, secretary); every change recorded in the activity log. `church:import-legacy-settings` brings the one legacy row.
+**D-F1 Church settings.** ✅ Done 2026-11-07. A single-row settings record (CHECK id = 1, as in the old system) with the congregation identity and the light/dark logos and favicon in private storage. Screen for `church_settings.manage` (pastor, secretary); every change recorded in the activity log. `church:import-legacy-settings` brings the one legacy row.
 
 **D-F2 PDF documents** (`setasign/fpdf`, approved). A shared letterhead (church identity, logos, verification code and the sealed-ledger head hash), then the documents in one batch: weekly closure (with the photo of the paper book, private storage, SHA-256), monthly offering closure, monthly accounting report, receipts (IPUV paper 612×396 pt), tithes reports and audit reports. Each document is regenerated from the data (D6), never stored as the evidence.
 

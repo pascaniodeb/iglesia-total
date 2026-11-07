@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
+use App\Modules\Church\Http\Controllers\ChurchSettingsController;
 use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('user-password.update');
 
     Route::inertia('settings/appearance', 'settings/appearance')->name('appearance.edit');
+
+    Route::middleware('can:church_settings.manage')->prefix('settings/church')->name('church.settings.')->group(function () {
+        Route::get('/', [ChurchSettingsController::class, 'edit'])->name('edit');
+        Route::post('/', [ChurchSettingsController::class, 'update'])->middleware('throttle:10,1')->name('update');
+        Route::get('branding/{kind}', [ChurchSettingsController::class, 'branding'])->whereIn('kind', ['logo-light', 'logo-dark', 'favicon'])->name('branding');
+    });
 });
 
 Route::get('.well-known/passkey-endpoints', function () {

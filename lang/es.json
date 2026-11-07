@@ -269,5 +269,8 @@
     "Movement corrected: the original was reversed and the correction recorded.": "Movimiento corregido: se revirtió el original y se registró la corrección.",
 
     "The support file was altered after it was uploaded.": "El archivo del soporte se alteró después de subirlo.",
-    "Opened the support of \":description\".": "Abrió el soporte de «:description»."
+    "Opened the support of \":description\".": "Abrió el soporte de «:description».",
+    "Updated the church settings.": "Actualizó los datos de la iglesia.",
+    "Church settings updated.": "Los datos de la iglesia se actualizaron.",
+    "The branding file was altered after it was uploaded.": "El archivo de marca se alteró después de subirlo."
 }
