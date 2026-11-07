@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import {
     ArrowLeftRight,
+    BookCheck,
     BookText,
     HandCoins,
     History,
@@ -27,6 +28,7 @@ import { index as accountsIndex } from '@/routes/accounting/accounts';
 import { index as activityLogIndex } from '@/routes/activity-log';
 import { index as exchangeRatesIndex } from '@/routes/treasury/exchange-rates';
 import { index as offeringCategoriesIndex } from '@/routes/treasury/offering-categories';
+import { index as monthlyOfferingClosuresIndex } from '@/routes/treasury/monthly-offering-closures';
 import { index as offeringsIndex } from '@/routes/treasury/offerings';
 import { index as weeklyClosuresIndex } from '@/routes/treasury/weekly-closures';
 import { index as membersIndex } from '@/routes/members';
@@ -55,6 +57,12 @@ const mainNavItems: NavItem[] = [
         title: 'Cierres semanales',
         href: weeklyClosuresIndex(),
         icon: Lock,
+        permission: 'closures.view',
+    },
+    {
+        title: 'Cierre de ofrendas del mes',
+        href: monthlyOfferingClosuresIndex(),
+        icon: BookCheck,
         permission: 'closures.view',
     },
     {

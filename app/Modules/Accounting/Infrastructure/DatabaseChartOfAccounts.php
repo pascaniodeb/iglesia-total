@@ -5,6 +5,7 @@ namespace App\Modules\Accounting\Infrastructure;
 use App\Modules\Accounting\Application\ChartOfAccounts;
 use App\Modules\Accounting\Domain\AccountRef;
 use App\Modules\Accounting\Domain\Enums\AccountType;
+use App\Modules\Accounting\Domain\Enums\SystemFunction;
 use App\Modules\Accounting\Infrastructure\Models\AccountingAccount;
 use Illuminate\Support\Str;
 
@@ -22,6 +23,11 @@ final class DatabaseChartOfAccounts implements ChartOfAccounts
         $account = AccountingAccount::query()->find($id);
 
         return $account === null ? null : self::ref($account);
+    }
+
+    public function cashAccount(): AccountRef
+    {
+        return self::ref(AccountingAccount::system(SystemFunction::Cash));
     }
 
     public function findMany(array $ids): array

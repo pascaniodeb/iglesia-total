@@ -126,3 +126,44 @@ export type NextWeek = {
     snapshot: { count: number; ves: string; usd: string; cop: string };
     blocker: string | null;
 };
+
+/** A month whose offerings were closed and posted to the journal. */
+export type MonthlyOfferingClosureRow = {
+    id: string;
+    month: string;
+    offerings_count: number;
+    total_ves: string;
+    total_usd: string;
+    total_cop: string;
+    journal_entry_id: string | null;
+    closed_at: string;
+};
+
+/** The next month to close: its weeks, its offerings by category and what blocks it. */
+export type NextMonth = {
+    month: string;
+    last_day: string;
+    weeks: {
+        week_key: string;
+        week_start: string;
+        week_end: string;
+        is_closed: boolean;
+    }[];
+    snapshot: {
+        count: number;
+        ves: string;
+        usd: string;
+        cop: string;
+        categories: {
+            category_id: string;
+            category: string;
+            account_code: string | null;
+            account_name: string | null;
+            count: number;
+            ves: string;
+            usd: string;
+            cop: string;
+        }[];
+    };
+    blocker: string | null;
+};

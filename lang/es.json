@@ -232,5 +232,11 @@
     "The week :week is sealed (block :height).": "La semana :week quedó sellada (bloque :height).",
     "That is not a valid week.": "Esa no es una semana válida.",
     "The week :week is closed: its offerings can no longer change.": "La semana :week está cerrada: sus ofrendas ya no pueden cambiar.",
-    "The week of :date is closed: its offerings can no longer change.": "La semana del :date está cerrada: sus ofrendas ya no pueden cambiar."
+    "The week of :date is closed: its offerings can no longer change.": "La semana del :date está cerrada: sus ofrendas ya no pueden cambiar.",
+
+    "The offerings of :month are already closed.": "Las ofrendas de :month ya están cerradas.",
+    "Months close in order: the next one to close is :month.": "Los meses se cierran en orden: el próximo a cerrar es :month.",
+    "Close first the weeks of the month that are still open: :weeks.": "Cierre primero las semanas del mes que siguen abiertas: :weeks.",
+    "Closed the offerings of :month: :count offerings posted to the journal.": "Cerró las ofrendas de :month: :count ofrendas asentadas en el Libro Diario.",
+    "The offerings of :month were closed and posted to the journal.": "Se cerraron las ofrendas de :month y se asentaron en el Libro Diario."
 }

@@ -5,6 +5,7 @@ use App\Modules\Accounting\Http\Controllers\AccountingAccountController;
 use App\Modules\Integrity\Http\Controllers\ActivityLogController;
 use App\Modules\Members\Http\Controllers\MemberController;
 use App\Modules\Treasury\Http\Controllers\ExchangeRateController;
+use App\Modules\Treasury\Http\Controllers\MonthlyOfferingClosureController;
 use App\Modules\Treasury\Http\Controllers\OfferingCategoryController;
 use App\Modules\Treasury\Http\Controllers\OfferingController;
 use App\Modules\Treasury\Http\Controllers\OfferingImportController;
@@ -70,6 +71,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/', [WeeklyClosureController::class, 'store'])->middleware('throttle:10,1')->name('store');
             Route::post('seal', [WeeklyClosureController::class, 'seal'])->middleware('throttle:10,1')->name('seal');
         });
+    });
+
+    // Monthly offering closures (Treasury): step 2 of the month circuit, posts to the journal.
+    Route::middleware('can:closures.view')->prefix('treasury/monthly-offering-closures')->name('treasury.monthly-offering-closures.')->group(function () {
+        Route::get('/', [MonthlyOfferingClosureController::class, 'index'])->name('index');
+        Route::post('/', [MonthlyOfferingClosureController::class, 'store'])->middleware(['can:closures.manage', 'throttle:10,1'])->name('store');
     });
 
     // Offering categories (Treasury).

@@ -13,6 +13,11 @@ interface ChartOfAccounts
     public function find(string $id): ?AccountRef;
 
     /**
+     * CAJA: the account the money the church holds is posted to, in every currency.
+     */
+    public function cashAccount(): AccountRef;
+
+    /**
      * Several accounts in one read, keyed by id (unknown ids are left out).
      *
      * @param  list<string>  $ids
