@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Sets the password of an account. A typed password is read from a hidden prompt, never
@@ -62,17 +63,28 @@ class SetUserPassword extends Command
 
     private function setGeneratedPassword(User $user): int
     {
-        // 24 random characters with letters, numbers and symbols: strong by construction,
-        // so it skips the rules meant for typed passwords (which may call an external service).
-        $password = Str::password(24);
+        // Strong by construction, so it skips the rules meant for typed passwords (which may
+        // call an external service).
+        $password = $this->newPassword();
 
         $this->store($user, $password);
 
         $this->components->info("Password updated for {$user->email}.");
-        $this->components->twoColumnDetail('Password (shown once)', $password);
+        $this->line('Password (shown once)');
+        // Raw, on its own line: the console formatter reads "\<", "<tag>" and a trailing "\" as
+        // formatting, and would show a password different from the one that was stored.
+        $this->output->writeln($password, OutputInterface::OUTPUT_RAW);
         $this->components->warn('Change it after signing in: Ajustes > Seguridad.');
 
         return self::SUCCESS;
+    }
+
+    /**
+     * 24 random characters with letters, numbers and symbols.
+     */
+    protected function newPassword(): string
+    {
+        return Str::password(24);
     }
 
     /**

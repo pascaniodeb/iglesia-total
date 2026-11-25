@@ -1,6 +1,8 @@
 <?php
 
+use App\Console\Commands\SetUserPassword;
 use App\Models\User;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 
@@ -9,7 +11,9 @@ use Illuminate\Support\Facades\Hash;
  */
 function generatedPasswordFrom(string $output): string
 {
-    preg_match('/Password \(shown once\)\s*\.*\s*(\S+)/', $output, $matches);
+    // The password is alone on the line after its label: nothing around it to trim, so a password
+    // that starts with a dot or ends with a backslash comes back whole.
+    preg_match('/Password \(shown once\)\R(\S+)/', $output, $matches);
 
     return $matches[1] ?? '';
 }
@@ -112,3 +116,31 @@ test('fails when no account uses the email', function () {
         ->expectsOutputToContain('No account uses that email.')
         ->assertFailed();
 });
+
+test('shows the generated password intact when it has characters the console reads as formatting', function (string $password) {
+    // Attributes are not inherited: the subclass declares the command's name again.
+    Artisan::registerCommand(new #[Signature('users:set-password {email} {--generate}')] class($password) extends SetUserPassword
+    {
+        public function __construct(private readonly string $fixed)
+        {
+            parent::__construct();
+        }
+
+        protected function newPassword(): string
+        {
+            return $this->fixed;
+        }
+    });
+    $user = User::factory()->create();
+
+    Artisan::call('users:set-password', ['email' => $user->email, '--generate' => true]);
+
+    expect(generatedPasswordFrom(Artisan::output()))->toBe($password)
+        ->and(Hash::check($password, $user->refresh()->password))->toBeTrue();
+})->with([
+    'a backslash before an angle bracket' => ['aB3x\\<Y7qLmN4pRt9sKd2Wz'],
+    'something that looks like a closing tag' => ['aB3x</>Y7qLmN4pRt9sKd2Wz'],
+    'something that looks like a style tag' => ['aB3x<fg=red>Y7qLmN4pRt9sKd2Wz'],
+    'a trailing backslash' => ['aB3xY7qLmN4pRt9sKd2Wz\\'],
+    'brackets and dots' => ['.aB3x[Y7]qLmN4pRt9sKd2Wz.'],
+]);
