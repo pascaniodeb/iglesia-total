@@ -3,6 +3,7 @@
 namespace App\Modules\Integrity\Application\Actions;
 
 use App\Modules\Integrity\Application\Ledger\SealableSources;
+use App\Modules\Integrity\Application\LegacyLedgerArchive;
 use App\Modules\Integrity\Domain\Ledger\BlockIssue;
 use App\Modules\Integrity\Domain\Ledger\Canonical;
 use App\Modules\Integrity\Domain\Ledger\ChainVerifier;
@@ -20,11 +21,12 @@ use stdClass;
  * really happens in a system with people in it: nobody edits the block table, but someone
  * records an offering with an old date.
  *
- * It also lists the closed periods that have no block yet ("seal pending").
+ * It also lists the closed periods that have no block yet ("seal pending"), and verifies the
+ * archive of the old system's chain with the same first pass.
  */
 final readonly class VerifyLedgerChain
 {
-    public function __construct(private SealableSources $sources) {}
+    public function __construct(private SealableSources $sources, private LegacyLedgerArchive $legacy) {}
 
     /**
      * @return array{
@@ -34,7 +36,8 @@ final readonly class VerifyLedgerChain
      *     issues: list<BlockIssue>,
      *     intact: bool,
      *     matches_books: bool,
-     *     unsealed: list<array{kind: string, period_key: string}>
+     *     unsealed: list<array{kind: string, period_key: string}>,
+     *     legacy: array{blocks: int, height: int|null, head_hash: string|null, issues: list<BlockIssue>, intact: bool}
      * }
      */
     public function __invoke(): array
@@ -78,6 +81,7 @@ final readonly class VerifyLedgerChain
             'issues' => [...$chainIssues, ...$driftIssues],
             'intact' => $chainIssues === [],
             'matches_books' => $chainIssues === [] && $driftIssues === [],
+            'legacy' => $this->legacy->verify(),
             'unsealed' => $this->unsealed($blocks->map(fn (LedgerBlock $block): string => "{$block->kind}:{$block->period_key}")->values()->all()),
         ];
     }

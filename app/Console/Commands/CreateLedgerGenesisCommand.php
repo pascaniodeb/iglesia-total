@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Modules\Integrity\Application\Actions\CreateLedgerGenesis;
+use App\Modules\Integrity\Application\LegacyLedgerArchive;
 use App\Modules\Integrity\Domain\Ledger\LedgerException;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
@@ -15,15 +16,40 @@ use Illuminate\Console\Command;
 #[Signature('ledger:genesis
     {church-code : Code of the congregation printed on its reports}
     {first-period : First period the chain seals (e.g. 2025-W01)}
+    {--continue-legacy : Continue the archived chain of the old system (its head is read from the archive)}
     {--continues-height= : Height of the head of the chain this one continues}
     {--continues-hash= : Hash of the head of the chain this one continues}')]
 #[Description('Create the genesis block of the sealed ledger')]
 class CreateLedgerGenesisCommand extends Command
 {
-    public function handle(CreateLedgerGenesis $createGenesis): int
+    public function handle(CreateLedgerGenesis $createGenesis, LegacyLedgerArchive $archive): int
     {
         $height = $this->option('continues-height');
         $hash = $this->option('continues-hash');
+
+        if ($this->option('continue-legacy')) {
+            if ($height !== null || $hash !== null) {
+                $this->components->error('Give --continue-legacy or an explicit head, not both.');
+
+                return self::FAILURE;
+            }
+
+            $head = $archive->head();
+
+            if ($head === null) {
+                $this->components->error('The old chain is not archived yet: run ledger:import-legacy first.');
+
+                return self::FAILURE;
+            }
+
+            if (! $archive->verify()['intact']) {
+                $this->components->error('The archived old chain is not intact: the new chain cannot continue it.');
+
+                return self::FAILURE;
+            }
+
+            [$height, $hash] = [(string) $head['height'], $head['hash']];
+        }
 
         if (($height === null) !== ($hash === null)) {
             $this->components->error('Give both --continues-height and --continues-hash, or neither.');

@@ -20,7 +20,8 @@ class VerifyLedger extends Command
     public function handle(VerifyLedgerChain $verify, ActivityLog $activityLog): int
     {
         $result = $verify();
-        $issues = $result['issues'];
+        $legacy = $result['legacy'];
+        $issues = [...$result['issues'], ...$legacy['issues']];
 
         $activityLog->system(
             'ledger.verified',
@@ -35,6 +36,7 @@ class VerifyLedger extends Command
                 'matches_books' => $result['matches_books'],
                 'issues' => array_map(fn (BlockIssue $issue) => $issue->toArray(), $issues),
                 'unsealed' => $result['unsealed'],
+                'legacy' => ['blocks' => $legacy['blocks'], 'height' => $legacy['height'], 'head_hash' => $legacy['head_hash'], 'intact' => $legacy['intact']],
             ],
         );
 
@@ -53,6 +55,10 @@ class VerifyLedger extends Command
         $this->components->info("Sealed ledger intact and matching the books: {$result['blocks']} blocks.");
         $this->components->twoColumnDetail('Head height', (string) $result['height']);
         $this->components->twoColumnDetail('Head hash', (string) $result['head_hash']);
+
+        if ($legacy['blocks'] > 0) {
+            $this->components->twoColumnDetail('Old chain (archived)', "{$legacy['blocks']} blocks intact, head {$legacy['height']}");
+        }
 
         return self::SUCCESS;
     }
