@@ -3,6 +3,9 @@
 namespace App\Modules\Accounting\Application\Cash;
 
 use App\Modules\Accounting\Application\Periods\PeriodSchedule;
+use App\Modules\Accounting\Domain\Enums\AccountType;
+use App\Modules\Accounting\Domain\Enums\MovementKind;
+use App\Modules\Accounting\Infrastructure\Models\AccountingAccount;
 use App\Modules\Accounting\Infrastructure\Models\AccountingPeriod;
 use App\Modules\Shared\Money\Currency;
 use App\Modules\Shared\Money\Money;
@@ -44,6 +47,26 @@ final readonly class MovementGuard
                 ? __('The month :month is not open for movements.', ['month' => $month])
                 : __('Only :from and :to are open for movements.', ['from' => $window['from'], 'to' => $window['to']])]);
         }
+    }
+
+    /**
+     * An active income account people can use (not the opening balance) or an active expense
+     * account, matching the kind.
+     *
+     * @throws ValidationException
+     */
+    public function usableAccount(MovementKind $kind, string $code, string $field = 'account_code'): AccountingAccount
+    {
+        $type = $kind === MovementKind::Income ? AccountType::Income : AccountType::Expense;
+        $account = AccountingAccount::query()->where('code', $code)->first();
+
+        if ($account === null || $account->type !== $type || $account->isSystem() || ! $account->is_active) {
+            throw ValidationException::withMessages([$field => $kind === MovementKind::Income
+                ? __('Choose an active income account.')
+                : __('Choose an active expense account.')]);
+        }
+
+        return $account;
     }
 
     /**

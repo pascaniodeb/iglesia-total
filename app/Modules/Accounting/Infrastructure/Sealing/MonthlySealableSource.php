@@ -4,6 +4,7 @@ namespace App\Modules\Accounting\Infrastructure\Sealing;
 
 use App\Modules\Accounting\Application\OfferingClosures;
 use App\Modules\Accounting\Application\Queries\MonthSummary;
+use App\Modules\Accounting\Application\ReceiptHashes;
 use App\Modules\Accounting\Infrastructure\Models\AccountingPeriod;
 use App\Modules\Integrity\Domain\Ledger\Canonical;
 use App\Modules\Integrity\Domain\Ledger\SealablePayload;
@@ -15,13 +16,13 @@ use Illuminate\Support\Facades\DB;
  * What a closed accounting month seals: its cash statement per currency (opening, income,
  * expense, capital, exchange, closing: the equation that ties a month to the next), the net of
  * every income and expense code, the month's closed offerings, and one Merkle leaf per journal
- * line of the month, ordered by entry and line, carrying the entry's receipt number and the
- * fingerprint of its support file when it has one. Rebuilt on every verification: an entry or line
+ * line of the month, ordered by entry and line, carrying the entry's receipt number, the
+ * fingerprint of its support file and the hash of the receipt it posts, when it has them. Rebuilt on every verification: an entry or line
  * that moves behind the database guards shows up as drift.
  */
 final readonly class MonthlySealableSource implements SealableSource
 {
-    public function __construct(private OfferingClosures $offerings) {}
+    public function __construct(private OfferingClosures $offerings, private ReceiptHashes $receipts) {}
 
     public function kind(): string
     {
@@ -37,7 +38,7 @@ final readonly class MonthlySealableSource implements SealableSource
         $month = Month::fromKey($periodKey);
         $summary = MonthSummary::of($month);
 
-        $lines = DB::select(<<<'SQL'
+        $lines = array_map(fn (object $row): array => (array) $row, DB::select(<<<'SQL'
             SELECT e.id::text AS entry, l.line_number AS line, a.code, l.currency,
                    l.debit::text AS debit, l.credit::text AS credit, e.reversal_of::text AS reversal_of,
                    s.receipt_number, s.sha256
@@ -47,12 +48,12 @@ final readonly class MonthlySealableSource implements SealableSource
             LEFT JOIN journal_entry_supports s ON s.journal_entry_id = e.id
             WHERE e.month = ?
             ORDER BY e.id, l.line_number
-        SQL, [$periodKey]);
+        SQL, [$periodKey]));
 
+        $receiptHashes = $this->receipts->byEntry(array_values(array_unique(array_map(fn (array $line): string => (string) $line['entry'], $lines))));
         $leaves = [];
 
         foreach ($lines as $line) {
-            $line = (array) $line;
             $leaves[] = Canonical::hash([
                 'entry' => (string) $line['entry'],
                 'line' => (int) $line['line'],
@@ -63,6 +64,7 @@ final readonly class MonthlySealableSource implements SealableSource
                 'reversalOf' => $line['reversal_of'] === null ? null : (string) $line['reversal_of'],
                 'receipt' => $line['receipt_number'] === null ? null : (string) $line['receipt_number'],
                 'supportSha256' => $line['sha256'] === null ? null : (string) $line['sha256'],
+                'receiptHash' => $receiptHashes[(string) $line['entry']] ?? null,
             ]);
         }
 

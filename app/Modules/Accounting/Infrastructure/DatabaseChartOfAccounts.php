@@ -56,6 +56,17 @@ final class DatabaseChartOfAccounts implements ChartOfAccounts
             ->all());
     }
 
+    public function activeExpenseAccounts(): array
+    {
+        return array_values(AccountingAccount::query()
+            ->where('type', AccountType::Expense->value)
+            ->where('is_active', true)
+            ->orderedByCode()
+            ->get()
+            ->map(self::ref(...))
+            ->all());
+    }
+
     private static function ref(AccountingAccount $account): AccountRef
     {
         return new AccountRef($account->id, $account->code, $account->name, $account->type, $account->is_active);

@@ -7,7 +7,7 @@ use App\Modules\Integrity\Domain\ChangeSet;
 use App\Modules\Members\Application\MemberDirectory;
 use App\Modules\Shared\Time\ChurchCalendar;
 use App\Modules\Shared\Time\IsoWeek;
-use App\Modules\Treasury\Domain\OfferingAmounts;
+use App\Modules\Treasury\Domain\CurrencyAmounts;
 use App\Modules\Treasury\Infrastructure\Models\Offering;
 use App\Modules\Treasury\Infrastructure\Models\OfferingCategory;
 use App\Modules\Treasury\Infrastructure\Models\WeeklyClosure;
@@ -73,7 +73,7 @@ final readonly class SaveOffering
         }
 
         try {
-            $amounts = OfferingAmounts::fromInput($data['amount_ves'] ?? null, $data['amount_usd'] ?? null, $data['amount_cop'] ?? null);
+            $amounts = CurrencyAmounts::fromInput($data['amount_ves'] ?? null, $data['amount_usd'] ?? null, $data['amount_cop'] ?? null);
         } catch (\InvalidArgumentException) {
             throw ValidationException::withMessages(['amount_ves' => __('Write at least one amount greater than zero, with up to two decimals and no thousands separators.')]);
         }

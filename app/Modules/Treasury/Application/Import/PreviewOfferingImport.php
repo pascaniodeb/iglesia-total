@@ -8,8 +8,8 @@ use App\Modules\Shared\Money\Money;
 use App\Modules\Shared\Spreadsheets\SpreadsheetReader;
 use App\Modules\Shared\Time\ChurchCalendar;
 use App\Modules\Shared\Time\IsoWeek;
+use App\Modules\Treasury\Domain\CurrencyAmounts;
 use App\Modules\Treasury\Domain\Import\ImportedValues;
-use App\Modules\Treasury\Domain\OfferingAmounts;
 use App\Modules\Treasury\Infrastructure\Models\OfferingCategory;
 use App\Modules\Treasury\Infrastructure\Models\WeeklyClosure;
 use DateTimeImmutable;
@@ -132,7 +132,7 @@ final readonly class PreviewOfferingImport
         }
 
         try {
-            new OfferingAmounts(Money::of($amounts['VES'], Currency::VES), Money::of($amounts['USD'], Currency::USD), Money::of($amounts['COP'], Currency::COP));
+            new CurrencyAmounts(Money::of($amounts['VES'], Currency::VES), Money::of($amounts['USD'], Currency::USD), Money::of($amounts['COP'], Currency::COP));
         } catch (InvalidArgumentException) {
             return __('The line has no amount greater than zero.');
         }

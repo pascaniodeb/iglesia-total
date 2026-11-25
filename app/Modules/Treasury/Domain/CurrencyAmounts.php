@@ -7,23 +7,24 @@ use App\Modules\Shared\Money\Money;
 use InvalidArgumentException;
 
 /**
- * What one offering brought, in each currency. Currencies are never mixed or converted; none is
- * negative and at least one is positive.
+ * An amount of money in each of the three currencies (what an offering brought, what a receipt
+ * acknowledges). Currencies are never mixed or converted; none is negative and at least one is
+ * positive.
  */
-final readonly class OfferingAmounts
+final readonly class CurrencyAmounts
 {
     public function __construct(public Money $ves, public Money $usd, public Money $cop)
     {
         if ($ves->currency() !== Currency::VES || $usd->currency() !== Currency::USD || $cop->currency() !== Currency::COP) {
-            throw new InvalidArgumentException('Each offering amount must be in its own currency.');
+            throw new InvalidArgumentException('Each amount must be in its own currency.');
         }
 
         if ($ves->isNegative() || $usd->isNegative() || $cop->isNegative()) {
-            throw new InvalidArgumentException('An offering amount cannot be negative.');
+            throw new InvalidArgumentException('An amount cannot be negative.');
         }
 
         if ($ves->isZero() && $usd->isZero() && $cop->isZero()) {
-            throw new InvalidArgumentException('An offering needs at least one amount greater than zero.');
+            throw new InvalidArgumentException('At least one amount must be greater than zero.');
         }
     }
 

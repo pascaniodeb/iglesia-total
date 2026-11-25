@@ -4,13 +4,11 @@ namespace App\Modules\Accounting\Application\Actions;
 
 use App\Modules\Accounting\Application\Cash\AvailableCash;
 use App\Modules\Accounting\Application\Cash\MovementGuard;
-use App\Modules\Accounting\Domain\Enums\AccountType;
 use App\Modules\Accounting\Domain\Enums\MovementKind;
 use App\Modules\Accounting\Domain\Journal\JournalEntryDraft;
 use App\Modules\Accounting\Domain\Journal\JournalLine;
 use App\Modules\Accounting\Domain\Journal\LedgerConflict;
 use App\Modules\Accounting\Domain\Journal\SupportInput;
-use App\Modules\Accounting\Infrastructure\Models\AccountingAccount;
 use App\Modules\Accounting\Infrastructure\Models\JournalEntry;
 use App\Modules\Accounting\Infrastructure\Models\JournalEntrySupport;
 use App\Modules\Shared\Money\Currency;
@@ -42,7 +40,7 @@ final readonly class RecordManualMovement
         $kind = MovementKind::from($data['kind']);
         $currency = Currency::from($data['currency']);
         $amount = self::amount($data['amount'], $currency);
-        $account = self::account($kind, $data['account_code']);
+        $account = $this->guard->usableAccount($kind, $data['account_code']);
 
         $this->guard->assertOpenDate($data['entry_date']);
 
@@ -109,25 +107,5 @@ final readonly class RecordManualMovement
         }
 
         return $money;
-    }
-
-    /**
-     * An active income account people can use (not the opening balance) or an active expense
-     * account, matching the kind.
-     *
-     * @throws ValidationException
-     */
-    private static function account(MovementKind $kind, string $code): AccountingAccount
-    {
-        $type = $kind === MovementKind::Income ? AccountType::Income : AccountType::Expense;
-        $account = AccountingAccount::query()->where('code', $code)->first();
-
-        if ($account === null || $account->type !== $type || $account->isSystem() || ! $account->is_active) {
-            throw ValidationException::withMessages(['account_code' => $kind === MovementKind::Income
-                ? __('Choose an active income account.')
-                : __('Choose an active expense account.')]);
-        }
-
-        return $account;
     }
 }

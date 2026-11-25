@@ -32,4 +32,11 @@ interface ChartOfAccounts
      * @return list<AccountRef>
      */
     public function activeIncomeAccounts(): array;
+
+    /**
+     * Active expense accounts, ordered by code.
+     *
+     * @return list<AccountRef>
+     */
+    public function activeExpenseAccounts(): array;
 }
