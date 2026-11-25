@@ -169,6 +169,84 @@ function legacyUser(int $id, array $attributes = []): void
 }
 
 /**
+ * The old system's tables that hold the money, with the old integer-id shape.
+ */
+function createLegacyTreasuryTables(): void
+{
+    Schema::connection('legacy')->create('offerings', function (Blueprint $table) {
+        $table->integer('id')->primary();
+        $table->date('date');
+        $table->integer('member_id')->nullable();
+        $table->integer('offering_category_id');
+        $table->text('concept')->nullable();
+        foreach (['amount_ves', 'amount_usd', 'amount_cop'] as $column) {
+            $table->decimal($column, 18, 2)->default(0);
+        }
+        $table->text('week_key')->nullable();
+        $table->text('month_key')->nullable();
+        $table->integer('created_by')->nullable();
+        $table->timestampTz('created_at');
+        $table->timestampTz('updated_at');
+        $table->timestampTz('deleted_at')->nullable();
+    });
+
+    Schema::connection('legacy')->create('weekly_closures', function (Blueprint $table) {
+        $table->integer('id')->primary();
+        $table->text('week_key');
+        $table->date('week_start');
+        $table->date('week_end');
+        $table->text('month_key')->nullable();
+        $table->integer('offerings_count');
+        foreach (['total_ves', 'total_usd', 'total_cop'] as $column) {
+            $table->decimal($column, 18, 2)->default(0);
+        }
+        $table->text('status')->default('closed');
+        $table->timestampTz('closed_at')->nullable();
+        $table->timestampTz('deleted_at')->nullable();
+    });
+
+    Schema::connection('legacy')->create('receipt_settings', function (Blueprint $table) {
+        $table->integer('id')->primary();
+        $table->integer('start_number');
+    });
+}
+
+/**
+ * @param  array<string, mixed>  $attributes
+ */
+function legacyOffering(int $id, array $attributes = []): void
+{
+    DB::connection('legacy')->table('offerings')->insert([
+        'id' => $id,
+        'date' => '2025-01-05',
+        'member_id' => null,
+        'offering_category_id' => 1,
+        'amount_cop' => '1000.00',
+        'created_at' => '2025-01-06 15:00:00+00',
+        'updated_at' => '2025-01-06 15:00:00+00',
+        ...$attributes,
+    ]);
+}
+
+/**
+ * @param  array<string, mixed>  $attributes
+ */
+function legacyWeeklyClosure(int $id, string $weekKey, string $start, array $attributes = []): void
+{
+    DB::connection('legacy')->table('weekly_closures')->insert([
+        'id' => $id,
+        'week_key' => $weekKey,
+        'week_start' => $start,
+        'week_end' => (new DateTimeImmutable($start))->modify('+6 days')->format('Y-m-d'),
+        'offerings_count' => 1,
+        'total_cop' => '1000.00',
+        'status' => 'closed',
+        'closed_at' => '2026-01-03 10:00:00+00',
+        ...$attributes,
+    ]);
+}
+
+/**
  * Drops the legacy schema, only ever in the test database and never in the real old one.
  */
 function dropLegacySource(): void
