@@ -1,3 +1,4 @@
+import type { Granularity } from '@/features/accounting/types';
 import type { TableFilters } from '@/types';
 
 /** An income account offered for a category (AccountRef::toOption()). */
@@ -262,3 +263,42 @@ export type TitheRow = {
 export type TitheSortKey = 'date' | 'ves' | 'usd' | 'cop';
 
 export type TitheFilters = TableFilters<TitheSortKey> & { month: string };
+
+type MoneyByCurrency = { ves: string; usd: string; cop: string };
+
+/** The tithes report of a period (TitheReport::of()). */
+export type TitheReport = {
+    granularity: Granularity;
+    period: string;
+    label: string;
+    short_label: string;
+    months: string[];
+    totals: MoneyByCurrency;
+    members_who_tithed: number;
+    members: ({ id: string; name: string; weeks: number } & MoneyByCurrency)[];
+};
+
+/** One member of the registry in the tithes analysis (TitheAnalysis::of()). */
+export type TitheAnalysisRow = {
+    id: string;
+    name: string;
+    totals: MoneyByCurrency;
+    /** Weeks of the period in which they tithed. */
+    weeks: number;
+    /** Total over the weeks they tithed; null for a currency of a member who did not tithe. */
+    average_given: Record<keyof MoneyByCurrency, string | null>;
+    /** Total over the Sundays of the period. */
+    average_period: MoneyByCurrency;
+    /** The last tithe ever, not only of the period. */
+    last_date: string | null;
+    weeks_ago: number | null;
+};
+
+export type TitheAnalysis = {
+    granularity: Granularity;
+    period: string;
+    label: string;
+    short_label: string;
+    sundays: number;
+    rows: TitheAnalysisRow[];
+};

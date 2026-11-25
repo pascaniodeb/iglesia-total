@@ -60,6 +60,62 @@ final readonly class ReportPeriod
     }
 
     /**
+     * The period a report URL asks for (?granularity=quarter&period=2026-Q2); a missing or malformed
+     * one falls back to the given month instead of failing: the URL is something people type and share.
+     */
+    public static function fromQuery(mixed $granularity, mixed $key, Month $fallback): self
+    {
+        if (is_string($granularity) && is_string($key)) {
+            try {
+                return self::fromKey($granularity, $key);
+            } catch (InvalidArgumentException) {
+                // Falls back below.
+            }
+        }
+
+        return self::containing(self::MONTH, $fallback);
+    }
+
+    /**
+     * The months from $first to $last, and the quarters, semesters and years they make up, newest
+     * first, each with its short label: what a period selector offers.
+     *
+     * @return array<string, list<array{key: string, label: string}>>
+     */
+    public static function options(Month $first, Month $last): array
+    {
+        $options = [];
+
+        foreach ([self::MONTH, self::QUARTER, self::SEMESTER, self::YEAR] as $granularity) {
+            $periods = [];
+
+            for ($month = $last; $month->key() >= $first->key(); $month = $month->previous()) {
+                $period = self::containing($granularity, $month);
+                $periods[$period->key()] ??= ['key' => $period->key(), 'label' => $period->shortLabel()];
+            }
+
+            $options[$granularity] = array_values($periods);
+        }
+
+        return $options;
+    }
+
+    /**
+     * How many Sundays the period has: the times someone could tithe in it (a tithe is given on
+     * Sunday). It is the denominator of "what they give over the period". Not the ISO weeks the
+     * period touches: August 2026 touches six, but its first brings two days and its last only a
+     * Monday, so someone who tithed all five Sundays would look as if they had missed one.
+     */
+    public function sundays(): int
+    {
+        $first = $this->firstDay();
+        $untilSunday = (7 - (int) $first->format('N')) % 7;
+        $days = (int) $first->diff($this->lastDay())->days;
+
+        return $days < $untilSunday ? 0 : intdiv($days - $untilSunday, 7) + 1;
+    }
+
+    /**
      * The period of a granularity that contains a month (a range becomes that single month).
      */
     public static function containing(string $granularity, Month $month): self

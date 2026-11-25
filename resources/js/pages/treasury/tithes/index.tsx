@@ -6,6 +6,7 @@ import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { titheColumns } from '@/features/treasury/components/tithe-columns';
 import { TitheFormDialog } from '@/features/treasury/components/tithe-form-dialog';
+import { TitheNav } from '@/features/treasury/components/tithe-nav';
 import { TitheRowActions } from '@/features/treasury/components/tithe-row-actions';
 import type {
     OfferingTotals,
@@ -60,6 +61,8 @@ export default function TithesIndex({
                         )
                     }
                 />
+
+                <TitheNav current="registry" />
 
                 <dl
                     aria-label="Totales de lo filtrado"

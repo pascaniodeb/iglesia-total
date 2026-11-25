@@ -51,3 +51,35 @@ test('malformed keys are refused', function (string $granularity, string $key) {
     ['range', '2026-05..2026-01'],
     ['week', '2026-W01'],
 ]);
+
+test('the Sundays of a period are what someone could tithe on, not the ISO weeks it touches', function (string $granularity, string $key, int $sundays) {
+    expect(ReportPeriod::fromKey($granularity, $key)->sundays())->toBe($sundays);
+})->with([
+    // Touches six ISO weeks (the first brings 2 days, the last a lone Monday) but has five Sundays.
+    'August 2026' => ['month', '2026-08', 5],
+    'February 2026' => ['month', '2026-02', 4],
+    'a month that starts on a Sunday' => ['month', '2026-11', 5],
+    'a month that ends on a Sunday' => ['month', '2026-05', 5],
+    'a quarter' => ['quarter', '2026-Q1', 13],
+    'a leap year' => ['year', '2024', 52],
+    'a year' => ['year', '2026', 52],
+    'a range' => ['range', '2026-07..2026-09', 13],
+]);
+
+test('a query falls back to the month it is given', function () {
+    $fallback = Month::fromKey('2026-11');
+
+    expect(ReportPeriod::fromQuery('quarter', '2026-Q2', $fallback)->key())->toBe('2026-Q2')
+        ->and(ReportPeriod::fromQuery('quarter', 'nonsense', $fallback)->key())->toBe('2026-11')
+        ->and(ReportPeriod::fromQuery(null, null, $fallback)->key())->toBe('2026-11')
+        ->and(ReportPeriod::fromQuery(['x'], 5, $fallback)->key())->toBe('2026-11');
+});
+
+test('the options list every period the months make up, newest first', function () {
+    $options = ReportPeriod::options(Month::fromKey('2026-02'), Month::fromKey('2026-08'));
+
+    expect(array_column($options['month'], 'key'))->toBe(['2026-08', '2026-07', '2026-06', '2026-05', '2026-04', '2026-03', '2026-02'])
+        ->and(array_column($options['quarter'], 'key'))->toBe(['2026-Q3', '2026-Q2', '2026-Q1'])
+        ->and(array_column($options['semester'], 'key'))->toBe(['2026-S2', '2026-S1'])
+        ->and(array_column($options['year'], 'key'))->toBe(['2026']);
+});

@@ -15,6 +15,7 @@ use App\Modules\Treasury\Http\Controllers\OfferingController;
 use App\Modules\Treasury\Http\Controllers\OfferingImportController;
 use App\Modules\Treasury\Http\Controllers\ReceiptController;
 use App\Modules\Treasury\Http\Controllers\TitheController;
+use App\Modules\Treasury\Http\Controllers\TitheInsightsController;
 use App\Modules\Treasury\Http\Controllers\WeeklyClosureController;
 use Illuminate\Support\Facades\Route;
 
@@ -116,6 +117,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Tithes book (Treasury): pastor only, never part of the books. Fixed paths go before {tithe}.
     Route::middleware('can:tithes.view')->prefix('treasury/tithes')->name('treasury.tithes.')->group(function () {
         Route::get('/', [TitheController::class, 'index'])->name('index');
+        Route::get('reports', [TitheInsightsController::class, 'report'])->name('reports');
+        Route::get('analysis', [TitheInsightsController::class, 'analysis'])->name('analysis');
 
         Route::middleware('can:tithes.manage')->group(function () {
             Route::post('/', [TitheController::class, 'store'])->name('store');
