@@ -7,70 +7,18 @@ use App\Modules\Accounting\Domain\Journal\JournalLine;
 use App\Modules\Accounting\Infrastructure\Models\AccountingAccount;
 use App\Modules\Accounting\Infrastructure\Models\AccountingPeriod;
 use App\Modules\Accounting\Infrastructure\Models\JournalEntry;
-use App\Modules\Integrity\Application\Actions\CreateLedgerGenesis;
 use App\Modules\Integrity\Application\Actions\VerifyLedgerChain;
 use App\Modules\Integrity\Infrastructure\Models\ActivityLogEntry;
 use App\Modules\Integrity\Infrastructure\Models\LedgerBlock;
 use App\Modules\Shared\Money\Currency;
 use App\Modules\Shared\Money\Money;
 use App\Modules\Shared\Time\Month;
-use App\Modules\Treasury\Application\Actions\CloseWeek;
-use App\Modules\Treasury\Application\Closures\WeeklyClosureSchedule;
-use App\Modules\Treasury\Infrastructure\Models\Offering;
-use App\Modules\Treasury\Infrastructure\Models\OfferingCategory;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
-/*
- * Three months of the old books, small enough to read:
- *
- *   January:  opening USD 2 + COP 10.000 · offerings COP 100.000 · expense COP 30.000   → closes COP 80.000
- *   February: opening USD 2 + COP 80.000 · offerings COP 50.000 + USD 5 · income USD 10 + COP 5.000 · expense COP 15.000
- *             → closes USD 17 + COP 120.000
- *   March:    opening USD 17 + COP 120.000 · nothing else
- *
- * The first month's opening is brought as capital; the next ones are only compared.
- */
+// The fixture (three months of old books and the new system ready for them) is seedThreeLegacyMonths().
 beforeEach(function () {
-    Carbon::setTestNow('2026-11-25 14:00:00');
-    createLegacySource();
-    createLegacyTreasuryTables();
-
-    $this->daily = AccountingAccount::factory()->create(['code' => 'I-002', 'name' => 'OFRENDAS DIARIAS']);
-    AccountingAccount::factory()->create(['code' => 'I-007', 'name' => 'APORTES']);
-    AccountingAccount::factory()->expense()->create(['code' => 'E-024', 'name' => 'SERVICIOS PÚBLICOS']);
-    $category = OfferingCategory::factory()->create(['account_id' => $this->daily->id]);
-
-    // 2025-01-05 and 2025-02-02 are Sundays.
-    Offering::factory()->create(['offering_category_id' => $category->id, 'offering_date' => '2025-01-05', 'amount_cop' => '100000.00']);
-    Offering::factory()->create(['offering_category_id' => $category->id, 'offering_date' => '2025-02-02', 'amount_cop' => '50000.00', 'amount_usd' => '5.00']);
-
-    app(CreateLedgerGenesis::class)('M07A1985C0001', '2025-W01');
-
-    // Every week up to the one with 31 March (a Monday, 2025-W14) is closed.
-    while (($week = WeeklyClosureSchedule::next()) !== null && $week->key() <= '2025-W14') {
-        app(CloseWeek::class)($week);
-    }
-
-    foreach ([[1, 'I-001', 'income'], [2, 'I-002', 'income'], [3, 'I-007', 'income'], [4, 'E-024', 'expense']] as [$id, $code, $type]) {
-        DB::connection('legacy')->table('account_codes')->insert(['id' => $id, 'code' => $code, 'name' => "{$code} (old)", 'type' => $type]);
-    }
-
-    foreach ([[1, '2025-01', 1, '0', '0', '100000.00'], [2, '2025-02', 1, '0', '5.00', '50000.00'], [3, '2025-03', 0, '0', '0', '0']] as [$id, $month, $count, $ves, $usd, $cop]) {
-        DB::connection('legacy')->table('monthly_closures')->insert(['id' => $id, 'month_key' => $month, 'offerings_count' => $count, 'total_ves' => $ves, 'total_usd' => $usd, 'total_cop' => $cop]);
-    }
-
-    legacyEntry(1, 'I-001', '2025-01-01', ['amount_usd' => '2.00', 'amount_cop' => '10000.00', 'concept' => 'Saldo anterior del mes 2025-01']);
-    legacyEntry(2, 'I-002', '2025-01-31', ['amount_cop' => '100000.00', 'monthly_closure_id' => 1]);
-    legacyEntry(3, 'E-024', '2025-01-15', ['amount_cop' => '30000.00', 'concept' => 'Pago de la luz']);
-    legacyEntry(4, 'I-001', '2025-02-01', ['amount_usd' => '2.00', 'amount_cop' => '80000.00']);
-    legacyEntry(5, 'I-002', '2025-02-28', ['amount_usd' => '5.00', 'amount_cop' => '50000.00', 'monthly_closure_id' => 2]);
-    legacyEntry(6, 'I-007', '2025-02-10', ['amount_usd' => '10.00', 'amount_cop' => '5000.00', 'concept' => 'Aporte']);
-    legacyEntry(7, 'E-024', '2025-02-20', ['amount_cop' => '15000.00', 'concept' => '']);
-    legacyEntry(8, 'I-001', '2025-03-01', ['amount_usd' => '17.00', 'amount_cop' => '120000.00']);
-    // In the old trash: not imported.
-    legacyEntry(9, 'E-024', '2025-02-21', ['amount_cop' => '999.00', 'deleted_at' => '2025-02-22 00:00:00+00']);
-    legacyEntry(10, 'I-001', '2025-02-01', ['amount_cop' => '1.00', 'deleted_at' => '2025-02-02 00:00:00+00']);
+    $this->daily = seedThreeLegacyMonths();
 });
 
 afterEach(function () {
