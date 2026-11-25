@@ -234,7 +234,7 @@ Output: one row per check and period with legacy, SQL, PHP and difference column
 3. C-F1, C-F1b, C-F2, C-F3, C-F3b (catalogs, exchange rates, offerings, weekly closures with sealing, monthly offering closure posting to the journal)
 4. B-F3, B-F4 (journal, monthly close, ledger, reports)
 5. C-F4, C-F5, C-F6 (receipts, tithes, dashboards)
-6. B-F5, C-F7, A-F3, B-F6 + cut-over command (gated by B-F6)
+6. B-F5, C-F7, A-F3, B-F6 + cut-over command (gated by B-F6) ✅ cut-over command `migrate:legacy {church-code}` done 2026-11-25: runs every import in order, then `reconcile:legacy`; idempotent, stops at the first failing step, fails unless 0 differences. Rehearsed end to end on the real dump in one run. Still pending for production: church logos from Bunny Storage (`--legacy-storage`), audits and activity-log archive (A-F5), the permanent `ledger:verify` checks of section 4.4.
 7. A-F4, A-F5, A-F6 (integrity center, audits, anchoring)
 8. D-F1, D-F2 (church settings and the PDF batch; D-F1 can move earlier if the PDFs are needed sooner)
 
