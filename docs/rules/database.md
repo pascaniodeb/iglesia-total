@@ -30,7 +30,7 @@
 
 ## Append-only tables
 
-- Records that are evidence (activity log, and later the sealed ledger, journal and period snapshots) are append-only: `forbid_update()` and `forbid_physical_delete()` triggers reject UPDATE, DELETE and TRUNCATE for every role. A mistake is corrected with a new row, never by editing one.
+- Records that are evidence (activity log, and later the sealed ledger, journal, period snapshots, receipts and their voids) are append-only: `forbid_update()` and `forbid_physical_delete()` triggers reject UPDATE, DELETE and TRUNCATE for every role. A mistake is corrected with a new row, never by editing one.
 - An append-only table cannot have `ON DELETE SET NULL`/`CASCADE` foreign keys (the cascade would be an update or delete). Use `RESTRICT` and keep snapshots (name, role) of what the row must still say if the referenced record changes.
 - Hash chains are computed by PostgreSQL in a `BEFORE INSERT` trigger under an advisory lock; the application never supplies `seq`, `previous_hash` or `hash`. Verification uses the same SQL function as the trigger.
 - `jsonb` columns that must hold an object get a `CHECK (jsonb_typeof(col) = 'object')`; write an empty object as `new stdClass`, because an empty PHP array is encoded as a JSON list.

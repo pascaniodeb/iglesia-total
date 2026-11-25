@@ -167,3 +167,81 @@ export type NextMonth = {
     };
     blocker: string | null;
 };
+
+/** Mirrors App\Modules\Treasury\Domain\Receipts\ReceiptType. */
+export type ReceiptType = 'income' | 'expense';
+
+/** Mirrors App\Modules\Treasury\Domain\Receipts\PaymentMethod. */
+export type PaymentMethod = 'cash' | 'deposit' | 'transfer';
+
+/** A row of the receipt book (ReceiptListing::row()). */
+export type ReceiptRow = {
+    number: number;
+    /** The number as the printed book shows it: "000001". */
+    number_label: string;
+    /** YYYY-MM-DD. */
+    issued_on: string;
+    type: ReceiptType;
+    type_label: string;
+    account_code: string | null;
+    account_name: string | null;
+    holder: string | null;
+    counterparty: string | null;
+    concept: string | null;
+    amount_ves: string;
+    amount_usd: string;
+    amount_cop: string;
+    is_void: boolean;
+};
+
+export type ReceiptSortKey = 'number' | 'date' | 'ves' | 'usd' | 'cop';
+
+export type ReceiptFilters = TableFilters<ReceiptSortKey> & {
+    type: string;
+    state: string;
+    month: string;
+};
+
+/** What the issue form needs, only sent to who can issue (ReceiptController::index()). */
+export type ReceiptFormData = {
+    accounts: { income: AccountOption[]; expense: AccountOption[] };
+    /** What can be spent today per currency code. */
+    available: Record<'VES' | 'USD' | 'COP', string>;
+    window: { min: string | null; max: string };
+    payment_methods: { value: PaymentMethod; label: string }[];
+};
+
+/** A receipt in full (ReceiptController::show()). */
+export type ReceiptDetail = {
+    number: number;
+    number_label: string;
+    type: ReceiptType;
+    type_label: string;
+    issued_on: string;
+    /** YYYY-MM: the month of its entry in the journal. */
+    month: string;
+    account_code: string | null;
+    account_name: string | null;
+    holder: string | null;
+    counterparty: string | null;
+    amount_ves: string;
+    amount_usd: string;
+    amount_cop: string;
+    concept: string | null;
+    payment_method: PaymentMethod;
+    payment_method_label: string;
+    bank: string | null;
+    payment_reference: string | null;
+    payment_date: string | null;
+    received_by_name: string | null;
+    received_by_id_number: string | null;
+    delivered_by_name: string | null;
+    delivered_by_id_number: string | null;
+    issued_by: string | null;
+    created_at: string;
+    void: {
+        reason: string;
+        voided_at: string;
+        voided_by: string | null;
+    } | null;
+};

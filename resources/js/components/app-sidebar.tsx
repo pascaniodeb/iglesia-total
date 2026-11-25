@@ -11,6 +11,7 @@ import {
     LayoutGrid,
     Library,
     Lock,
+    Receipt,
     Users,
     Wallet,
 } from 'lucide-react';
@@ -38,6 +39,7 @@ import { index as exchangeRatesIndex } from '@/routes/treasury/exchange-rates';
 import { index as offeringCategoriesIndex } from '@/routes/treasury/offering-categories';
 import { index as monthlyOfferingClosuresIndex } from '@/routes/treasury/monthly-offering-closures';
 import { index as offeringsIndex } from '@/routes/treasury/offerings';
+import { index as receiptsIndex } from '@/routes/treasury/receipts';
 import { index as weeklyClosuresIndex } from '@/routes/treasury/weekly-closures';
 import { index as membersIndex } from '@/routes/members';
 import type { NavItem } from '@/types';
@@ -72,6 +74,12 @@ const mainNavItems: NavItem[] = [
         href: monthlyOfferingClosuresIndex(),
         icon: BookCheck,
         permission: 'closures.view',
+    },
+    {
+        title: 'Comprobantes',
+        href: receiptsIndex(),
+        icon: Receipt,
+        permission: 'accounting.view',
     },
     {
         title: 'Libro Diario',

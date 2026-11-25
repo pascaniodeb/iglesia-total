@@ -13,6 +13,7 @@ use App\Modules\Treasury\Http\Controllers\MonthlyOfferingClosureController;
 use App\Modules\Treasury\Http\Controllers\OfferingCategoryController;
 use App\Modules\Treasury\Http\Controllers\OfferingController;
 use App\Modules\Treasury\Http\Controllers\OfferingImportController;
+use App\Modules\Treasury\Http\Controllers\ReceiptController;
 use App\Modules\Treasury\Http\Controllers\WeeklyClosureController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,6 +63,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::middleware(['can:accounting.manage', 'throttle:10,1'])->group(function () {
             Route::post('/', [AccountingPeriodController::class, 'store'])->name('store');
             Route::post('seal', [AccountingPeriodController::class, 'seal'])->name('seal');
+        });
+    });
+
+    // Receipt book (Treasury): one numbered series, each receipt posted to the journal.
+    // The number in the URL is the receipt's number; fixed paths go before it.
+    Route::middleware('can:accounting.view')->prefix('treasury/receipts')->name('treasury.receipts.')->group(function () {
+        Route::get('/', [ReceiptController::class, 'index'])->name('index');
+        Route::get('{receipt:number}', [ReceiptController::class, 'show'])->whereNumber('receipt')->name('show');
+
+        Route::post('/', [ReceiptController::class, 'store'])->middleware(['can:accounting.manage', 'throttle:30,1'])->name('store');
+
+        Route::middleware(['can:receipts.administer', 'throttle:10,1'])->group(function () {
+            Route::put('settings', [ReceiptController::class, 'settings'])->name('settings');
+            Route::post('{receipt:number}/cancel', [ReceiptController::class, 'cancel'])->whereNumber('receipt')->name('cancel');
         });
     });
 

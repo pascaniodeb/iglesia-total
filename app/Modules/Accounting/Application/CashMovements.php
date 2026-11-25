@@ -33,4 +33,20 @@ interface CashMovements
      * @throws ValidationException
      */
     public function reverse(string $entryId, string $reason): PostedEntry;
+
+    /**
+     * The most that can leave the cash of each currency on a day (zero or more), as decimal text
+     * keyed by currency code: what an expense dated that day may take.
+     *
+     * @return array<string, string>
+     */
+    public function available(string $day): array;
+
+    /**
+     * The dates a movement can have: from the first day of the earliest open month (null while no
+     * month has been closed: there is no limit yet) to today.
+     *
+     * @return array{min: string|null, max: string}
+     */
+    public function window(): array;
 }

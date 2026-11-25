@@ -2,6 +2,7 @@
 
 use App\Enums\UserRole;
 use App\Modules\Accounting\Application\Actions\ClosePeriod;
+use App\Modules\Accounting\Application\CashMovements;
 use App\Modules\Accounting\Application\Ledger;
 use App\Modules\Accounting\Domain\Journal\JournalEntryDraft;
 use App\Modules\Accounting\Domain\Journal\JournalLine;
@@ -199,6 +200,14 @@ test('the date is inside an open month and never in the future', function (strin
     'in the future' => ['2026-11-17'],
     'not a date' => ['2026-02-30'],
 ]);
+
+test('the dates a receipt can have start after the last closed month and end today', function () {
+    expect(app(CashMovements::class)->window())->toBe(['min' => null, 'max' => '2026-11-16']);
+
+    app(ClosePeriod::class)(Month::fromKey('2026-10'));
+
+    expect(app(CashMovements::class)->window())->toBe(['min' => '2026-11-01', 'max' => '2026-11-16']);
+});
 
 test('a closed month receives no receipts', function () {
     app(ClosePeriod::class)(Month::fromKey('2026-10'));

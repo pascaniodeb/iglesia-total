@@ -283,5 +283,8 @@
     "Write a whole number between 1 and :max.": "Escriba un número entero entre 1 y :max.",
     "Cash": "Efectivo",
     "Deposit": "Depósito",
-    "Transfer": "Transferencia"
+    "Transfer": "Transferencia",
+    "Receipt N.º :number issued.": "Comprobante N.º :number emitido.",
+    "Receipt N.º :number voided.": "Comprobante N.º :number anulado.",
+    "The starting number of the book was saved.": "Se guardó el número inicial del talonario."
 }

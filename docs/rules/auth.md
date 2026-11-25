@@ -60,6 +60,8 @@ Generated from the enums; the explicit table in `tests/Unit/Enums/UserRoleTest.p
 | `activity_log.view`      |   ✓    |           |            |          |           |         |
 | `users.manage`           |   ✓    |           |            |          |           |         |
 
+Receipts follow the table: they are read with `accounting.view` and issued with `accounting.manage` (Tesorería and the pastor), but voiding one and setting the number the book starts at need `receipts.administer` (the pastor). The old system let Tesorería void them.
+
 Where this improves the old system: its checks were scattered `CAN_VIEW` sets, one per file, and they disagreed with the menu. Tesorería could _modify_ tithes without being able to _see_ them; offering categories and account codes sat under the pastor-only Ajustes menu while the server also accepted Tesorería. Now tithes are pastor-only, and catalogs are viewed by Tesorería and Contraloría but managed only by the pastor.
 
 ## Changing roles

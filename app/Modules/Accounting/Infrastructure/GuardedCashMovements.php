@@ -7,6 +7,7 @@ use App\Modules\Accounting\Application\Actions\ReverseJournalEntry;
 use App\Modules\Accounting\Application\Cash\AvailableCash;
 use App\Modules\Accounting\Application\Cash\MovementGuard;
 use App\Modules\Accounting\Application\CashMovements;
+use App\Modules\Accounting\Application\Periods\PeriodSchedule;
 use App\Modules\Accounting\Domain\Enums\MovementKind;
 use App\Modules\Accounting\Domain\Enums\SystemFunction;
 use App\Modules\Accounting\Domain\Journal\CashMovement;
@@ -18,6 +19,7 @@ use App\Modules\Accounting\Infrastructure\Models\JournalEntry;
 use App\Modules\Shared\Money\Currency;
 use App\Modules\Shared\Money\Money;
 use App\Modules\Shared\Time\ChurchCalendar;
+use App\Modules\Shared\Time\Month;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -32,6 +34,8 @@ final readonly class GuardedCashMovements implements CashMovements
         private PostJournalEntry $post,
         private ReverseJournalEntry $reverse,
         private MovementGuard $guard,
+        private AvailableCash $cash,
+        private PeriodSchedule $schedule,
     ) {}
 
     public function record(CashMovement $movement): PostedEntry
@@ -122,6 +126,27 @@ final readonly class GuardedCashMovements implements CashMovements
 
             return self::posted($reversal);
         });
+    }
+
+    public function available(string $day): array
+    {
+        $available = [];
+
+        foreach (Currency::cases() as $currency) {
+            $available[$currency->value] = $this->cash->on($currency, $day)->amount();
+        }
+
+        return $available;
+    }
+
+    public function window(): array
+    {
+        $from = $this->schedule->openWindow()['from'];
+
+        return [
+            'min' => $from === null ? null : Month::fromKey($from)->firstDay->format('Y-m-d'),
+            'max' => ChurchCalendar::today()->format('Y-m-d'),
+        ];
     }
 
     /**
