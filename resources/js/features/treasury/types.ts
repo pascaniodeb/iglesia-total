@@ -245,3 +245,20 @@ export type ReceiptDetail = {
         voided_by: string | null;
     } | null;
 };
+
+/** A row of the tithes book (TitheListing::row()). */
+export type TitheRow = {
+    id: string;
+    /** YYYY-MM-DD. */
+    tithe_date: string;
+    member: MemberOption | null;
+    notes: string | null;
+    amount_ves: string;
+    amount_usd: string;
+    amount_cop: string;
+    is_deleted: boolean;
+};
+
+export type TitheSortKey = 'date' | 'ves' | 'usd' | 'cop';
+
+export type TitheFilters = TableFilters<TitheSortKey> & { month: string };

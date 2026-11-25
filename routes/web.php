@@ -14,6 +14,7 @@ use App\Modules\Treasury\Http\Controllers\OfferingCategoryController;
 use App\Modules\Treasury\Http\Controllers\OfferingController;
 use App\Modules\Treasury\Http\Controllers\OfferingImportController;
 use App\Modules\Treasury\Http\Controllers\ReceiptController;
+use App\Modules\Treasury\Http\Controllers\TitheController;
 use App\Modules\Treasury\Http\Controllers\WeeklyClosureController;
 use Illuminate\Support\Facades\Route;
 
@@ -109,6 +110,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('import', [OfferingImportController::class, 'store'])->middleware('throttle:10,1')->name('import.store');
             Route::put('{offering}', [OfferingController::class, 'update'])->whereUuid('offering')->name('update');
             Route::delete('{offering}', [OfferingController::class, 'destroy'])->whereUuid('offering')->name('destroy');
+        });
+    });
+
+    // Tithes book (Treasury): pastor only, never part of the books. Fixed paths go before {tithe}.
+    Route::middleware('can:tithes.view')->prefix('treasury/tithes')->name('treasury.tithes.')->group(function () {
+        Route::get('/', [TitheController::class, 'index'])->name('index');
+
+        Route::middleware('can:tithes.manage')->group(function () {
+            Route::post('/', [TitheController::class, 'store'])->name('store');
+            Route::get('member-options', [TitheController::class, 'memberOptions'])->name('member-options');
+            Route::put('{tithe}', [TitheController::class, 'update'])->whereUuid('tithe')->name('update');
+            Route::delete('{tithe}', [TitheController::class, 'destroy'])->whereUuid('tithe')->name('destroy');
+            Route::post('{tithe}/restore', [TitheController::class, 'restore'])->whereUuid('tithe')->withTrashed()->name('restore');
         });
     });
 

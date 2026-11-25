@@ -286,5 +286,15 @@
     "Transfer": "Transferencia",
     "Receipt N.º :number issued.": "Comprobante N.º :number emitido.",
     "Receipt N.º :number voided.": "Comprobante N.º :number anulado.",
-    "The starting number of the book was saved.": "Se guardó el número inicial del talonario."
+    "The starting number of the book was saved.": "Se guardó el número inicial del talonario.",
+    "The tithe date cannot be in the future.": "La fecha del diezmo no puede ser futura.",
+    "Choose a member of the registry.": "Elija un miembro del padrón.",
+    "Recorded a tithe of :member on :date.": "Registró un diezmo de :member del :date.",
+    "Corrected a tithe of :member on :date.": "Corrigió un diezmo de :member del :date.",
+    "Sent to the trash a tithe of :member on :date.": "Envió a la papelera un diezmo de :member del :date.",
+    "Restored a tithe of :member on :date.": "Restauró un diezmo de :member del :date.",
+    "Tithe recorded.": "Diezmo registrado.",
+    "Tithe corrected.": "Diezmo corregido.",
+    "Tithe sent to the trash.": "Diezmo enviado a la papelera.",
+    "Tithe restored.": "Diezmo restaurado."
 }

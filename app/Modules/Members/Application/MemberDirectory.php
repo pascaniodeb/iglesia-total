@@ -40,6 +40,14 @@ interface MemberDirectory
     public function idsMatching(string $term): array;
 
     /**
+     * Every member of the registry (not in the trash), by name: the people a report must list even
+     * when they have nothing to show (who did not tithe is exactly what an analysis is for).
+     *
+     * @return list<MemberRef>
+     */
+    public function registry(): array;
+
+    /**
      * Members of the registry (not in the trash) by normalized full name: to match a name typed
      * in a file exactly. A list, because two people can share a name (an ambiguous match must
      * be refused, never guessed).

@@ -12,6 +12,7 @@ import {
     Library,
     Lock,
     Receipt,
+    Sprout,
     Users,
     Wallet,
 } from 'lucide-react';
@@ -40,6 +41,7 @@ import { index as offeringCategoriesIndex } from '@/routes/treasury/offering-cat
 import { index as monthlyOfferingClosuresIndex } from '@/routes/treasury/monthly-offering-closures';
 import { index as offeringsIndex } from '@/routes/treasury/offerings';
 import { index as receiptsIndex } from '@/routes/treasury/receipts';
+import { index as tithesIndex } from '@/routes/treasury/tithes';
 import { index as weeklyClosuresIndex } from '@/routes/treasury/weekly-closures';
 import { index as membersIndex } from '@/routes/members';
 import type { NavItem } from '@/types';
@@ -62,6 +64,12 @@ const mainNavItems: NavItem[] = [
         href: offeringsIndex(),
         icon: Wallet,
         permission: 'offerings.view',
+    },
+    {
+        title: 'Diezmos',
+        href: tithesIndex(),
+        icon: Sprout,
+        permission: 'tithes.view',
     },
     {
         title: 'Cierres semanales',

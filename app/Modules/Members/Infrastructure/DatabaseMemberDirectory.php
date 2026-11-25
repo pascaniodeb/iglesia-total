@@ -59,6 +59,11 @@ final class DatabaseMemberDirectory implements MemberDirectory
         return array_values(array_map(strval(...), Member::withTrashed()->search($term)->pluck('id')->all()));
     }
 
+    public function registry(): array
+    {
+        return array_values(Member::query()->orderedByName()->get()->map(self::ref(...))->all());
+    }
+
     public function registryNameIndex(): array
     {
         $index = [];
