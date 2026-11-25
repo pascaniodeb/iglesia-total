@@ -296,5 +296,13 @@
     "Tithe recorded.": "Diezmo registrado.",
     "Tithe corrected.": "Diezmo corregido.",
     "Tithe sent to the trash.": "Diezmo enviado a la papelera.",
-    "Tithe restored.": "Diezmo restaurado."
+    "Tithe restored.": "Diezmo restaurado.",
+    "A tithe needs its member.": "Un diezmo necesita su miembro.",
+    "The member \":value\" is not in the registry. Did you mean \":suggestion\"?": "El miembro «:value» no está en el padrón. ¿Quiso decir «:suggestion»?",
+    "The currency \":value\" is not valid (use VES, USD or COP).": "La moneda «:value» no es válida (use VES, USD o COP).",
+    "The amount \":value\" is not valid: write an amount greater than zero.": "El monto «:value» no es válido: escriba un monto mayor que cero.",
+    "The file has no tithes to import.": "El archivo no tiene diezmos para importar.",
+    "The file repeats lines exactly; confirm that they are separate tithes.": "El archivo repite filas exactas: confirme que son diezmos distintos.",
+    "Imported :count tithes from a file.": "Importó :count diezmos desde un archivo.",
+    "{1} :count tithe imported.|[2,*] :count tithes imported.": "{1} Se importó :count diezmo.|[2,*] Se importaron :count diezmos."
 }

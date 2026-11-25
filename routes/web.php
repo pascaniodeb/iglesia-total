@@ -15,6 +15,7 @@ use App\Modules\Treasury\Http\Controllers\OfferingController;
 use App\Modules\Treasury\Http\Controllers\OfferingImportController;
 use App\Modules\Treasury\Http\Controllers\ReceiptController;
 use App\Modules\Treasury\Http\Controllers\TitheController;
+use App\Modules\Treasury\Http\Controllers\TitheImportController;
 use App\Modules\Treasury\Http\Controllers\TitheInsightsController;
 use App\Modules\Treasury\Http\Controllers\WeeklyClosureController;
 use Illuminate\Support\Facades\Route;
@@ -123,6 +124,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::middleware('can:tithes.manage')->group(function () {
             Route::post('/', [TitheController::class, 'store'])->name('store');
             Route::get('member-options', [TitheController::class, 'memberOptions'])->name('member-options');
+            Route::get('import/template', [TitheImportController::class, 'template'])->name('import.template');
+            Route::post('import/preview', [TitheImportController::class, 'preview'])->middleware('throttle:20,1')->name('import.preview');
+            Route::post('import', [TitheImportController::class, 'store'])->middleware('throttle:10,1')->name('import.store');
             Route::put('{tithe}', [TitheController::class, 'update'])->whereUuid('tithe')->name('update');
             Route::delete('{tithe}', [TitheController::class, 'destroy'])->whereUuid('tithe')->name('destroy');
             Route::post('{tithe}/restore', [TitheController::class, 'restore'])->whereUuid('tithe')->withTrashed()->name('restore');

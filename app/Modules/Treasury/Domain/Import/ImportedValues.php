@@ -2,7 +2,9 @@
 
 namespace App\Modules\Treasury\Domain\Import;
 
+use App\Modules\Shared\Money\Currency;
 use DateTimeImmutable;
+use Illuminate\Support\Str;
 
 /**
  * Strict readers for the values of an offerings file (ported from the old system's import).
@@ -53,6 +55,23 @@ final class ImportedValues
         $integer = ltrim($parts[1], '0');
 
         return ($integer === '' ? '0' : $integer).'.'.str_pad($parts[2] ?? '', 2, '0');
+    }
+
+    /**
+     * The currency as someone copying from a notebook writes it: "VES", "bs", "Bs.", "Bolívares",
+     * "$", "dólares", "pesos"… Accents, case and punctuation (except the $ sign, which is the datum)
+     * do not matter. An empty or unknown value is not guessed: it is null.
+     */
+    public static function currency(string $raw): ?Currency
+    {
+        $value = Str::upper(trim((string) preg_replace('/\s+/', ' ', (string) preg_replace('/[^\p{L}\p{N}$ ]/u', '', Str::ascii($raw)))));
+
+        return match (true) {
+            in_array($value, ['VES', 'BS', 'BSS', 'BOLIVAR', 'BOLIVARES', 'VEF'], true) => Currency::VES,
+            in_array($value, ['USD', '$', 'US$', 'DOLAR', 'DOLARES', 'DOLLAR'], true) => Currency::USD,
+            in_array($value, ['COP', 'PESO', 'PESOS', 'PESOS COLOMBIANOS'], true) => Currency::COP,
+            default => null,
+        };
     }
 
     /**

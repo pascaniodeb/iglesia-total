@@ -148,6 +148,12 @@ foreach ([
     'App\Modules\Treasury\Http\Controllers\TitheController',
     'App\Modules\Treasury\Http\Tables\TitheListing',
     'App\Modules\Treasury\Http\Requests\TitheRequest',
+    'App\Modules\Treasury\Http\Controllers\TitheImportController',
+    'App\Modules\Treasury\Http\Controllers\TitheInsightsController',
+    'App\Modules\Treasury\Application\Import\PreviewTitheImport',
+    'App\Modules\Treasury\Application\Import\ImportTithes',
+    'App\Modules\Treasury\Application\Tithes\TitheReport',
+    'App\Modules\Treasury\Application\Tithes\TitheAnalysis',
     'App\Modules\Treasury\Infrastructure\Models\Tithe',
 ] as $titheClass) {
     arch('tithes stay out of the books, the receipts and the seal: '.class_basename($titheClass))

@@ -85,6 +85,16 @@ export type CategoryOption = {
     is_active: boolean;
 };
 
+/** What a workbook would write, as far as the import dialog needs (the preview of any import). */
+export type ImportPreview = {
+    rows: { line: number }[];
+    rejected: { line: number; reason: string }[];
+    duplicate_lines: number[];
+    totals: { ves: string; usd: string; cop: string };
+    file_hash: string;
+    can_import: boolean;
+};
+
 /** What an offerings workbook would write (OfferingImportPreview::toArray()). */
 export type OfferingImportPreview = {
     rows: {

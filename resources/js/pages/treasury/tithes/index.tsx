@@ -1,11 +1,12 @@
 import { Head } from '@inertiajs/react';
-import { Plus } from 'lucide-react';
+import { FileSpreadsheet, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { ServerDataTable } from '@/components/data-table/server-data-table';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { titheColumns } from '@/features/treasury/components/tithe-columns';
 import { TitheFormDialog } from '@/features/treasury/components/tithe-form-dialog';
+import { TitheImportDialog } from '@/features/treasury/components/tithe-import-dialog';
 import { TitheNav } from '@/features/treasury/components/tithe-nav';
 import { TitheRowActions } from '@/features/treasury/components/tithe-row-actions';
 import type {
@@ -39,6 +40,7 @@ export default function TithesIndex({
 }: TithesIndexProps) {
     const { can } = usePermissions();
     const [isRecording, setIsRecording] = useState(false);
+    const [isImporting, setIsImporting] = useState(false);
 
     return (
         <>
@@ -51,13 +53,23 @@ export default function TithesIndex({
                     meta={`${count.format(totals.count)} ${totals.count === 1 ? 'diezmo' : 'diezmos'}`}
                     actions={
                         can('tithes.manage') && (
-                            <Button
-                                className="shrink-0"
-                                onClick={() => setIsRecording(true)}
-                            >
-                                <Plus aria-hidden />
-                                Registrar diezmo
-                            </Button>
+                            <>
+                                <Button
+                                    variant="outline"
+                                    className="shrink-0"
+                                    onClick={() => setIsImporting(true)}
+                                >
+                                    <FileSpreadsheet aria-hidden />
+                                    Importar Excel
+                                </Button>
+                                <Button
+                                    className="shrink-0"
+                                    onClick={() => setIsRecording(true)}
+                                >
+                                    <Plus aria-hidden />
+                                    Registrar diezmo
+                                </Button>
+                            </>
                         )
                     }
                 />
@@ -125,6 +137,12 @@ export default function TithesIndex({
                     }}
                 />
             </div>
+            {can('tithes.manage') && (
+                <TitheImportDialog
+                    open={isImporting}
+                    onOpenChange={setIsImporting}
+                />
+            )}
             {can('tithes.manage') && (
                 <TitheFormDialog
                     today={today}

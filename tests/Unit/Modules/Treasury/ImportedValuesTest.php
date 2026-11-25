@@ -48,3 +48,22 @@ test('reads DD/MM/YYYY dates and refuses impossible ones', function (string $raw
     ['2026-11-01', null],
     ['11/2026', null],
 ]);
+
+test('the currency is read as someone copying from a notebook writes it', function (string $raw, ?string $expected) {
+    expect(ImportedValues::currency($raw)?->value)->toBe($expected);
+})->with([
+    ['VES', 'VES'],
+    ['bs', 'VES'],
+    ['Bs.', 'VES'],
+    ['  Bolívares ', 'VES'],
+    ['$', 'USD'],
+    ['us$', 'USD'],
+    ['Dólares', 'USD'],
+    ['usd', 'USD'],
+    ['pesos', 'COP'],
+    ['Pesos colombianos', 'COP'],
+    ['cop', 'COP'],
+    'empty is not guessed as bolívares' => ['', null],
+    'unknown' => ['euros', null],
+    'only punctuation' => ['..', null],
+]);
