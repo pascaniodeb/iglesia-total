@@ -35,3 +35,18 @@ test('members without dashboard access land on their own profile', function () {
 
     $response->assertRedirect(route('profile.edit'));
 });
+
+test('each widget reaches only the roles that may open the page behind it', function (UserRole $role) {
+    $user = User::factory()->role($role)->create();
+
+    $this->actingAs($user)->get(route('dashboard'))->assertInertia(fn ($page) => $page
+        ->component('dashboard')
+        ->where('offerings', fn ($value) => ($value !== null) === $role->grants(Permission::OfferingsView))
+        ->where('tithes', fn ($value) => ($value !== null) === $role->grants(Permission::TithesView))
+        ->where('pending', fn ($value) => ($value !== null) === $role->grants(Permission::ClosuresView))
+        ->where('cash', fn ($value) => ($value !== null) === $role->grants(Permission::AccountingView))
+        ->where('rates', fn ($value) => $value === null || $role->grants(Permission::CatalogsView)));
+})->with(array_filter(
+    array_column(UserRole::cases(), null, 'value'),
+    fn (UserRole $role) => $role->grants(Permission::DashboardView),
+));
