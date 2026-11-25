@@ -205,6 +205,41 @@ function createLegacyTreasuryTables(): void
         $table->timestampTz('deleted_at')->nullable();
     });
 
+    Schema::connection('legacy')->create('account_codes', function (Blueprint $table) {
+        $table->integer('id')->primary();
+        $table->text('code');
+        $table->text('name');
+        $table->text('type');
+        $table->boolean('is_active')->default(true);
+    });
+
+    Schema::connection('legacy')->create('monthly_closures', function (Blueprint $table) {
+        $table->integer('id')->primary();
+        $table->text('month_key');
+        $table->integer('offerings_count')->default(0);
+        foreach (['total_ves', 'total_usd', 'total_cop'] as $column) {
+            $table->decimal($column, 18, 2)->default(0);
+        }
+        $table->text('status')->default('closed');
+        $table->timestampTz('deleted_at')->nullable();
+    });
+
+    Schema::connection('legacy')->create('accounting_entries', function (Blueprint $table) {
+        $table->integer('id')->primary();
+        $table->date('entry_date');
+        $table->text('type');
+        $table->integer('account_code_id');
+        $table->text('concept')->nullable();
+        $table->text('description')->nullable();
+        foreach (['amount_ves', 'amount_usd', 'amount_cop'] as $column) {
+            $table->decimal($column, 18, 2)->default(0);
+        }
+        $table->text('month_key');
+        $table->integer('monthly_closure_id')->nullable();
+        $table->timestampTz('posted_at')->nullable();
+        $table->timestampTz('deleted_at')->nullable();
+    });
+
     Schema::connection('legacy')->create('receipt_settings', function (Blueprint $table) {
         $table->integer('id')->primary();
         $table->integer('start_number');
@@ -242,6 +277,24 @@ function legacyWeeklyClosure(int $id, string $weekKey, string $start, array $att
         'total_cop' => '1000.00',
         'status' => 'closed',
         'closed_at' => '2026-01-03 10:00:00+00',
+        ...$attributes,
+    ]);
+}
+
+/**
+ * @param  array<string, mixed>  $attributes
+ */
+function legacyEntry(int $id, string $code, string $date, array $attributes = []): void
+{
+    $codeId = DB::connection('legacy')->table('account_codes')->where('code', $code)->value('id');
+
+    DB::connection('legacy')->table('accounting_entries')->insert([
+        'id' => $id,
+        'entry_date' => $date,
+        'type' => str_starts_with($code, 'E-') ? 'expense' : 'income',
+        'account_code_id' => $codeId,
+        'concept' => "Concepto {$id}",
+        'month_key' => substr($date, 0, 7),
         ...$attributes,
     ]);
 }
