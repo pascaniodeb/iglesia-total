@@ -72,6 +72,10 @@ class MigrateLegacy extends Command
             return self::FAILURE;
         }
 
+        if (! $this->step('books:verify', [])) {
+            return self::FAILURE;
+        }
+
         $this->components->info('Migrated: every figure matches the old system to the cent.');
 
         return self::SUCCESS;
