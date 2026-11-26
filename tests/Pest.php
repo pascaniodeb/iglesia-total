@@ -322,6 +322,24 @@ function legacyEntry(int $id, string $code, string $date, array $attributes = []
 }
 
 /**
+ * The text of the page as a person would read it: the PDF streams are not compressed in the test
+ * (FPDF compresses the streams: inflate each one and keep the text operators).
+ */
+function pdfText(string $pdf): string
+{
+    preg_match_all('/stream\r?\n(.*?)\r?\nendstream/s', $pdf, $streams);
+    $text = '';
+
+    foreach ($streams[1] as $stream) {
+        $content = @gzuncompress($stream);
+        preg_match_all('/\((.*?)\)\s*Tj/s', $content === false ? $stream : $content, $found);
+        $text .= implode(' ', $found[1]).' ';
+    }
+
+    return mb_convert_encoding($text, 'UTF-8', 'Windows-1252');
+}
+
+/**
  * Three months of the old books, small enough to read, with the new system ready to receive them
  * (accounts, category, offerings, the sealed ledger open and every week closed):
  *

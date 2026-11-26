@@ -17,6 +17,9 @@ use FPDF;
  */
 final class Document extends FPDF
 {
+    /** A line printed at the foot of every page, with "Página n de N" under it; null prints nothing. */
+    public ?string $footerLine = null;
+
     /**
      * @param  'P'|'L'  $orientation
      * @param  'Letter'|'A4'|array{0: float, 1: float}  $size  width and height in points, portrait
@@ -27,6 +30,19 @@ final class Document extends FPDF
         $this->SetMargins(0, 0, 0);
         $this->SetAutoPageBreak(false);
         $this->SetCreator('Iglesia Total');
+    }
+
+    public function Footer(): void
+    {
+        if ($this->footerLine === null) {
+            return;
+        }
+
+        $this->SetFont('Helvetica', '', 6.5);
+        $this->SetTextColor(100);
+        $this->put(34, $this->h - 34, $this->w - 68, 8, $this->footerLine, 'C');
+        $this->put(34, $this->h - 25, $this->w - 68, 8, 'Página '.$this->PageNo().' de {nb}', 'C');
+        $this->SetTextColor(0);
     }
 
     /**

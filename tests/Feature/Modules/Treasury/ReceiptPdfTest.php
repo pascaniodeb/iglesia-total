@@ -22,24 +22,6 @@ afterEach(function () {
     Carbon::setTestNow();
 });
 
-/**
- * The text of the page as a person would read it: the PDF streams are not compressed in the test
- * (FPDF compresses them, so inflate each one and keep the text operators).
- */
-function pdfText(string $pdf): string
-{
-    preg_match_all('/stream\r?\n(.*?)\r?\nendstream/s', $pdf, $streams);
-    $text = '';
-
-    foreach ($streams[1] as $stream) {
-        $content = @gzuncompress($stream);
-        preg_match_all('/\((.*?)\)\s*Tj/s', $content === false ? $stream : $content, $found);
-        $text .= implode(' ', $found[1]).' ';
-    }
-
-    return mb_convert_encoding($text, 'UTF-8', 'Windows-1252');
-}
-
 test('the receipt comes out as a half-letter PDF with what the paper says', function () {
     $response = $this->get(route('treasury.receipts.pdf', 1))->assertOk();
     $pdf = $response->getContent();

@@ -20,4 +20,11 @@ final class DatabaseSealedPeriods implements SealedPeriods
             ->mapWithKeys(fn (LedgerBlock $block) => [(string) $block->period_key => ['height' => $block->height, 'hash' => $block->hash]])
             ->all();
     }
+
+    public function head(): ?array
+    {
+        $block = LedgerBlock::query()->orderByDesc('height')->first(['height', 'hash']);
+
+        return $block === null ? null : ['height' => $block->height, 'hash' => $block->hash];
+    }
 }

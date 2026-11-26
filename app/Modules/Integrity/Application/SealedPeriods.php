@@ -13,4 +13,12 @@ interface SealedPeriods
      * @return array<string, array{height: int, hash: string}> by period key; unsealed periods are left out
      */
     public function of(string $kind, array $periodKeys): array;
+
+    /**
+     * The head of the sealed ledger (the last block), which a printed document cites so it can be
+     * placed in the chain; null before the genesis.
+     *
+     * @return array{height: int, hash: string}|null
+     */
+    public function head(): ?array;
 }

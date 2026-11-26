@@ -1,5 +1,7 @@
 import { Head, router } from '@inertiajs/react';
+import { FileDown } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
+import { Button } from '@/components/ui/button';
 import { CashStatementTable } from '@/features/accounting/components/cash-statement-table';
 import { CodeTable } from '@/features/accounting/components/code-table';
 import { DraftNotice } from '@/features/accounting/components/draft-notice';
@@ -10,7 +12,7 @@ import type {
     PeriodReport,
 } from '@/features/accounting/types';
 import { formatShortDate } from '@/features/treasury/rates';
-import { index as reportsIndex } from '@/routes/accounting/reports';
+import { index as reportsIndex, pdf } from '@/routes/accounting/reports';
 
 type Props = {
     report: PeriodReport;
@@ -35,12 +37,31 @@ export default function ReportsIndex({ report, options }: Props) {
                     description={`${report.label}, del ${formatShortDate(report.first_day)} al ${formatShortDate(report.last_day)}. Un solo saldo anterior y un solo saldo final para todo el período: los saldos de cada mes nunca se suman.`}
                     meta={report.is_draft ? 'Borrador' : 'Meses cerrados'}
                     actions={
-                        <PeriodPicker
-                            granularity={report.granularity}
-                            period={report.period}
-                            options={options}
-                            onChange={visit}
-                        />
+                        <>
+                            <PeriodPicker
+                                granularity={report.granularity}
+                                period={report.period}
+                                options={options}
+                                onChange={visit}
+                            />
+                            <Button variant="outline" asChild>
+                                <a
+                                    href={
+                                        pdf({
+                                            query: {
+                                                granularity: report.granularity,
+                                                period: report.period,
+                                            },
+                                        }).url
+                                    }
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <FileDown aria-hidden />
+                                    Ver PDF
+                                </a>
+                            </Button>
+                        </>
                     }
                 />
 

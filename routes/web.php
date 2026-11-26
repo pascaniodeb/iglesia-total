@@ -88,6 +88,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('can:accounting.view')->group(function () {
         Route::get('accounting/ledger', [GeneralLedgerController::class, 'index'])->name('accounting.ledger.index');
         Route::get('accounting/reports', [PeriodReportController::class, 'index'])->name('accounting.reports.index');
+        Route::get('accounting/reports/pdf', [PeriodReportController::class, 'pdf'])->middleware('throttle:60,1')->name('accounting.reports.pdf');
     });
 
     // Chart of accounts (Accounting). Fixed paths go before {account}.
