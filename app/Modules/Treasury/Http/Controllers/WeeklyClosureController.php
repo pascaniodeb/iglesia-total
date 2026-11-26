@@ -3,17 +3,22 @@
 namespace App\Modules\Treasury\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Church\Application\ChurchIdentity;
 use App\Modules\Integrity\Application\Actions\SealPeriod;
+use App\Modules\Integrity\Application\ActivityLog;
 use App\Modules\Integrity\Application\SealedPeriods;
 use App\Modules\Integrity\Domain\Ledger\LedgerException;
 use App\Modules\Shared\Tables\TableQuery;
 use App\Modules\Shared\Time\IsoWeek;
 use App\Modules\Treasury\Application\Actions\CloseWeek;
+use App\Modules\Treasury\Application\Closures\WeekByCategory;
 use App\Modules\Treasury\Application\Closures\WeeklyClosureSchedule;
 use App\Modules\Treasury\Application\Closures\WeekSnapshot;
 use App\Modules\Treasury\Infrastructure\Models\WeeklyClosure;
+use App\Modules\Treasury\Infrastructure\Pdf\WeeklyClosurePdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 use InvalidArgumentException;
@@ -53,6 +58,34 @@ class WeeklyClosureController extends Controller
                 'snapshot' => WeekSnapshot::of($next),
                 'blocker' => WeeklyClosureSchedule::blocker($next),
             ],
+        ]);
+    }
+
+    /**
+     * The weekly income report of a closed week as the paper form, drawn again on every request.
+     */
+    public function pdf(string $week, ChurchIdentity $church, WeekByCategory $lines, WeeklyClosurePdf $document, ActivityLog $activityLog): HttpResponse
+    {
+        if ($church->profile() === null) {
+            abort(409, __('Fill in the church settings first.'));
+        }
+
+        try {
+            $isoWeek = IsoWeek::fromKey($week);
+        } catch (InvalidArgumentException) {
+            abort(404);
+        }
+
+        $closure = WeeklyClosure::query()->where('week_key', $isoWeek->key())->first()
+            ?? abort(409, __('The week :week is not closed yet.', ['week' => $isoWeek->key()]));
+        $bytes = $document->render($closure, $lines->of($isoWeek));
+
+        $activityLog->access('weekly_closure.pdf_downloaded', __('Opened the PDF of the weekly closure :week.', ['week' => $isoWeek->key()]), $closure);
+
+        return response($bytes, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="reporte-ingresos-semanal-'.$isoWeek->key().'.pdf"',
+            'Cache-Control' => 'private, no-cache, must-revalidate',
         ]);
     }
 

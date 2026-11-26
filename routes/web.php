@@ -138,6 +138,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Weekly closures (Treasury): step 1 of the month circuit. A closed week never reopens.
     Route::middleware('can:closures.view')->prefix('treasury/weekly-closures')->name('treasury.weekly-closures.')->group(function () {
         Route::get('/', [WeeklyClosureController::class, 'index'])->name('index');
+        Route::get('{week}/pdf', [WeeklyClosureController::class, 'pdf'])->where('week', '\d{4}-W\d{2}')->middleware('throttle:60,1')->name('pdf');
 
         Route::middleware('can:closures.manage')->group(function () {
             Route::post('/', [WeeklyClosureController::class, 'store'])->middleware('throttle:10,1')->name('store');

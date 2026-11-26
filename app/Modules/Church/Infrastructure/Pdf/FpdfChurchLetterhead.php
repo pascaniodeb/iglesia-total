@@ -23,6 +23,7 @@ final class FpdfChurchLetterhead implements ChurchLetterhead
         return match ($variant) {
             LetterheadVariant::Stacked => $this->stacked($pdf, $church, $title),
             LetterheadVariant::Receipt => $this->receipt($pdf, $church),
+            LetterheadVariant::Framed => $this->framed($pdf, $church, $title),
         };
     }
 
@@ -68,6 +69,57 @@ final class FpdfChurchLetterhead implements ChurchLetterhead
         }
 
         return $y + 6;
+    }
+
+    private function framed(Document $pdf, ChurchProfile $church, string $title): float
+    {
+        $width = $pdf->GetPageWidth();
+        $y = 20.0;
+
+        $this->logo($pdf, $church, self::MARGIN - 4, $y - 2, 56);
+
+        $pdf->SetFont('Times', 'B', 13);
+        $pdf->put(100, $y, $width - 100 - 210, 16, $church->denomination, 'C');
+        $y += 18;
+
+        if ($church->headquarters !== '') {
+            $pdf->SetFont('Helvetica', 'B', 9.5);
+            $pdf->put(100, $y, $width - 100 - 210, 12, $church->headquarters, 'C');
+            $y += 14;
+        }
+
+        if ($church->registrationNote !== '') {
+            $pdf->SetFont('Helvetica', '', 6.5);
+            $lines = $pdf->wrap(100, $y, $width - 100 - 210, 8, $church->registrationNote, 2, 'C');
+            $y += $lines * 8 + 2;
+        }
+
+        $corner = array_values(array_filter([
+            $church->denominationRif !== '' ? 'RIF: '.$church->denominationRif : null,
+            $church->code !== '' ? 'CÓDIGO: '.$church->code : null,
+        ]));
+
+        if ($corner !== []) {
+            $boxHeight = 8 + 12 * count($corner);
+            $pdf->box($width - self::MARGIN - 160, 22, 160, $boxHeight, 0.75);
+            $pdf->SetFont('Helvetica', 'B', 8);
+
+            foreach ($corner as $i => $line) {
+                $pdf->put($width - self::MARGIN - 160, 26 + $i * 12, 160, 12, $line, 'C');
+            }
+        }
+
+        $y = max($y, 22 + 56) + 6;
+
+        if ($title !== '') {
+            $frame = 330.0;
+            $pdf->box(($width - $frame) / 2, $y, $frame, 22, 1);
+            $pdf->SetFont('Times', 'B', 13);
+            $pdf->put(($width - $frame) / 2, $y, $frame, 22, $title, 'C');
+            $y += 22;
+        }
+
+        return $y + 12;
     }
 
     private function receipt(Document $pdf, ChurchProfile $church): float

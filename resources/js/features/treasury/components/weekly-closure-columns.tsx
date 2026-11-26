@@ -1,11 +1,11 @@
 import { router } from '@inertiajs/react';
-import { ShieldCheck, ShieldAlert } from 'lucide-react';
+import { FileDown, ShieldCheck, ShieldAlert } from 'lucide-react';
 import type { DataTableColumn } from '@/components/data-table/types';
 import { Button } from '@/components/ui/button';
 import { formatShortDate } from '@/features/treasury/rates';
 import type { WeeklyClosureRow } from '@/features/treasury/types';
 import { formatAmount } from '@/lib/money';
-import { seal } from '@/routes/treasury/weekly-closures';
+import { pdf, seal } from '@/routes/treasury/weekly-closures';
 
 const amount = (value: string) => (
     <span className="font-semibold whitespace-nowrap tabular-nums">
@@ -96,6 +96,23 @@ export function weeklyClosureColumns(
             header: 'COP',
             align: 'end',
             cell: (c) => amount(c.total_cop),
+        },
+        {
+            key: 'pdf',
+            header: 'Formulario',
+            mobile: 'detail',
+            cell: (closure) => (
+                <Button size="sm" variant="outline" asChild>
+                    <a
+                        href={pdf(closure.week_key).url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <FileDown aria-hidden />
+                        PDF
+                    </a>
+                </Button>
+            ),
         },
         {
             key: 'seal',
