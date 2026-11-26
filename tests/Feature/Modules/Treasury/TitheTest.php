@@ -154,6 +154,7 @@ foreach ([
     'App\Modules\Treasury\Application\Import\ImportTithes',
     'App\Modules\Treasury\Application\Tithes\TitheReport',
     'App\Modules\Treasury\Application\Tithes\TitheAnalysis',
+    'App\Modules\Treasury\Infrastructure\Pdf\TitheReportPdf',
     'App\Modules\Treasury\Infrastructure\Models\Tithe',
 ] as $titheClass) {
     arch('tithes stay out of the books, the receipts and the seal: '.class_basename($titheClass))

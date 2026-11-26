@@ -1,11 +1,14 @@
 import { Head, router } from '@inertiajs/react';
+import { FileDown } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
+import { Button } from '@/components/ui/button';
 import { PeriodPicker } from '@/features/accounting/components/period-picker';
 import type { Granularity, PeriodOptions } from '@/features/accounting/types';
 import { TitheNav } from '@/features/treasury/components/tithe-nav';
 import type { TitheReport } from '@/features/treasury/types';
 import { formatAmount, isZeroAmount } from '@/lib/money';
 import { reports } from '@/routes/treasury/tithes';
+import { pdf } from '@/routes/treasury/tithes/reports';
 
 type TitheReportsProps = {
     report: TitheReport;
@@ -39,12 +42,31 @@ export default function TitheReports({ report, options }: TitheReportsProps) {
                     description={`${report.label}. Lo que se diezmó en el período, cada moneda por separado. Los miembros van por orden alfabético: no es un ranking.`}
                     meta={`${count.format(report.members_who_tithed)} ${report.members_who_tithed === 1 ? 'miembro diezmó' : 'miembros diezmaron'}`}
                     actions={
-                        <PeriodPicker
-                            granularity={report.granularity}
-                            period={report.period}
-                            options={options}
-                            onChange={visit}
-                        />
+                        <>
+                            <PeriodPicker
+                                granularity={report.granularity}
+                                period={report.period}
+                                options={options}
+                                onChange={visit}
+                            />
+                            <Button variant="outline" asChild>
+                                <a
+                                    href={
+                                        pdf({
+                                            query: {
+                                                granularity: report.granularity,
+                                                period: report.period,
+                                            },
+                                        }).url
+                                    }
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <FileDown aria-hidden />
+                                    Ver PDF
+                                </a>
+                            </Button>
+                        </>
                     }
                 />
 

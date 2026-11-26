@@ -2,6 +2,8 @@
 
 namespace App\Modules\Shared\Pdf;
 
+use App\Modules\Shared\Time\Month;
+
 /**
  * How printed documents write numbers and dates: thousands with a dot and decimals with a comma,
  * as it is written here, from the server's exact decimal text and never through a float.
@@ -30,5 +32,13 @@ final class Format
         [$year, $month, $day] = array_pad(explode('-', substr($iso, 0, 10)), 3, '');
 
         return "{$day}/{$month}/{$year}";
+    }
+
+    /** A month as it is written on a heading: "noviembre de 2026". */
+    public static function monthName(Month $month): string
+    {
+        $names = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+        return $names[(int) $month->firstDay->format('n') - 1].' de '.$month->firstDay->format('Y');
     }
 }

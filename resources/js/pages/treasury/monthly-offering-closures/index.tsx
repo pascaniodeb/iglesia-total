@@ -1,7 +1,9 @@
 import { Head } from '@inertiajs/react';
+import { FileDown } from 'lucide-react';
 import { ServerDataTable } from '@/components/data-table/server-data-table';
 import type { DataTableColumn } from '@/components/data-table/types';
 import { PageHeader } from '@/components/page-header';
+import { Button } from '@/components/ui/button';
 import { NextMonthCard } from '@/features/treasury/components/next-month-card';
 import type {
     MonthlyOfferingClosureRow,
@@ -10,7 +12,10 @@ import type {
 import { usePermissions } from '@/hooks/use-permissions';
 import { formatAmount } from '@/lib/money';
 import { formatMonth } from '@/lib/month';
-import { index as monthlyIndex } from '@/routes/treasury/monthly-offering-closures';
+import {
+    index as monthlyIndex,
+    pdf,
+} from '@/routes/treasury/monthly-offering-closures';
 import type { Paginated, TableFilters } from '@/types';
 
 type MonthlyOfferingClosuresIndexProps = {
@@ -60,6 +65,23 @@ const columns: DataTableColumn<MonthlyOfferingClosureRow, 'month'>[] = [
         header: 'COP',
         align: 'end',
         cell: (c) => amount(c.total_cop),
+    },
+    {
+        key: 'pdf',
+        header: 'Documento',
+        mobile: 'detail',
+        cell: (closure) => (
+            <Button size="sm" variant="outline" asChild>
+                <a
+                    href={pdf(closure.month).url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <FileDown aria-hidden />
+                    PDF
+                </a>
+            </Button>
+        ),
     },
     {
         key: 'entry',

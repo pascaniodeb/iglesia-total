@@ -4,6 +4,8 @@ namespace App\Modules\Treasury\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Accounting\Application\ChartOfAccounts;
+use App\Modules\Church\Application\ChurchIdentity;
+use App\Modules\Integrity\Application\ActivityLog;
 use App\Modules\Shared\Tables\TableQuery;
 use App\Modules\Shared\Time\IsoWeek;
 use App\Modules\Shared\Time\Month;
@@ -12,8 +14,10 @@ use App\Modules\Treasury\Application\Closures\MonthlyOfferingClosureSchedule;
 use App\Modules\Treasury\Application\Closures\MonthOfferingSnapshot;
 use App\Modules\Treasury\Infrastructure\Models\MonthlyOfferingClosure;
 use App\Modules\Treasury\Infrastructure\Models\WeeklyClosure;
+use App\Modules\Treasury\Infrastructure\Pdf\MonthlyOfferingClosurePdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 use InvalidArgumentException;
@@ -43,6 +47,34 @@ class MonthlyOfferingClosureController extends Controller
             ]),
             'filters' => $table->filters(),
             'next' => $next === null ? null : $this->nextMonth($next, $chart),
+        ]);
+    }
+
+    /**
+     * The closure of a month as a printed document, drawn again on every request.
+     */
+    public function pdf(string $month, ChurchIdentity $church, MonthlyOfferingClosurePdf $document, ActivityLog $activityLog): HttpResponse
+    {
+        if ($church->profile() === null) {
+            abort(409, __('Fill in the church settings first.'));
+        }
+
+        try {
+            $key = Month::fromKey($month)->key();
+        } catch (InvalidArgumentException) {
+            abort(404);
+        }
+
+        $closure = MonthlyOfferingClosure::query()->where('month', $key)->first()
+            ?? abort(409, __('The offerings of :month are not closed yet.', ['month' => $key]));
+        $bytes = $document->render($closure);
+
+        $activityLog->access('monthly_offering_closure.pdf_downloaded', __('Opened the PDF of the offerings closure of :month.', ['month' => $key]), $closure);
+
+        return response($bytes, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="cierre-ofrendas-'.$key.'.pdf"',
+            'Cache-Control' => 'private, no-cache, must-revalidate',
         ]);
     }
 

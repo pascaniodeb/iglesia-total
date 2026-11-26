@@ -121,6 +121,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('can:tithes.view')->prefix('treasury/tithes')->name('treasury.tithes.')->group(function () {
         Route::get('/', [TitheController::class, 'index'])->name('index');
         Route::get('reports', [TitheInsightsController::class, 'report'])->name('reports');
+        Route::get('reports/pdf', [TitheInsightsController::class, 'reportPdf'])->middleware('throttle:30,1')->name('reports.pdf');
         Route::get('analysis', [TitheInsightsController::class, 'analysis'])->name('analysis');
 
         Route::middleware('can:tithes.manage')->group(function () {
@@ -149,6 +150,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Monthly offering closures (Treasury): step 2 of the month circuit, posts to the journal.
     Route::middleware('can:closures.view')->prefix('treasury/monthly-offering-closures')->name('treasury.monthly-offering-closures.')->group(function () {
         Route::get('/', [MonthlyOfferingClosureController::class, 'index'])->name('index');
+        Route::get('{month}/pdf', [MonthlyOfferingClosureController::class, 'pdf'])->where('month', '\d{4}-\d{2}')->middleware('throttle:60,1')->name('pdf');
         Route::post('/', [MonthlyOfferingClosureController::class, 'store'])->middleware(['can:closures.manage', 'throttle:10,1'])->name('store');
     });
 
