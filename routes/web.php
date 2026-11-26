@@ -74,6 +74,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('can:accounting.view')->prefix('treasury/receipts')->name('treasury.receipts.')->group(function () {
         Route::get('/', [ReceiptController::class, 'index'])->name('index');
         Route::get('{receipt:number}', [ReceiptController::class, 'show'])->whereNumber('receipt')->name('show');
+        Route::get('{receipt:number}/pdf', [ReceiptController::class, 'pdf'])->whereNumber('receipt')->middleware('throttle:60,1')->name('pdf');
 
         Route::post('/', [ReceiptController::class, 'store'])->middleware(['can:accounting.manage', 'throttle:30,1'])->name('store');
 

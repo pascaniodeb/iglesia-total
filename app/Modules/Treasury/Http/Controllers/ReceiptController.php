@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Modules\Accounting\Application\CashMovements;
 use App\Modules\Accounting\Application\ChartOfAccounts;
+use App\Modules\Church\Application\ChurchIdentity;
+use App\Modules\Integrity\Application\ActivityLog;
 use App\Modules\Shared\Tables\TableQuery;
 use App\Modules\Shared\Time\ChurchCalendar;
 use App\Modules\Treasury\Application\Actions\IssueReceipt;
@@ -19,8 +21,10 @@ use App\Modules\Treasury\Http\Requests\ReceiptRequest;
 use App\Modules\Treasury\Http\Tables\ReceiptListing;
 use App\Modules\Treasury\Infrastructure\Models\Receipt;
 use App\Modules\Treasury\Infrastructure\Models\ReceiptSetting;
+use App\Modules\Treasury\Infrastructure\Pdf\ReceiptPdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -111,6 +115,28 @@ class ReceiptController extends Controller
                 ],
             ],
             'can_administer' => $request->user()?->can(Permission::ReceiptsAdminister->value) ?? false,
+        ]);
+    }
+
+    /**
+     * The receipt as the paper form of the IPUV book, drawn again on every request (a receipt is
+     * never edited, so the same paper always comes out; a voided one carries its ANULADO band).
+     */
+    public function pdf(Receipt $receipt, ChartOfAccounts $chart, ChurchIdentity $church, ReceiptPdf $document, ActivityLog $activityLog): HttpResponse
+    {
+        if ($church->profile() === null) {
+            abort(409, __('Fill in the church settings first.'));
+        }
+
+        $number = ReceiptNumber::format($receipt->number);
+        $bytes = $document->render($receipt, $chart->find($receipt->account_id)->code);
+
+        $activityLog->access('receipt.pdf_downloaded', __('Opened the PDF of receipt N.º :number.', ['number' => $number]), $receipt);
+
+        return response($bytes, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => "inline; filename=\"comprobante-{$number}.pdf\"",
+            'Cache-Control' => 'private, no-cache, must-revalidate',
         ]);
     }
 

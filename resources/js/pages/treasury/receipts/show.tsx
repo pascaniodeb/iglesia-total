@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { Ban, BookOpen } from 'lucide-react';
+import { Ban, BookOpen, FileDown } from 'lucide-react';
 import { useState } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import { formatAmount, isZeroAmount } from '@/lib/money';
 import { formatMonth } from '@/lib/month';
 import { cn } from '@/lib/utils';
 import { index as journalIndex } from '@/routes/accounting/journal';
-import { index as receiptsIndex } from '@/routes/treasury/receipts';
+import { index as receiptsIndex, pdf } from '@/routes/treasury/receipts';
 
 type ReceiptShowProps = {
     receipt: ReceiptDetail;
@@ -67,6 +67,16 @@ export default function ReceiptShow({
                                     <BookOpen aria-hidden />
                                     Ver en el Libro Diario
                                 </Link>
+                            </Button>
+                            <Button variant="outline" asChild>
+                                <a
+                                    href={pdf(receipt.number).url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <FileDown aria-hidden />
+                                    Ver PDF
+                                </a>
                             </Button>
                             {canAdminister && !receipt.void && (
                                 <Button

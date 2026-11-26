@@ -45,6 +45,16 @@ final class BrandingStorage
         return hash('sha256', $this->bytes($kind, $file));
     }
 
+    /**
+     * The bytes of a stored branding file, or null when it is missing from the disk.
+     */
+    public function read(string $path): ?string
+    {
+        $disk = Storage::disk(self::DISK);
+
+        return $disk->exists($path) ? $disk->get($path) : null;
+    }
+
     public function delete(?string $path): void
     {
         if ($path !== null) {
