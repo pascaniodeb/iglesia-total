@@ -28,13 +28,17 @@ export function PageHeader({
         <header
             className={cn(
                 'flex flex-col md:flex-row md:justify-between',
-                compact ? 'gap-3 md:items-center' : 'gap-6 md:items-end',
+                compact
+                    ? 'gap-3 md:items-center'
+                    : 'gap-6 md:flex-wrap md:items-end',
             )}
         >
             <div
                 className={cn(
                     'flex min-w-0 flex-1 flex-col',
-                    compact ? 'gap-1.5' : 'gap-3',
+                    // With wide actions the row wraps (actions go under the text) instead of
+                    // squeezing the title into a sliver.
+                    compact ? 'gap-1.5' : 'gap-3 md:min-w-80',
                 )}
             >
                 {(eyebrow || meta) && (

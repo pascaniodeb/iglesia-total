@@ -3,13 +3,19 @@
 namespace App\Modules\Integrity\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Church\Application\ChurchIdentity;
+use App\Modules\Integrity\Application\Actions\VerifyIntegrity;
+use App\Modules\Integrity\Application\ActivityLog;
 use App\Modules\Integrity\Application\IntegrityChecks;
 use App\Modules\Integrity\Application\LegacyLedgerArchive;
 use App\Modules\Integrity\Http\Tables\LedgerBlockListing;
 use App\Modules\Integrity\Infrastructure\Models\ActivityLogEntry;
 use App\Modules\Integrity\Infrastructure\Models\LedgerBlock;
+use App\Modules\Integrity\Infrastructure\Pdf\IntegrityCertificatePdf;
 use App\Modules\Shared\Tables\TableQuery;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -57,6 +63,46 @@ class IntegrityCenterController extends Controller
             'filters' => $table->filters(),
             'kinds' => LedgerBlockListing::KINDS,
             'history' => $this->history(),
+        ]);
+    }
+
+    /**
+     * Verifies everything now (the chain and every control) and leaves it on the record.
+     */
+    public function verify(VerifyIntegrity $verify): RedirectResponse
+    {
+        $result = $verify();
+
+        Inertia::flash('toast', $result['passed']
+            ? ['type' => 'success', 'message' => __('The ledger is intact and every control holds.')]
+            : ['type' => 'warning', 'message' => __('The verification found differences: review them below.')]);
+
+        return back();
+    }
+
+    /**
+     * The certificate of the sealed ledger, with a verification made now (never an older one).
+     */
+    public function certificate(VerifyIntegrity $verify, ChurchIdentity $church, IntegrityCertificatePdf $document, ActivityLog $activityLog): HttpResponse
+    {
+        if ($church->profile() === null) {
+            abort(409, __('Fill in the church settings first.'));
+        }
+
+        $verification = $verify();
+        $bytes = $document->render($verification, [
+            'genesis' => LedgerBlock::query()->where('kind', 'genesis')->count(),
+            'weekly' => LedgerBlock::query()->where('kind', 'weekly')->count(),
+            'monthly' => LedgerBlock::query()->where('kind', 'monthly')->count(),
+            'started_at' => LedgerBlock::query()->where('kind', 'genesis')->first()?->sealed_at->toDateString(),
+        ]);
+
+        $activityLog->access('integrity.certificate_downloaded', __('Opened the integrity certificate of the sealed ledger.'));
+
+        return response($bytes, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="certificado-integridad.pdf"',
+            'Cache-Control' => 'private, no-cache, must-revalidate',
         ]);
     }
 

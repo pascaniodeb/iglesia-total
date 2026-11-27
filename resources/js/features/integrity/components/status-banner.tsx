@@ -89,7 +89,7 @@ export function StatusBanner({
                     )}
                 </div>
             </div>
-            <dl className="grid grid-cols-2 gap-3 text-foreground md:grid-cols-4">
+            <dl className="grid grid-cols-2 gap-3 text-foreground xl:grid-cols-4">
                 <Stat label="Bloques sellados" value={String(status.blocks)} />
                 <Stat
                     label="Último bloque"

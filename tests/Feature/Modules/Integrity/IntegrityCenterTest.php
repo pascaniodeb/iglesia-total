@@ -2,6 +2,7 @@
 
 use App\Enums\UserRole;
 use App\Modules\Accounting\Infrastructure\Models\AccountingAccount;
+use App\Modules\Church\Infrastructure\Models\ChurchSetting;
 use App\Modules\Integrity\Application\Actions\CreateLedgerGenesis;
 use App\Modules\Integrity\Infrastructure\Models\ActivityLogEntry;
 use App\Modules\Shared\Time\IsoWeek;
@@ -86,4 +87,66 @@ test('only who may read the sealed ledger gets in', function () {
 
     signInAs(UserRole::Comptroller);
     $this->get(route('integrity.index'))->assertOk();
+});
+
+test('verifying now leaves the chain and the controls on the record and flashes the result', function () {
+    app(CreateLedgerGenesis::class)('M07A1985C0001', '2026-W40');
+
+    $this->post(route('integrity.verify'))->assertRedirect();
+
+    expect(ActivityLogEntry::query()->where('action', 'ledger.verified')->count())->toBe(1)
+        ->and(ActivityLogEntry::query()->where('action', 'integrity.verified')->count())->toBe(1);
+
+    $this->get(route('integrity.index'))->assertInertia(fn (Assert $page) => $page
+        ->where('status.last_chain_check.intact', true)
+        ->where('history', fn ($history) => collect($history)->pluck('action')->contains('integrity.verified')));
+});
+
+test('verifying now needs the permission to read the sealed ledger', function () {
+    signInAs(UserRole::Treasurer);
+
+    $this->post(route('integrity.verify'))->assertForbidden();
+});
+
+test('the certificate states the head of the chain and the result of a verification made now', function () {
+    ChurchSetting::factory()->create();
+    app(CreateLedgerGenesis::class)('M07A1985C0001', '2026-W40');
+    $head = DB::table('ledger_blocks')->orderByDesc('height')->value('hash');
+
+    $response = $this->get(route('integrity.certificate'))->assertOk();
+    $text = pdfText($response->getContent());
+
+    expect($response->headers->get('Content-Type'))->toBe('application/pdf')
+        ->and($text)->toContain('CERTIFICADO DE INTEGRIDAD DEL LIBRO SELLADO')
+        ->and($text)->toContain('CADENA ÍNTEGRA Y CUADRADA CON LOS LIBROS')
+        ->and($text)->toContain(substr(trim($head), 0, 32))
+        ->and($text)->toContain('SE CUMPLE')
+        ->and($text)->not->toContain('CON DIFERENCIAS')
+        ->and(ActivityLogEntry::query()->where('action', 'ledger.verified')->count())->toBe(1)
+        ->and(ActivityLogEntry::query()->where('action', 'integrity.certificate_downloaded')->count())->toBe(1);
+});
+
+test('a certificate with differences never reads as if all were well', function () {
+    ChurchSetting::factory()->create();
+    $category = OfferingCategory::factory()->create(['account_id' => AccountingAccount::factory()->create()->id]);
+    Offering::factory()->create(['offering_date' => '2026-10-28', 'offering_category_id' => $category->id, 'amount_cop' => '100.00']);
+    app(CreateLedgerGenesis::class)('M07A1985C0001', '2026-W40');
+    app(CloseWeek::class)(IsoWeek::fromKey('2026-W44'));
+
+    DB::statement('ALTER TABLE offerings DISABLE TRIGGER offerings_closed_week_guard');
+    DB::statement("UPDATE offerings SET amount_cop = '999.00'");
+    DB::statement('ALTER TABLE offerings ENABLE TRIGGER offerings_closed_week_guard');
+
+    $text = pdfText($this->get(route('integrity.certificate'))->getContent());
+
+    expect($text)->toContain('SE ENCONTRARON DIFERENCIAS')
+        ->and($text)->toContain('CON DIFERENCIAS')
+        ->and($text)->not->toContain('CADENA ÍNTEGRA Y CUADRADA');
+});
+
+test('the certificate needs the church settings and the permission', function () {
+    $this->get(route('integrity.certificate'))->assertStatus(409);
+
+    signInAs(UserRole::Secretary);
+    $this->get(route('integrity.certificate'))->assertForbidden();
 });

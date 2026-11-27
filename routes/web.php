@@ -181,6 +181,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // The integrity center: the sealed ledger, the old chain's archive and every module's checks.
     Route::middleware('can:sealed_ledger.view')->prefix('integrity')->name('integrity.')->group(function () {
         Route::get('/', [IntegrityCenterController::class, 'index'])->name('index');
+        Route::post('verify', [IntegrityCenterController::class, 'verify'])->middleware('throttle:6,1')->name('verify');
+        Route::get('certificate', [IntegrityCenterController::class, 'certificate'])->middleware('throttle:6,1')->name('certificate');
         Route::get('blocks/{height}', [IntegrityBlockController::class, 'show'])->whereNumber('height')->name('blocks.show');
         Route::get('proof', [IntegrityBlockController::class, 'proof'])->middleware('throttle:60,1')->name('proof');
     });

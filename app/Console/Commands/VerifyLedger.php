@@ -2,9 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Modules\Integrity\Application\Actions\VerifyLedgerChain;
-use App\Modules\Integrity\Application\ActivityLog;
-use App\Modules\Integrity\Domain\Ledger\BlockIssue;
+use App\Modules\Integrity\Application\Actions\VerifyAndRecordLedger;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -17,28 +15,11 @@ use Illuminate\Console\Command;
 #[Description('Verify the sealed ledger chain against itself and against the books')]
 class VerifyLedger extends Command
 {
-    public function handle(VerifyLedgerChain $verify, ActivityLog $activityLog): int
+    public function handle(VerifyAndRecordLedger $verify): int
     {
         $result = $verify();
         $legacy = $result['legacy'];
         $issues = [...$result['issues'], ...$legacy['issues']];
-
-        $activityLog->system(
-            'ledger.verified',
-            $issues === []
-                ? __('Verified the sealed ledger: :blocks blocks, intact and matching the books.', ['blocks' => $result['blocks']])
-                : __('Verified the sealed ledger: :count issues found.', ['count' => count($issues)]),
-            details: [
-                'blocks' => $result['blocks'],
-                'height' => $result['height'],
-                'head_hash' => $result['head_hash'],
-                'intact' => $result['intact'],
-                'matches_books' => $result['matches_books'],
-                'issues' => array_map(fn (BlockIssue $issue) => $issue->toArray(), $issues),
-                'unsealed' => $result['unsealed'],
-                'legacy' => ['blocks' => $legacy['blocks'], 'height' => $legacy['height'], 'head_hash' => $legacy['head_hash'], 'intact' => $legacy['intact']],
-            ],
-        );
 
         foreach ($issues as $issue) {
             $this->components->error("[{$issue->type}] #{$issue->height} {$issue->kind} {$issue->periodKey}: {$issue->detail()}");

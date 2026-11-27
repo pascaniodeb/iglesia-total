@@ -1,6 +1,9 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
+import { FileText, ShieldCheck } from 'lucide-react';
+import { useState } from 'react';
 import { ServerDataTable } from '@/components/data-table/server-data-table';
 import { PageHeader } from '@/components/page-header';
+import { Button } from '@/components/ui/button';
 import { blockColumns } from '@/features/integrity/components/block-columns';
 import { ChainFindings } from '@/features/integrity/components/chain-findings';
 import { ChecksPanel } from '@/features/integrity/components/checks-panel';
@@ -13,7 +16,11 @@ import type {
     HistoryEntry,
     IntegrityStatus,
 } from '@/features/integrity/types';
-import { index as integrityIndex } from '@/routes/integrity';
+import {
+    certificate,
+    index as integrityIndex,
+    verify,
+} from '@/routes/integrity';
 import type { Paginated, TableFilters } from '@/types';
 
 type IntegrityIndexProps = {
@@ -39,6 +46,8 @@ export default function IntegrityIndex({
     kinds,
     history,
 }: IntegrityIndexProps) {
+    const [isVerifying, setIsVerifying] = useState(false);
+
     return (
         <>
             <Head title="Centro de integridad" />
@@ -47,6 +56,40 @@ export default function IntegrityIndex({
                     eyebrow="Integridad"
                     title="Centro de integridad"
                     description="Cada semana y cada mes cerrados se sellan en una cadena de bloques que no se puede reescribir sin que se note. Aquí se ve si la cadena está íntegra y si los libros de hoy siguen diciendo lo mismo que cuando se cerraron."
+                    actions={
+                        <>
+                            <Button variant="outline" asChild>
+                                <a
+                                    href={certificate().url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <FileText aria-hidden />
+                                    Certificado (PDF)
+                                </a>
+                            </Button>
+                            <Button
+                                disabled={isVerifying}
+                                onClick={() =>
+                                    router.post(
+                                        verify(),
+                                        {},
+                                        {
+                                            preserveScroll: true,
+                                            onStart: () => setIsVerifying(true),
+                                            onFinish: () =>
+                                                setIsVerifying(false),
+                                        },
+                                    )
+                                }
+                            >
+                                <ShieldCheck aria-hidden />
+                                {isVerifying
+                                    ? 'Verificando…'
+                                    : 'Verificar ahora'}
+                            </Button>
+                        </>
+                    }
                 />
 
                 <StatusBanner status={status} checks={checks} />
