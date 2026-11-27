@@ -12,6 +12,7 @@ import {
     Library,
     Lock,
     Receipt,
+    ShieldCheck,
     Sprout,
     Users,
     Wallet,
@@ -36,6 +37,7 @@ import { index as ledgerIndex } from '@/routes/accounting/ledger';
 import { index as periodsIndex } from '@/routes/accounting/periods';
 import { index as reportsIndex } from '@/routes/accounting/reports';
 import { index as activityLogIndex } from '@/routes/activity-log';
+import { index as integrityIndex } from '@/routes/integrity';
 import { index as exchangeRatesIndex } from '@/routes/treasury/exchange-rates';
 import { index as offeringCategoriesIndex } from '@/routes/treasury/offering-categories';
 import { index as monthlyOfferingClosuresIndex } from '@/routes/treasury/monthly-offering-closures';
@@ -130,6 +132,12 @@ const mainNavItems: NavItem[] = [
         href: exchangeRatesIndex(),
         icon: ArrowLeftRight,
         permission: 'catalogs.view',
+    },
+    {
+        title: 'Centro de integridad',
+        href: integrityIndex(),
+        icon: ShieldCheck,
+        permission: 'sealed_ledger.view',
     },
     {
         title: 'Bitácora',

@@ -17,18 +17,50 @@ final class BooksVerification
     /** Findings listed per check at most; the count says how many there are. */
     private const int LIMIT = 25;
 
+    /** The keys of the checks, in the order they are listed. */
+    public const array KEYS = ['weeks', 'months', 'posting', 'snapshots', 'receipts'];
+
     /**
      * @return array<string, array{title: string, findings: list<string>}>
      */
     public function __invoke(): array
     {
-        return [
-            'weeks' => ['title' => 'Each closed week holds exactly its offerings (count and totals)', 'findings' => $this->weeks()],
-            'months' => ['title' => 'Each monthly offering closure holds exactly the offerings of its month, by category', 'findings' => $this->months()],
-            'posting' => ['title' => 'Each monthly closure posted exactly its income to the journal', 'findings' => $this->posting()],
-            'snapshots' => ['title' => 'Each closed month\'s balance snapshot equals the sum of the journal lines up to its end', 'findings' => $this->snapshots()],
-            'receipts' => ['title' => 'Each receipt moved the cash by exactly its amounts', 'findings' => $this->receipts()],
-        ];
+        $results = [];
+
+        foreach (self::KEYS as $key) {
+            $results[$key] = ['title' => self::title($key), 'findings' => $this->findingsOf($key)];
+        }
+
+        return $results;
+    }
+
+    public static function title(string $key): string
+    {
+        return match ($key) {
+            'weeks' => __('Each closed week holds exactly its offerings (count and totals)'),
+            'months' => __('Each monthly offering closure holds exactly the offerings of its month, by category'),
+            'posting' => __('Each monthly closure posted exactly its income to the journal'),
+            'snapshots' => __("Each closed month's balance snapshot equals the sum of the journal lines up to its end"),
+            'receipts' => __('Each receipt moved the cash by exactly its amounts'),
+            default => throw new \InvalidArgumentException("Unknown books check: {$key}."),
+        };
+    }
+
+    /**
+     * What breaks one check; empty when it holds.
+     *
+     * @return list<string>
+     */
+    public function findingsOf(string $key): array
+    {
+        return match ($key) {
+            'weeks' => $this->weeks(),
+            'months' => $this->months(),
+            'posting' => $this->posting(),
+            'snapshots' => $this->snapshots(),
+            'receipts' => $this->receipts(),
+            default => throw new \InvalidArgumentException("Unknown books check: {$key}."),
+        };
     }
 
     /**

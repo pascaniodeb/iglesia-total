@@ -8,7 +8,9 @@ use App\Modules\Accounting\Application\Ledger;
 use App\Modules\Accounting\Infrastructure\DatabaseChartOfAccounts;
 use App\Modules\Accounting\Infrastructure\DatabaseLedger;
 use App\Modules\Accounting\Infrastructure\GuardedCashMovements;
+use App\Modules\Accounting\Infrastructure\JournalBalanceCheck;
 use App\Modules\Accounting\Infrastructure\Sealing\MonthlySealableSource;
+use App\Modules\Integrity\Application\IntegrityChecks;
 use App\Modules\Integrity\Application\Ledger\SealableSources;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,6 +27,10 @@ class AccountingServiceProvider extends ServiceProvider
         $this->app->bind(CashMovements::class, GuardedCashMovements::class);
 
         // Closed accounting months are sealed as the monthly blocks of the sealed ledger.
+        $this->callAfterResolving(IntegrityChecks::class, function (IntegrityChecks $checks): void {
+            $checks->register($this->app->make(JournalBalanceCheck::class));
+        });
+
         $this->callAfterResolving(SealableSources::class, function (SealableSources $sources): void {
             $sources->register($this->app->make(MonthlySealableSource::class));
         });

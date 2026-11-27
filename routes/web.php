@@ -7,6 +7,7 @@ use App\Modules\Accounting\Http\Controllers\GeneralLedgerController;
 use App\Modules\Accounting\Http\Controllers\JournalController;
 use App\Modules\Accounting\Http\Controllers\PeriodReportController;
 use App\Modules\Integrity\Http\Controllers\ActivityLogController;
+use App\Modules\Integrity\Http\Controllers\IntegrityCenterController;
 use App\Modules\Members\Http\Controllers\MemberController;
 use App\Modules\Treasury\Http\Controllers\ExchangeRateController;
 use App\Modules\Treasury\Http\Controllers\MonthlyOfferingClosureController;
@@ -176,6 +177,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Activity log (Integrity): read-only.
+    // The integrity center: the sealed ledger, the old chain's archive and every module's checks.
+    Route::get('integrity', [IntegrityCenterController::class, 'index'])
+        ->middleware('can:sealed_ledger.view')
+        ->name('integrity.index');
+
     Route::get('activity-log', [ActivityLogController::class, 'index'])
         ->middleware('can:activity_log.view')
         ->name('activity-log.index');

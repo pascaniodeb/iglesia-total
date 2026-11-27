@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
+use App\Console\Reconciliation\BooksIntegrityCheck;
+use App\Console\Reconciliation\BooksVerification;
 use App\Enums\Permission;
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Modules\Integrity\Application\IntegrityChecks;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +22,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // The cross-checks between treasury and accounting read both, which no module may: the
+        // application composes them and hands them to the integrity center.
+        $this->callAfterResolving(IntegrityChecks::class, function (IntegrityChecks $checks): void {
+            foreach (BooksVerification::KEYS as $key) {
+                $checks->register(new BooksIntegrityCheck($this->app->make(BooksVerification::class), $key));
+            }
+        });
     }
 
     /**

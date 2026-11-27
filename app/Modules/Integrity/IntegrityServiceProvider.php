@@ -3,6 +3,7 @@
 namespace App\Modules\Integrity;
 
 use App\Modules\Integrity\Application\ActivityLog;
+use App\Modules\Integrity\Application\IntegrityChecks;
 use App\Modules\Integrity\Application\Ledger\SealableSources;
 use App\Modules\Integrity\Application\SealedPeriods;
 use App\Modules\Integrity\Infrastructure\ActivityContext;
@@ -27,6 +28,9 @@ class IntegrityServiceProvider extends ServiceProvider
 
         // Treasury and Accounting register their SealableSource here from their own providers.
         $this->app->singleton(SealableSources::class);
+
+        // The modules (and the application, for checks that read several) register their IntegrityCheck here.
+        $this->app->singleton(IntegrityChecks::class);
         $this->app->bind(SealedPeriods::class, DatabaseSealedPeriods::class);
     }
 
