@@ -50,9 +50,11 @@ final class WeeklySealableSource implements SealableSource
         SQL, [$periodKey]);
 
         $leaves = [];
+        $keys = [];
 
         foreach ($offerings as $offering) {
             $row = (array) $offering;
+            $keys[] = (string) $row['id'];
             $leaves[] = Canonical::hash([
                 'id' => $row['id'],
                 'date' => $row['date'],
@@ -78,6 +80,7 @@ final class WeeklySealableSource implements SealableSource
                 ],
             ],
             $leaves,
+            $keys,
         );
     }
 

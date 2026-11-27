@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, ShieldCheck, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { DataTableRowActions } from '@/components/data-table/data-table-row-actions';
 import type { RowAction } from '@/components/data-table/data-table-row-actions';
@@ -16,6 +16,7 @@ import { OfferingFormDialog } from '@/features/treasury/components/offering-form
 import { formatShortDate } from '@/features/treasury/rates';
 import type { CategoryOption, OfferingRow } from '@/features/treasury/types';
 import { usePermissions } from '@/hooks/use-permissions';
+import { proof } from '@/routes/integrity';
 import { destroy } from '@/routes/treasury/offerings';
 
 /** Correct an offering or send it to the trash (only while its week is open). */
@@ -32,20 +33,46 @@ export function OfferingRowActions({
     const [isEditing, setIsEditing] = useState(false);
     const [isConfirming, setIsConfirming] = useState(false);
 
-    if (!can('offerings.manage') || offering.is_deleted || offering.is_locked) {
+    const canChange =
+        can('offerings.manage') && !offering.is_deleted && !offering.is_locked;
+    const canProve =
+        can('sealed_ledger.view') && !offering.is_deleted && offering.is_locked;
+
+    if (!canChange && !canProve) {
         return null;
     }
 
     const giver = offering.member?.name ?? 'Ofrenda anónima';
-    const actions: RowAction[] = [
-        { label: 'Corregir', icon: Pencil, onSelect: () => setIsEditing(true) },
-        {
-            label: 'Enviar a la papelera',
-            icon: Trash2,
-            destructive: true,
-            onSelect: () => setIsConfirming(true),
-        },
-    ];
+    const actions: RowAction[] = canChange
+        ? [
+              {
+                  label: 'Corregir',
+                  icon: Pencil,
+                  onSelect: () => setIsEditing(true),
+              },
+              {
+                  label: 'Enviar a la papelera',
+                  icon: Trash2,
+                  destructive: true,
+                  onSelect: () => setIsConfirming(true),
+              },
+          ]
+        : [
+              {
+                  label: 'Ver prueba de sellado',
+                  icon: ShieldCheck,
+                  onSelect: () =>
+                      router.visit(
+                          proof({
+                              query: {
+                                  kind: 'weekly',
+                                  period: offering.week_key,
+                                  record: offering.id,
+                              },
+                          }),
+                      ),
+              },
+          ];
 
     return (
         <>

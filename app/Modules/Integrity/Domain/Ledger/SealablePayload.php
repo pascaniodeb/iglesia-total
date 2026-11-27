@@ -23,9 +23,15 @@ final readonly class SealablePayload
     /**
      * @param  array<array-key, mixed>|stdClass  $payload  an object: associative array or stdClass
      * @param  list<string>  $leaves  hex SHA-256 of each record (use Canonical::hash())
+     * @param  list<string>  $leafKeys  the key of each sealed record, in the same order as $leaves (the id a person
+     *                                  knows it by), so a proof can be asked for "this record"; empty when not offered
      */
-    public function __construct(public array|stdClass $payload, public array $leaves = [])
+    public function __construct(public array|stdClass $payload, public array $leaves = [], public array $leafKeys = [])
     {
+        if ($leafKeys !== [] && count($leafKeys) !== count($leaves)) {
+            throw new InvalidArgumentException('Every sealed record needs its key, or none of them.');
+        }
+
         if (is_array($payload) && array_is_list($payload)) {
             throw new InvalidArgumentException('A sealed payload is an object, not a list.');
         }

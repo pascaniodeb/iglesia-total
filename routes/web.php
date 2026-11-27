@@ -7,6 +7,7 @@ use App\Modules\Accounting\Http\Controllers\GeneralLedgerController;
 use App\Modules\Accounting\Http\Controllers\JournalController;
 use App\Modules\Accounting\Http\Controllers\PeriodReportController;
 use App\Modules\Integrity\Http\Controllers\ActivityLogController;
+use App\Modules\Integrity\Http\Controllers\IntegrityBlockController;
 use App\Modules\Integrity\Http\Controllers\IntegrityCenterController;
 use App\Modules\Members\Http\Controllers\MemberController;
 use App\Modules\Treasury\Http\Controllers\ExchangeRateController;
@@ -178,9 +179,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Activity log (Integrity): read-only.
     // The integrity center: the sealed ledger, the old chain's archive and every module's checks.
-    Route::get('integrity', [IntegrityCenterController::class, 'index'])
-        ->middleware('can:sealed_ledger.view')
-        ->name('integrity.index');
+    Route::middleware('can:sealed_ledger.view')->prefix('integrity')->name('integrity.')->group(function () {
+        Route::get('/', [IntegrityCenterController::class, 'index'])->name('index');
+        Route::get('blocks/{height}', [IntegrityBlockController::class, 'show'])->whereNumber('height')->name('blocks.show');
+        Route::get('proof', [IntegrityBlockController::class, 'proof'])->middleware('throttle:60,1')->name('proof');
+    });
 
     Route::get('activity-log', [ActivityLogController::class, 'index'])
         ->middleware('can:activity_log.view')

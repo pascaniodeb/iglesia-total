@@ -52,8 +52,10 @@ final readonly class MonthlySealableSource implements SealableSource
 
         $receiptHashes = $this->receipts->byEntry(array_values(array_unique(array_map(fn (array $line): string => (string) $line['entry'], $lines))));
         $leaves = [];
+        $keys = [];
 
         foreach ($lines as $line) {
+            $keys[] = $line['entry'].':'.$line['line'];
             $leaves[] = Canonical::hash([
                 'entry' => (string) $line['entry'],
                 'line' => (int) $line['line'],
@@ -85,6 +87,7 @@ final readonly class MonthlySealableSource implements SealableSource
                 'offerings' => $offerings,
             ],
             $leaves,
+            $keys,
         );
     }
 

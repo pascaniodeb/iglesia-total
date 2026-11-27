@@ -1,6 +1,8 @@
+import { Link } from '@inertiajs/react';
 import type { DataTableColumn } from '@/components/data-table/types';
 import type { BlockRow, BlockSortKey } from '@/features/integrity/types';
 import { formatDateTime } from '@/lib/date';
+import { show } from '@/routes/integrity/blocks';
 
 const KIND_LABEL = {
     genesis: 'Génesis',
@@ -21,7 +23,13 @@ export const blockColumns: DataTableColumn<BlockRow, BlockSortKey>[] = [
         sortKey: 'height',
         mobile: 'primary',
         cell: (block) => (
-            <span className="font-semibold tabular-nums">#{block.height}</span>
+            <Link
+                href={show(block.height)}
+                prefetch
+                className="font-semibold text-primary tabular-nums hover:underline"
+            >
+                #{block.height}
+            </Link>
         ),
     },
     {

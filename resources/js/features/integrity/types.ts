@@ -51,3 +51,44 @@ export type HistoryEntry = {
     summary: string;
     passed: boolean;
 };
+
+export type BlockDetail = {
+    block: {
+        height: number;
+        kind: BlockKind;
+        period_key: string | null;
+        prev_hash: string;
+        merkle_root: string;
+        payload_hash: string;
+        hash: string;
+        leaves_count: number;
+        sealed_at: string;
+        sealed_by: string | null;
+    };
+    hash_recomputes: boolean;
+    payload_recomputes: boolean;
+    books: 'matches' | 'drifted' | 'unavailable';
+    payload: unknown;
+    leaves: { key: string; leaf: string }[];
+    leaves_total: number;
+    proofs_offered: boolean;
+};
+
+export type ProofStatus =
+    | 'valid'
+    | 'changed'
+    | 'missing'
+    | 'unsealed'
+    | 'unsupported';
+
+export type RecordProof = {
+    status: ProofStatus;
+    kind: string;
+    period_key: string;
+    record_key: string;
+    height: number | null;
+    block_hash: string | null;
+    merkle_root: string | null;
+    leaf: string | null;
+    steps: { side: 'left' | 'right'; hash: string }[];
+};
