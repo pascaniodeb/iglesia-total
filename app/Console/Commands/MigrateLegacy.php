@@ -47,7 +47,7 @@ class MigrateLegacy extends Command
             }
         }
 
-        $dependent = ['treasury:import-legacy-offerings', 'treasury:import-legacy-closures', 'treasury:import-legacy-receipt-settings', 'accounting:import-legacy-books'];
+        $dependent = ['treasury:import-legacy-offerings', 'treasury:import-legacy-closures', 'treasury:import-legacy-receipt-settings', 'accounting:import-legacy-books', 'audits:import-legacy', 'activity:import-legacy'];
 
         if ($dry) {
             $this->components->info('Dry run: these need the steps above written first, rehearse them on a scratch database: genesis, '.implode(', ', $dependent).', reconcile:legacy.');

@@ -31,6 +31,9 @@ class AuditAcknowledgement extends Model
 
     public $timestamps = false;
 
+    /** Keeps the microseconds: an imported act keeps the exact instant it had. */
+    protected $dateFormat = 'Y-m-d H:i:s.uP';
+
     protected $guarded = [];
 
     /**

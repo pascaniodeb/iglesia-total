@@ -60,3 +60,15 @@ test('there is nothing to reconcile without old entries', function () {
 
     $this->artisan('reconcile:legacy')->assertFailed();
 });
+
+test('an audit, an acknowledgement or an activity entry that was not imported is a difference', function () {
+    DB::connection('legacy')->table('audits')->insert(['id' => 5, 'ran_at' => '2026-08-22 11:00:54+00', 'status' => 'clean', 'findings_count' => 0, 'critical_count' => 0, 'snapshot' => '{"checks":[]}']);
+    DB::connection('legacy')->table('audit_acknowledgements')->insert(['id' => 7, 'fingerprint' => str_repeat('a', 64), 'check_id' => 'x', 'subject' => 's', 'detail' => 'd', 'reason' => 'Motivo largo.', 'acknowledged_at' => '2026-08-22 10:00:00+00']);
+    DB::connection('legacy')->table('activity_log')->insert(['id' => 20, 'occurred_at' => '2026-08-22 22:00:00+00', 'actor_name' => 'x', 'actor_role' => 'pastor', 'action' => 'a', 'entity' => 'e', 'summary' => 's']);
+
+    $this->artisan('reconcile:legacy')->assertFailed();
+
+    $this->artisan('audits:import-legacy')->assertSuccessful();
+    $this->artisan('activity:import-legacy')->assertSuccessful();
+    $this->artisan('reconcile:legacy')->assertSuccessful();
+});

@@ -304,6 +304,55 @@ function legacyWeeklyClosure(int $id, string $weekKey, string $start, array $att
 }
 
 /**
+ * The comptroller's tables of the old system and its activity log, inside the `legacy` schema.
+ */
+function createLegacyAuditTables(): void
+{
+    Schema::connection('legacy')->create('audits', function (Blueprint $table) {
+        $table->integer('id')->primary();
+        $table->timestampTz('ran_at', 6);
+        $table->integer('ran_by')->nullable();
+        $table->text('status');
+        $table->integer('findings_count')->default(0);
+        $table->integer('critical_count')->default(0);
+        $table->jsonb('snapshot');
+        $table->text('notes')->nullable();
+        $table->timestampTz('deleted_at')->nullable();
+    });
+
+    Schema::connection('legacy')->create('audit_acknowledgements', function (Blueprint $table) {
+        $table->integer('id')->primary();
+        $table->text('fingerprint');
+        $table->text('check_id');
+        $table->text('subject');
+        $table->text('detail');
+        $table->text('reason');
+        $table->integer('acknowledged_by')->nullable();
+        $table->timestampTz('acknowledged_at', 6);
+        $table->timestampTz('revoked_at', 6)->nullable();
+        $table->integer('revoked_by')->nullable();
+        $table->text('revoke_reason')->nullable();
+    });
+
+    Schema::connection('legacy')->create('activity_log', function (Blueprint $table) {
+        $table->integer('id')->primary();
+        $table->timestampTz('occurred_at', 6);
+        $table->integer('actor_id')->nullable();
+        $table->text('actor_name');
+        $table->text('actor_role');
+        $table->text('action');
+        $table->text('entity');
+        $table->text('entity_id')->nullable();
+        $table->text('summary');
+        $table->jsonb('before')->nullable();
+        $table->jsonb('after')->nullable();
+        $table->jsonb('diff')->nullable();
+        $table->text('ip')->nullable();
+        $table->text('user_agent')->nullable();
+    });
+}
+
+/**
  * @param  array<string, mixed>  $attributes
  */
 function legacyEntry(int $id, string $code, string $date, array $attributes = []): void
@@ -356,6 +405,7 @@ function seedThreeLegacyMonths(): AccountingAccount
     Carbon::setTestNow('2026-11-25 14:00:00');
     createLegacySource();
     createLegacyTreasuryTables();
+    createLegacyAuditTables();
 
     $daily = AccountingAccount::factory()->create(['code' => 'I-002', 'name' => 'OFRENDAS DIARIAS']);
     AccountingAccount::factory()->create(['code' => 'I-007', 'name' => 'APORTES']);

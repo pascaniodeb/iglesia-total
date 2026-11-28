@@ -10,6 +10,7 @@ use App\Modules\Integrity\Http\Controllers\ActivityLogController;
 use App\Modules\Integrity\Http\Controllers\AuditController;
 use App\Modules\Integrity\Http\Controllers\IntegrityBlockController;
 use App\Modules\Integrity\Http\Controllers\IntegrityCenterController;
+use App\Modules\Integrity\Http\Controllers\LegacyActivityLogController;
 use App\Modules\Members\Http\Controllers\MemberController;
 use App\Modules\Treasury\Http\Controllers\ExchangeRateController;
 use App\Modules\Treasury\Http\Controllers\MonthlyOfferingClosureController;
@@ -206,6 +207,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('activity-log', [ActivityLogController::class, 'index'])
         ->middleware('can:activity_log.view')
         ->name('activity-log.index');
+    Route::get('activity-log/legacy', [LegacyActivityLogController::class, 'index'])
+        ->middleware('can:activity_log.view')
+        ->name('activity-log.legacy');
 });
 
 require __DIR__.'/settings.php';

@@ -375,5 +375,12 @@
     "The audit was recorded with :count pending findings.": "Se registró la auditoría con :count hallazgos pendientes.",
     "The finding was accepted and the reason recorded.": "Se aceptó el hallazgo y quedó anotado el motivo.",
     "The acceptance was lifted: the finding is pending again.": "Se levantó la aceptación: el hallazgo vuelve a estar pendiente.",
-    "Opened the PDF of the audit of :date.": "Abrió el PDF de la auditoría del :date."
+    "Opened the PDF of the audit of :date.": "Abrió el PDF de la auditoría del :date.",
+    "Archived the activity log of the old system: :count entries.": "Se archivó la bitácora del sistema anterior: :count registros.",
+    "Imported the audits of the old system: :audits audits, :acks acknowledgements and :revocations revocations.": "Se importaron las auditorías del sistema anterior: :audits auditorías, :acks aceptaciones y :revocations levantamientos.",
+    "Lifted in the old system (no reason was recorded).": "Levantada en el sistema anterior (no se registró el motivo).",
+    "The archive of the old activity log is exactly what was archived": "El archivo de la bitácora anterior es exactamente lo que se archivó",
+    "There are :count archived entries but no record of their digest in the activity log.": "Hay :count registros archivados pero ningún registro de su huella en la bitácora.",
+    "The archive no longer matches the digest recorded when it was archived.": "El archivo ya no coincide con la huella que se anotó cuando se archivó.",
+    "The archive holds :now entries and :recorded were archived.": "El archivo tiene :now registros y se archivaron :recorded."
 }

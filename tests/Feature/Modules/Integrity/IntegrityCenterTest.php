@@ -25,8 +25,8 @@ afterEach(function () {
 test('the center lists the checks of every module, all holding on clean books', function () {
     $this->get(route('integrity.index'))->assertInertia(fn (Assert $page) => $page
         ->component('integrity/index')
-        ->has('checks', 6)
-        ->where('checks', fn ($checks) => collect($checks)->pluck('id')->sort()->values()->all() === ['books.months', 'books.posting', 'books.receipts', 'books.snapshots', 'books.weeks', 'journal.balance'])
+        ->has('checks', 7)
+        ->where('checks', fn ($checks) => collect($checks)->pluck('id')->sort()->values()->all() === ['activity.legacy-archive', 'books.months', 'books.posting', 'books.receipts', 'books.snapshots', 'books.weeks', 'journal.balance'])
         ->where('checks', fn ($checks) => collect($checks)->every(fn ($check) => $check['passed'])));
 });
 

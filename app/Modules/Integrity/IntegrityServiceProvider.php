@@ -12,6 +12,7 @@ use App\Modules\Integrity\Infrastructure\Audit\SealedLedgerAudit;
 use App\Modules\Integrity\Infrastructure\Audit\SealedLedgerFindings;
 use App\Modules\Integrity\Infrastructure\DatabaseActivityLog;
 use App\Modules\Integrity\Infrastructure\DatabaseSealedPeriods;
+use App\Modules\Integrity\Infrastructure\LegacyActivityArchiveCheck;
 use App\Modules\Integrity\Infrastructure\Listeners\RecordSecurityEvents;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Support\Facades\Event;
@@ -34,6 +35,10 @@ class IntegrityServiceProvider extends ServiceProvider
 
         // The modules (and the application, for checks that read several) register their IntegrityCheck here.
         $this->app->singleton(IntegrityChecks::class);
+
+        $this->callAfterResolving(IntegrityChecks::class, function (IntegrityChecks $checks): void {
+            $checks->register($this->app->make(LegacyActivityArchiveCheck::class));
+        });
 
         // The checks of the comptroller's audit: the modules register theirs from their own providers.
         $this->app->singleton(AuditChecks::class);

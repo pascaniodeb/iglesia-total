@@ -5,10 +5,12 @@ namespace App\Console\Reconciliation;
 use App\Modules\Accounting\Application\Queries\MonthSummary;
 use App\Modules\Accounting\Infrastructure\Models\AccountingPeriod;
 use App\Modules\Integrity\Application\Actions\VerifyLedgerChain;
+use App\Modules\Integrity\Application\LegacyActivityArchive;
 use App\Modules\Shared\Money\Currency;
 use App\Modules\Shared\Money\Money;
 use App\Modules\Shared\Time\Month;
 use Illuminate\Database\Connection;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use stdClass;
@@ -42,7 +44,7 @@ final class LegacyReconciliation
 
     private Connection $legacy;
 
-    public function __construct(private readonly VerifyLedgerChain $chains) {}
+    public function __construct(private readonly VerifyLedgerChain $chains, private readonly LegacyActivityArchive $activityArchive) {}
 
     public function __invoke(string $connection): ReconciliationReport
     {
@@ -68,6 +70,7 @@ final class LegacyReconciliation
         $this->global($entries);
         $this->sealedMonths($entries, $months);
         $this->chains();
+        $this->comptroller();
 
         return $this->report;
     }
@@ -593,6 +596,50 @@ final class LegacyReconciliation
             'expected' => '0',
             'found' => (string) count($result['unsealed']),
         ]);
+    }
+
+    /**
+     * 8. The comptroller's work and the old activity log: every audit, every acceptance (with its
+     * fingerprint and its revocation) and every activity entry is in the new system, equal.
+     */
+    private function comptroller(): void
+    {
+        $this->report->title('comptroller', '9. Audits, acceptances and the old activity log');
+
+        $audits = $this->legacy->table('audits')->whereNull('deleted_at')->pluck('status', 'id');
+        $newAudits = DB::table('audits')->whereNotNull('legacy_id')->pluck('status', 'legacy_id');
+        $this->report->add('comptroller', 'all', 'audits', ['old system' => (string) $audits->count(), 'new SQL' => (string) $newAudits->count()]);
+        $this->report->add('comptroller', 'all', 'audits with the same result', [
+            'old system' => (string) $audits->count(),
+            'new PHP' => (string) $audits->filter(fn (string $status, int|string $id): bool => ($newAudits[$id] ?? null) === $status)->count(),
+        ]);
+
+        $acks = $this->legacy->table('audit_acknowledgements')->get()->keyBy('id');
+        $newAcks = DB::table('audit_acknowledgements')->whereNotNull('legacy_id')->get()->keyBy('legacy_id');
+        $revoked = DB::table('audit_acknowledgement_revocations')->pluck('acknowledgement_id')->flip();
+        $this->report->add('comptroller', 'all', 'acknowledgements', ['old system' => (string) $acks->count(), 'new SQL' => (string) $newAcks->count()]);
+        $this->report->add('comptroller', 'all', 'acknowledgements with the same fingerprint, reason and author-date', [
+            'old system' => (string) $acks->count(),
+            'new PHP' => (string) $acks->filter(function (object $ack, int|string $id) use ($newAcks): bool {
+                $new = $newAcks[$id] ?? null;
+
+                return $new !== null && trim((string) $new->fingerprint) === $ack->fingerprint && $new->reason === $ack->reason
+                    && Carbon::parse($new->acknowledged_at)->equalTo(Carbon::parse($ack->acknowledged_at));
+            })->count(),
+        ]);
+        $this->report->add('comptroller', 'all', 'acknowledgements that were revoked', [
+            'old system' => (string) $acks->whereNotNull('revoked_at')->count(),
+            'new SQL' => (string) $newAcks->filter(fn (object $new): bool => $revoked->has($new->id))->count(),
+        ]);
+
+        $old = LegacyActivityArchive::summarize($this->legacy->table('activity_log')->orderBy('id')->get()->map(fn (object $row): array => [
+            'legacy_id' => $row->id, 'occurred_at' => $row->occurred_at, 'legacy_actor_id' => $row->actor_id, 'actor_name' => $row->actor_name,
+            'actor_role' => $row->actor_role, 'action' => $row->action, 'entity' => $row->entity, 'entity_id' => $row->entity_id,
+            'summary' => $row->summary, 'before' => $row->before, 'after' => $row->after, 'diff' => $row->diff, 'ip' => $row->ip, 'user_agent' => $row->user_agent,
+        ])->all());
+        $new = $this->activityArchive->current();
+        $this->report->add('comptroller', 'all', 'old activity entries archived', ['old system' => (string) $old['count'], 'new SQL' => (string) $new['count']]);
+        $this->report->add('comptroller', 'all', 'digest of the old activity log', ['old system' => $old['digest'], 'new archive' => $new['digest']]);
     }
 
     /**

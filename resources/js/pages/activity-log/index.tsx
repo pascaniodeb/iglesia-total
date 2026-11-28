@@ -1,14 +1,16 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
+import { Archive } from 'lucide-react';
 import { ServerDataTable } from '@/components/data-table/server-data-table';
 import type { FacetOption } from '@/components/data-table/types';
 import { PageHeader } from '@/components/page-header';
+import { Button } from '@/components/ui/button';
 import { activityLogColumns } from '@/features/activity-log/components/activity-log-columns';
 import { ActivityLogRowActions } from '@/features/activity-log/components/activity-log-row-actions';
 import type {
     ActivityLogFilters,
     ActivityLogRow,
 } from '@/features/activity-log/types';
-import { index as activityLogIndex } from '@/routes/activity-log';
+import { index as activityLogIndex, legacy } from '@/routes/activity-log';
 import type { Paginated } from '@/types';
 
 type ActivityLogIndexProps = {
@@ -33,6 +35,14 @@ export default function ActivityLogIndex({
                     title="Bitácora"
                     description="Quién hizo qué y cuándo. Los registros no se pueden modificar ni borrar."
                     meta={`${count.format(entries.total)} ${entries.total === 1 ? 'registro' : 'registros'}`}
+                    actions={
+                        <Button variant="outline" asChild>
+                            <Link href={legacy()} prefetch>
+                                <Archive aria-hidden />
+                                Bitácora anterior
+                            </Link>
+                        </Button>
+                    }
                 />
                 <ServerDataTable
                     url={activityLogIndex().url}
