@@ -25,6 +25,7 @@ final readonly class RunAudit
             $notes = $notes === null || trim($notes) === '' ? null : trim($notes);
 
             $audit = Audit::query()->create([
+                'ran_at' => now(),
                 'ran_by' => $actorId === null ? null : (string) $actorId,
                 'status' => $evaluation['pending_count'] === 0 ? 'clean' : 'findings',
                 'findings_count' => $evaluation['pending_count'],

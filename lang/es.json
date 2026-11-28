@@ -370,5 +370,9 @@
     "Weeks without a closure": "Semanas sin cierre",
     "offering": "ofrenda",
     "offerings": "ofrendas",
-    "{1} :count offering without a weekly closure.|[2,*] :count offerings without a weekly closure.": "{1} :count ofrenda sin cierre semanal.|[2,*] :count ofrendas sin cierre semanal."
+    "{1} :count offering without a weekly closure.|[2,*] :count offerings without a weekly closure.": "{1} :count ofrenda sin cierre semanal.|[2,*] :count ofrendas sin cierre semanal.",
+    "The audit was recorded: no pending findings.": "Se registró la auditoría: sin hallazgos pendientes.",
+    "The audit was recorded with :count pending findings.": "Se registró la auditoría con :count hallazgos pendientes.",
+    "The finding was accepted and the reason recorded.": "Se aceptó el hallazgo y quedó anotado el motivo.",
+    "The acceptance was lifted: the finding is pending again.": "Se levantó la aceptación: el hallazgo vuelve a estar pendiente."
 }

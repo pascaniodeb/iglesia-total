@@ -7,6 +7,7 @@ use App\Modules\Accounting\Http\Controllers\GeneralLedgerController;
 use App\Modules\Accounting\Http\Controllers\JournalController;
 use App\Modules\Accounting\Http\Controllers\PeriodReportController;
 use App\Modules\Integrity\Http\Controllers\ActivityLogController;
+use App\Modules\Integrity\Http\Controllers\AuditController;
 use App\Modules\Integrity\Http\Controllers\IntegrityBlockController;
 use App\Modules\Integrity\Http\Controllers\IntegrityCenterController;
 use App\Modules\Members\Http\Controllers\MemberController;
@@ -178,6 +179,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Activity log (Integrity): read-only.
+    // The comptroller's audits: findings recomputed live; an audit run and an acknowledgement are the
+    // recorded acts. Fixed paths go before {audit}.
+    Route::middleware('can:audits.view')->prefix('audits')->name('audits.')->group(function () {
+        Route::get('/', [AuditController::class, 'index'])->name('index');
+
+        Route::middleware(['can:audits.record', 'throttle:20,1'])->group(function () {
+            Route::post('/', [AuditController::class, 'store'])->name('store');
+            Route::post('acknowledge', [AuditController::class, 'acknowledge'])->name('acknowledge');
+            Route::post('acknowledgements/{acknowledgement}/revoke', [AuditController::class, 'revoke'])->whereUuid('acknowledgement')->name('revoke');
+        });
+
+        Route::get('{audit}', [AuditController::class, 'show'])->whereUuid('audit')->name('show');
+    });
+
     // The integrity center: the sealed ledger, the old chain's archive and every module's checks.
     Route::middleware('can:sealed_ledger.view')->prefix('integrity')->name('integrity.')->group(function () {
         Route::get('/', [IntegrityCenterController::class, 'index'])->name('index');

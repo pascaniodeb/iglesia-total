@@ -6,6 +6,7 @@ import {
     BookText,
     CalendarCheck,
     ChartColumn,
+    ClipboardCheck,
     HandCoins,
     History,
     LayoutGrid,
@@ -37,6 +38,7 @@ import { index as ledgerIndex } from '@/routes/accounting/ledger';
 import { index as periodsIndex } from '@/routes/accounting/periods';
 import { index as reportsIndex } from '@/routes/accounting/reports';
 import { index as activityLogIndex } from '@/routes/activity-log';
+import { index as auditsIndex } from '@/routes/audits';
 import { index as integrityIndex } from '@/routes/integrity';
 import { index as exchangeRatesIndex } from '@/routes/treasury/exchange-rates';
 import { index as offeringCategoriesIndex } from '@/routes/treasury/offering-categories';
@@ -138,6 +140,12 @@ const mainNavItems: NavItem[] = [
         href: integrityIndex(),
         icon: ShieldCheck,
         permission: 'sealed_ledger.view',
+    },
+    {
+        title: 'Auditoría',
+        href: auditsIndex(),
+        icon: ClipboardCheck,
+        permission: 'audits.view',
     },
     {
         title: 'Bitácora',
