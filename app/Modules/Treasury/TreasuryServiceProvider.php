@@ -5,8 +5,12 @@ namespace App\Modules\Treasury;
 use App\Modules\Accounting\Application\ClosedOfferingCash;
 use App\Modules\Accounting\Application\OfferingClosures;
 use App\Modules\Accounting\Application\ReceiptHashes;
+use App\Modules\Integrity\Application\Audit\AuditChecks;
 use App\Modules\Integrity\Application\Ledger\SealableSources;
 use App\Modules\Treasury\Domain\Rates\MarketRateSource;
+use App\Modules\Treasury\Infrastructure\Audit\ClosureTotalsAudit;
+use App\Modules\Treasury\Infrastructure\Audit\MonthStraddlingWeeksAudit;
+use App\Modules\Treasury\Infrastructure\Audit\WeeksWithoutClosureAudit;
 use App\Modules\Treasury\Infrastructure\Rates\OfficialMarketRateSource;
 use App\Modules\Treasury\Infrastructure\Sealing\WeeklySealableSource;
 use App\Modules\Treasury\Infrastructure\TreasuryClosedOfferingCash;
@@ -30,6 +34,13 @@ class TreasuryServiceProvider extends ServiceProvider
 
         $this->callAfterResolving(SealableSources::class, function (SealableSources $sources): void {
             $sources->register(new WeeklySealableSource);
+        });
+
+        $this->callAfterResolving(AuditChecks::class, function (AuditChecks $checks): void {
+            $checks->register(new ClosureTotalsAudit('weekly'));
+            $checks->register(new ClosureTotalsAudit('monthly'));
+            $checks->register(new WeeksWithoutClosureAudit);
+            $checks->register(new MonthStraddlingWeeksAudit);
         });
     }
 }

@@ -5,11 +5,13 @@ namespace App\Modules\Accounting;
 use App\Modules\Accounting\Application\CashMovements;
 use App\Modules\Accounting\Application\ChartOfAccounts;
 use App\Modules\Accounting\Application\Ledger;
+use App\Modules\Accounting\Infrastructure\Audit\CarryForwardAudit;
 use App\Modules\Accounting\Infrastructure\DatabaseChartOfAccounts;
 use App\Modules\Accounting\Infrastructure\DatabaseLedger;
 use App\Modules\Accounting\Infrastructure\GuardedCashMovements;
 use App\Modules\Accounting\Infrastructure\JournalBalanceCheck;
 use App\Modules\Accounting\Infrastructure\Sealing\MonthlySealableSource;
+use App\Modules\Integrity\Application\Audit\AuditChecks;
 use App\Modules\Integrity\Application\IntegrityChecks;
 use App\Modules\Integrity\Application\Ledger\SealableSources;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +31,10 @@ class AccountingServiceProvider extends ServiceProvider
         // Closed accounting months are sealed as the monthly blocks of the sealed ledger.
         $this->callAfterResolving(IntegrityChecks::class, function (IntegrityChecks $checks): void {
             $checks->register($this->app->make(JournalBalanceCheck::class));
+        });
+
+        $this->callAfterResolving(AuditChecks::class, function (AuditChecks $checks): void {
+            $checks->register(new CarryForwardAudit);
         });
 
         $this->callAfterResolving(SealableSources::class, function (SealableSources $sources): void {
