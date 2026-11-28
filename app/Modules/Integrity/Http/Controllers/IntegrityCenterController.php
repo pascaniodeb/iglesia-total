@@ -10,6 +10,7 @@ use App\Modules\Integrity\Application\IntegrityChecks;
 use App\Modules\Integrity\Application\LegacyLedgerArchive;
 use App\Modules\Integrity\Http\Tables\LedgerBlockListing;
 use App\Modules\Integrity\Infrastructure\Models\ActivityLogEntry;
+use App\Modules\Integrity\Infrastructure\Models\ChainAnchor;
 use App\Modules\Integrity\Infrastructure\Models\LedgerBlock;
 use App\Modules\Integrity\Infrastructure\Pdf\IntegrityCertificatePdf;
 use App\Modules\Shared\Tables\TableQuery;
@@ -57,6 +58,7 @@ class IntegrityCenterController extends Controller
                 'last_chain_check' => $lastChain === null ? null : $this->chainCheck($lastChain),
             ],
             'checks' => $checks->run(),
+            'anchors' => $this->anchors(),
             'blocks' => $table
                 ->paginate(LedgerBlockListing::base($table), LedgerBlockListing::searchable())
                 ->through(LedgerBlockListing::row(...)),
@@ -64,6 +66,30 @@ class IntegrityCenterController extends Controller
             'kinds' => LedgerBlockListing::KINDS,
             'history' => $this->history(),
         ]);
+    }
+
+    /**
+     * What is anchored outside the church: whether anchoring is on, how many anchors are confirmed
+     * or pending, and the latest ones. Read from the stored anchors; the offline verification of
+     * their proofs is the `anchors.external` check.
+     *
+     * @return array{enabled: bool, confirmed: int, pending: int, recent: list<array<string, mixed>>}
+     */
+    private function anchors(): array
+    {
+        return [
+            'enabled' => (bool) config('integrity.anchor.enabled'),
+            'confirmed' => ChainAnchor::query()->where('status', 'confirmed')->count(),
+            'pending' => ChainAnchor::query()->where('status', 'pending')->count(),
+            'recent' => array_values(ChainAnchor::query()->orderByDesc('created_at')->orderByDesc('position')->limit(8)->get()->map(fn (ChainAnchor $anchor): array => [
+                'id' => $anchor->id,
+                'chain' => $anchor->chain,
+                'provider' => $anchor->provider,
+                'position' => $anchor->position,
+                'status' => $anchor->status,
+                'at' => ($anchor->confirmed_at ?? $anchor->created_at)->toIso8601String(),
+            ])->all()),
+        ];
     }
 
     /**

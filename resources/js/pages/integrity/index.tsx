@@ -5,11 +5,13 @@ import { ServerDataTable } from '@/components/data-table/server-data-table';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { blockColumns } from '@/features/integrity/components/block-columns';
+import { AnchorsPanel } from '@/features/integrity/components/anchors-panel';
 import { ChainFindings } from '@/features/integrity/components/chain-findings';
 import { ChecksPanel } from '@/features/integrity/components/checks-panel';
 import { HistoryPanel } from '@/features/integrity/components/history-panel';
 import { StatusBanner } from '@/features/integrity/components/status-banner';
 import type {
+    AnchorsSummary,
     BlockRow,
     BlockSortKey,
     CheckResult,
@@ -26,6 +28,7 @@ import type { Paginated, TableFilters } from '@/types';
 type IntegrityIndexProps = {
     status: IntegrityStatus;
     checks: CheckResult[];
+    anchors: AnchorsSummary;
     blocks: Paginated<BlockRow>;
     filters: TableFilters<BlockSortKey>;
     kinds: string[];
@@ -41,6 +44,7 @@ const KIND_LABEL = {
 export default function IntegrityIndex({
     status,
     checks,
+    anchors,
     blocks,
     filters,
     kinds,
@@ -97,6 +101,7 @@ export default function IntegrityIndex({
                 <div className="grid gap-6 xl:grid-cols-2">
                     <ChecksPanel checks={checks} />
                     <div className="flex min-w-0 flex-col gap-6">
+                        <AnchorsPanel anchors={anchors} />
                         <ChainFindings check={status.last_chain_check} />
                         <HistoryPanel history={history} />
                     </div>

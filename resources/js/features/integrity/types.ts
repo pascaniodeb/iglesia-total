@@ -92,3 +92,19 @@ export type RecordProof = {
     leaf: string | null;
     steps: { side: 'left' | 'right'; hash: string }[];
 };
+
+export type AnchorRow = {
+    id: string;
+    chain: 'ledger' | 'activity';
+    provider: string;
+    position: number;
+    status: 'pending' | 'confirmed';
+    at: string;
+};
+
+export type AnchorsSummary = {
+    enabled: boolean;
+    confirmed: number;
+    pending: number;
+    recent: AnchorRow[];
+};

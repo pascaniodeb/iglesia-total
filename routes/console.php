@@ -16,6 +16,8 @@ Schedule::command('activity:verify')->dailyAt('03:00')->withoutOverlapping();
 Schedule::command('ledger:seal-pending')->dailyAt('03:10')->withoutOverlapping();
 Schedule::command('ledger:verify')->dailyAt('03:15')->withoutOverlapping();
 Schedule::command('books:verify')->dailyAt('03:20')->withoutOverlapping();
+Schedule::command('integrity:anchor')->dailyAt('03:30')->withoutOverlapping()->when(fn () => (bool) config('integrity.anchor.enabled'));
+Schedule::command('integrity:anchor --upgrade')->everySixHours()->withoutOverlapping()->when(fn () => (bool) config('integrity.anchor.enabled'));
 
 // Accounting: the journal's arithmetic is recomputed every night.
 Schedule::command('journal:verify')->dailyAt('03:05')->withoutOverlapping();

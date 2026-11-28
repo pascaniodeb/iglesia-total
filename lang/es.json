@@ -382,5 +382,13 @@
     "The archive of the old activity log is exactly what was archived": "El archivo de la bitácora anterior es exactamente lo que se archivó",
     "There are :count archived entries but no record of their digest in the activity log.": "Hay :count registros archivados pero ningún registro de su huella en la bitácora.",
     "The archive no longer matches the digest recorded when it was archived.": "El archivo ya no coincide con la huella que se anotó cuando se archivó.",
-    "The archive holds :now entries and :recorded were archived.": "El archivo tiene :now registros y se archivaron :recorded."
+    "The archive holds :now entries and :recorded were archived.": "El archivo tiene :now registros y se archivaron :recorded.",
+    "Anchored the :chain at :position with :provider.": "Se ancló el :chain en la posición :position con :provider.",
+    "Could not anchor with :provider.": "No se pudo anclar con :provider.",
+    "Confirmed the anchor of the :chain at :position with :provider.": "Se confirmó el ancla del :chain en la posición :position con :provider.",
+    "sealed ledger": "libro sellado",
+    "activity log": "bitácora",
+    "What was anchored outside the church is still in the chains and its proofs hold": "Lo anclado fuera de la iglesia sigue en las cadenas y sus pruebas se sostienen",
+    "The anchored block :anchor is no longer in its chain with that hash: history was rewritten.": "El bloque anclado :anchor ya no está en su cadena con esa huella: se reescribió la historia.",
+    "The proof of the anchor :anchor does not correspond to what it anchors.": "La prueba del ancla :anchor no corresponde a lo que ancla."
 }

@@ -3,11 +3,17 @@
 namespace App\Modules\Integrity;
 
 use App\Modules\Integrity\Application\ActivityLog;
+use App\Modules\Integrity\Application\Anchoring\ChainAnchoring;
 use App\Modules\Integrity\Application\Audit\AuditChecks;
 use App\Modules\Integrity\Application\IntegrityChecks;
 use App\Modules\Integrity\Application\Ledger\SealableSources;
 use App\Modules\Integrity\Application\SealedPeriods;
+use App\Modules\Integrity\Domain\Anchoring\ChainAnchor;
 use App\Modules\Integrity\Infrastructure\ActivityContext;
+use App\Modules\Integrity\Infrastructure\Anchoring\EsploraBitcoinHeaders;
+use App\Modules\Integrity\Infrastructure\Anchoring\OpenTimestampsAnchor;
+use App\Modules\Integrity\Infrastructure\Anchoring\Rfc3161Anchor;
+use App\Modules\Integrity\Infrastructure\AnchorsCheck;
 use App\Modules\Integrity\Infrastructure\Audit\SealedLedgerAudit;
 use App\Modules\Integrity\Infrastructure\Audit\SealedLedgerFindings;
 use App\Modules\Integrity\Infrastructure\DatabaseActivityLog;
@@ -34,10 +40,25 @@ class IntegrityServiceProvider extends ServiceProvider
         $this->app->singleton(SealableSources::class);
 
         // The modules (and the application, for checks that read several) register their IntegrityCheck here.
+        $this->app->bind(ChainAnchoring::class, fn (): ChainAnchoring => new ChainAnchoring(array_values(array_map(
+            fn (string $provider): ChainAnchor => match ($provider) {
+                'rfc3161' => new Rfc3161Anchor(config('integrity.anchor.rfc3161'), (string) config('integrity.anchor.openssl'), (int) config('integrity.anchor.timeout')),
+                'opentimestamps' => new OpenTimestampsAnchor(
+                    config('integrity.anchor.opentimestamps.aggregators'),
+                    config('integrity.anchor.opentimestamps.whitelist'),
+                    new EsploraBitcoinHeaders((string) config('integrity.anchor.opentimestamps.esplora_url'), (int) config('integrity.anchor.timeout')),
+                    (int) config('integrity.anchor.timeout'),
+                ),
+                default => throw new \InvalidArgumentException("Unknown anchoring provider: {$provider}."),
+            },
+            config('integrity.anchor.providers'),
+        ))));
+
         $this->app->singleton(IntegrityChecks::class);
 
         $this->callAfterResolving(IntegrityChecks::class, function (IntegrityChecks $checks): void {
             $checks->register($this->app->make(LegacyActivityArchiveCheck::class));
+            $checks->register($this->app->make(AnchorsCheck::class));
         });
 
         // The checks of the comptroller's audit: the modules register theirs from their own providers.
