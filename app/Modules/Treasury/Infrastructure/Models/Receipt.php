@@ -2,6 +2,8 @@
 
 namespace App\Modules\Treasury\Infrastructure\Models;
 
+use App\Modules\Integrity\Application\Seals\Sealed;
+use App\Modules\Integrity\Application\Seals\SealsRows;
 use App\Modules\Treasury\Domain\Receipts\PaymentMethod;
 use App\Modules\Treasury\Domain\Receipts\ReceiptContent;
 use App\Modules\Treasury\Domain\Receipts\ReceiptType;
@@ -41,9 +43,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property-read ReceiptVoid|null $void
  */
-class Receipt extends Model
+class Receipt extends Model implements Sealed
 {
     use HasUuids;
+    use SealsRows;
 
     public const UPDATED_AT = null;
 
@@ -99,5 +102,15 @@ class Receipt extends Model
             'issued_on' => 'date',
             'payment_date' => 'date',
         ];
+    }
+
+    /**
+     * Every column enters the seal: none changes by a path that no Action records.
+     *
+     * @return list<string>
+     */
+    public static function unsealedColumns(): array
+    {
+        return [];
     }
 }

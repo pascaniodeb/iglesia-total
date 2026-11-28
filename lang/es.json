@@ -390,5 +390,11 @@
     "activity log": "bitácora",
     "What was anchored outside the church is still in the chains and its proofs hold": "Lo anclado fuera de la iglesia sigue en las cadenas y sus pruebas se sostienen",
     "The anchored block :anchor is no longer in its chain with that hash: history was rewritten.": "El bloque anclado :anchor ya no está en su cadena con esa huella: se reescribió la historia.",
-    "The proof of the anchor :anchor does not correspond to what it anchors.": "La prueba del ancla :anchor no corresponde a lo que ancla."
+    "The proof of the anchor :anchor does not correspond to what it anchors.": "La prueba del ancla :anchor no corresponde a lo que ancla.",
+    "Every sealed row still has the seal it was given": "Cada fila sellada conserva el sello que se le dio",
+    "The row :row no longer matches its seal: it was changed outside the Actions.": "La fila :row ya no coincide con su sello: se cambió por fuera de la aplicación.",
+    "The row :row has no seal: run integrity:seal-rows.": "La fila :row no tiene sello: ejecute integrity:seal-rows.",
+    "The row :row was erased: its seal is all that is left.": "La fila :row fue borrada: solo queda su sello.",
+    ":count more rows of this kind are not listed.": "Hay :count filas más de este tipo que no se listan.",
+    "Sealed :count rows that had no seal.": "Se sellaron :count filas que no tenían sello."
 }

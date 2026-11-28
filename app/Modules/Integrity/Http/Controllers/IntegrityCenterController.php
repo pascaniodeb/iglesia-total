@@ -121,6 +121,10 @@ class IntegrityCenterController extends Controller
             'weekly' => LedgerBlock::query()->where('kind', 'weekly')->count(),
             'monthly' => LedgerBlock::query()->where('kind', 'monthly')->count(),
             'started_at' => LedgerBlock::query()->where('kind', 'genesis')->first()?->sealed_at->toDateString(),
+            'anchored' => [
+                'ledger' => ChainAnchor::query()->where('chain', 'ledger')->where('status', 'confirmed')->max('confirmed_at'),
+                'activity' => ChainAnchor::query()->where('chain', 'activity')->where('status', 'confirmed')->max('confirmed_at'),
+            ],
         ]);
 
         $activityLog->access('integrity.certificate_downloaded', __('Opened the integrity certificate of the sealed ledger.'));
@@ -180,7 +184,7 @@ class IntegrityCenterController extends Controller
         $details = $entry->changes;
 
         return match ($entry->action) {
-            'ledger.verified' => (bool) ($details['intact'] ?? false) && (bool) ($details['matches_books'] ?? false),
+            'ledger.verified' => (bool) ($details['intact'] ?? false) && (bool) ($details['matches_books'] ?? false) && array_sum((array) ($details['row_seals']['counts'] ?? [])) === 0,
             'journal.verified' => (bool) ($details['passed'] ?? false),
             'books.verified' => collect($details)->every(fn (mixed $check): bool => is_array($check) && ($check['findings'] ?? []) === []),
             default => (bool) ($details['passed'] ?? false),

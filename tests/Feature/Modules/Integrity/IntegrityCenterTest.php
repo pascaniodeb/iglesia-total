@@ -25,8 +25,8 @@ afterEach(function () {
 test('the center lists the checks of every module, all holding on clean books', function () {
     $this->get(route('integrity.index'))->assertInertia(fn (Assert $page) => $page
         ->component('integrity/index')
-        ->has('checks', 8)
-        ->where('checks', fn ($checks) => collect($checks)->pluck('id')->sort()->values()->all() === ['activity.legacy-archive', 'anchors.external', 'books.months', 'books.posting', 'books.receipts', 'books.snapshots', 'books.weeks', 'journal.balance'])
+        ->has('checks', 9)
+        ->where('checks', fn ($checks) => collect($checks)->pluck('id')->sort()->values()->all() === ['activity.legacy-archive', 'anchors.external', 'books.months', 'books.posting', 'books.receipts', 'books.snapshots', 'books.weeks', 'journal.balance', 'seals.rows'])
         ->where('checks', fn ($checks) => collect($checks)->every(fn ($check) => $check['passed'])));
 });
 
@@ -121,6 +121,7 @@ test('the certificate states the head of the chain and the result of a verificat
         ->and($text)->toContain('CADENA ÍNTEGRA Y CUADRADA CON LOS LIBROS')
         ->and($text)->toContain(substr(trim($head), 0, 32))
         ->and($text)->toContain('SE CUMPLE')
+        ->and($text)->toContain('ltimo anclaje externo del libro sellado')
         ->and($text)->not->toContain('CON DIFERENCIAS')
         ->and(ActivityLogEntry::query()->where('action', 'ledger.verified')->count())->toBe(1)
         ->and(ActivityLogEntry::query()->where('action', 'integrity.certificate_downloaded')->count())->toBe(1);

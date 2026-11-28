@@ -8,6 +8,8 @@ use App\Modules\Integrity\Application\Audit\AuditChecks;
 use App\Modules\Integrity\Application\IntegrityChecks;
 use App\Modules\Integrity\Application\Ledger\SealableSources;
 use App\Modules\Integrity\Application\SealedPeriods;
+use App\Modules\Integrity\Application\Seals\RecordSeal;
+use App\Modules\Integrity\Application\Seals\SealedModels;
 use App\Modules\Integrity\Domain\Anchoring\ChainAnchor;
 use App\Modules\Integrity\Infrastructure\ActivityContext;
 use App\Modules\Integrity\Infrastructure\Anchoring\EsploraBitcoinHeaders;
@@ -20,6 +22,7 @@ use App\Modules\Integrity\Infrastructure\DatabaseActivityLog;
 use App\Modules\Integrity\Infrastructure\DatabaseSealedPeriods;
 use App\Modules\Integrity\Infrastructure\LegacyActivityArchiveCheck;
 use App\Modules\Integrity\Infrastructure\Listeners\RecordSecurityEvents;
+use App\Modules\Integrity\Infrastructure\RowSealsCheck;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
@@ -54,11 +57,16 @@ class IntegrityServiceProvider extends ServiceProvider
             config('integrity.anchor.providers'),
         ))));
 
+        // The modules register the models whose rows are sealed (see Seals\Sealed) from their own providers.
+        $this->app->singleton(SealedModels::class);
+        $this->app->bind(RecordSeal::class, fn (): RecordSeal => RecordSeal::fromConfig());
+
         $this->app->singleton(IntegrityChecks::class);
 
         $this->callAfterResolving(IntegrityChecks::class, function (IntegrityChecks $checks): void {
             $checks->register($this->app->make(LegacyActivityArchiveCheck::class));
             $checks->register($this->app->make(AnchorsCheck::class));
+            $checks->register($this->app->make(RowSealsCheck::class));
         });
 
         // The checks of the comptroller's audit: the modules register theirs from their own providers.

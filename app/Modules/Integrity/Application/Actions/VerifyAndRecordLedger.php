@@ -3,6 +3,7 @@
 namespace App\Modules\Integrity\Application\Actions;
 
 use App\Modules\Integrity\Application\ActivityLog;
+use App\Modules\Integrity\Application\Seals\VerifyRowSeals;
 use App\Modules\Integrity\Domain\Ledger\BlockIssue;
 
 /**
@@ -11,7 +12,7 @@ use App\Modules\Integrity\Domain\Ledger\BlockIssue;
  */
 final readonly class VerifyAndRecordLedger
 {
-    public function __construct(private VerifyLedgerChain $verify, private ActivityLog $activityLog) {}
+    public function __construct(private VerifyLedgerChain $verify, private VerifyRowSeals $rowSeals, private ActivityLog $activityLog) {}
 
     /**
      * @return array{
@@ -22,12 +23,14 @@ final readonly class VerifyAndRecordLedger
      *     intact: bool,
      *     matches_books: bool,
      *     unsealed: list<array{kind: string, period_key: string}>,
-     *     legacy: array{blocks: int, height: int|null, head_hash: string|null, issues: list<BlockIssue>, intact: bool}
+     *     legacy: array{blocks: int, height: int|null, head_hash: string|null, issues: list<BlockIssue>, intact: bool},
+     *     row_seals: array{enabled: bool, checked: int, changed: list<string>, unsealed: list<string>, gone: list<string>, counts: array{changed: int, unsealed: int, gone: int}}
      * }
      */
     public function __invoke(): array
     {
         $result = ($this->verify)();
+        $seals = ($this->rowSeals)();
         $legacy = $result['legacy'];
         $issues = [...$result['issues'], ...$legacy['issues']];
 
@@ -45,9 +48,10 @@ final readonly class VerifyAndRecordLedger
                 'issues' => array_map(fn (BlockIssue $issue) => $issue->toArray(), $issues),
                 'unsealed' => $result['unsealed'],
                 'legacy' => ['blocks' => $legacy['blocks'], 'height' => $legacy['height'], 'head_hash' => $legacy['head_hash'], 'intact' => $legacy['intact']],
+                'row_seals' => ['enabled' => $seals['enabled'], 'checked' => $seals['checked'], 'counts' => $seals['counts']],
             ],
         );
 
-        return $result;
+        return [...$result, 'row_seals' => $seals];
     }
 }

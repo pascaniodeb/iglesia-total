@@ -2,6 +2,8 @@
 
 namespace App\Modules\Treasury\Infrastructure\Models;
 
+use App\Modules\Integrity\Application\Seals\Sealed;
+use App\Modules\Integrity\Application\Seals\SealsRows;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -22,9 +24,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon $closed_at
  * @property string|null $closed_by
  */
-class WeeklyClosure extends Model
+class WeeklyClosure extends Model implements Sealed
 {
     use HasUuids;
+    use SealsRows;
 
     public $timestamps = false;
 
@@ -45,5 +48,15 @@ class WeeklyClosure extends Model
             'offerings_count' => 'integer',
             'closed_at' => 'immutable_datetime',
         ];
+    }
+
+    /**
+     * Every column enters the seal: none changes by a path that no Action records.
+     *
+     * @return list<string>
+     */
+    public static function unsealedColumns(): array
+    {
+        return [];
     }
 }

@@ -7,10 +7,15 @@ use App\Modules\Accounting\Application\OfferingClosures;
 use App\Modules\Accounting\Application\ReceiptHashes;
 use App\Modules\Integrity\Application\Audit\AuditChecks;
 use App\Modules\Integrity\Application\Ledger\SealableSources;
+use App\Modules\Integrity\Application\Seals\SealedModels;
 use App\Modules\Treasury\Domain\Rates\MarketRateSource;
 use App\Modules\Treasury\Infrastructure\Audit\ClosureTotalsAudit;
 use App\Modules\Treasury\Infrastructure\Audit\MonthStraddlingWeeksAudit;
 use App\Modules\Treasury\Infrastructure\Audit\WeeksWithoutClosureAudit;
+use App\Modules\Treasury\Infrastructure\Models\MonthlyOfferingClosure;
+use App\Modules\Treasury\Infrastructure\Models\Offering;
+use App\Modules\Treasury\Infrastructure\Models\Receipt;
+use App\Modules\Treasury\Infrastructure\Models\WeeklyClosure;
 use App\Modules\Treasury\Infrastructure\Rates\OfficialMarketRateSource;
 use App\Modules\Treasury\Infrastructure\Sealing\WeeklySealableSource;
 use App\Modules\Treasury\Infrastructure\TreasuryClosedOfferingCash;
@@ -34,6 +39,10 @@ class TreasuryServiceProvider extends ServiceProvider
 
         $this->callAfterResolving(SealableSources::class, function (SealableSources $sources): void {
             $sources->register(new WeeklySealableSource);
+        });
+
+        $this->callAfterResolving(SealedModels::class, function (SealedModels $models): void {
+            $models->register(Offering::class, Receipt::class, WeeklyClosure::class, MonthlyOfferingClosure::class);
         });
 
         $this->callAfterResolving(AuditChecks::class, function (AuditChecks $checks): void {

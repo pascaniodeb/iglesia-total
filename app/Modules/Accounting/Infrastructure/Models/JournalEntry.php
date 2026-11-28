@@ -3,6 +3,8 @@
 namespace App\Modules\Accounting\Infrastructure\Models;
 
 use App\Models\User;
+use App\Modules\Integrity\Application\Seals\Sealed;
+use App\Modules\Integrity\Application\Seals\SealsRows;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -37,9 +39,10 @@ use Illuminate\Support\Carbon;
     'entry_date', 'month', 'description', 'origin_type', 'origin_id', 'origin_purpose',
     'reversal_of', 'reversal_reason', 'lines_count', 'created_by',
 ])]
-class JournalEntry extends Model
+class JournalEntry extends Model implements Sealed
 {
     use HasUuids;
+    use SealsRows;
 
     public const UPDATED_AT = null;
 
@@ -92,5 +95,15 @@ class JournalEntry extends Model
             'entry_date' => 'date',
             'lines_count' => 'integer',
         ];
+    }
+
+    /**
+     * Every column enters the seal: none changes by a path that no Action records.
+     *
+     * @return list<string>
+     */
+    public static function unsealedColumns(): array
+    {
+        return [];
     }
 }

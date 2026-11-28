@@ -2,6 +2,8 @@
 
 namespace App\Modules\Accounting\Infrastructure\Models;
 
+use App\Modules\Integrity\Application\Seals\Sealed;
+use App\Modules\Integrity\Application\Seals\SealsRows;
 use App\Modules\Shared\Money\Currency;
 use App\Modules\Shared\Money\Money;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -25,9 +27,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read JournalEntry $entry
  */
 #[Fillable(['journal_entry_id', 'line_number', 'account_id', 'currency', 'debit', 'credit', 'description'])]
-class JournalEntryLine extends Model
+class JournalEntryLine extends Model implements Sealed
 {
     use HasUuids;
+    use SealsRows;
 
     public const UPDATED_AT = null;
 
@@ -66,5 +69,15 @@ class JournalEntryLine extends Model
             'line_number' => 'integer',
             'currency' => Currency::class,
         ];
+    }
+
+    /**
+     * Every column enters the seal: none changes by a path that no Action records.
+     *
+     * @return list<string>
+     */
+    public static function unsealedColumns(): array
+    {
+        return [];
     }
 }

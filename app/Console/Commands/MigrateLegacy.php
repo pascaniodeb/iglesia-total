@@ -66,6 +66,10 @@ class MigrateLegacy extends Command
             }
         }
 
+        if (config('integrity.seal_key') !== null && config('integrity.seal_key') !== '' && ! $this->step('integrity:seal-rows', [])) {
+            return self::FAILURE;
+        }
+
         if (! $this->step('reconcile:legacy', $connection)) {
             $this->components->error('The migration ran but the books do NOT match the old system: do not cut over.');
 

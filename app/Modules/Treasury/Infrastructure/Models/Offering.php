@@ -2,6 +2,8 @@
 
 namespace App\Modules\Treasury\Infrastructure\Models;
 
+use App\Modules\Integrity\Application\Seals\Sealed;
+use App\Modules\Integrity\Application\Seals\SealsRows;
 use Database\Factories\OfferingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -35,12 +37,13 @@ use Illuminate\Support\Carbon;
  */
 #[Fillable(['offering_date', 'member_id', 'offering_category_id', 'concept', 'amount_ves', 'amount_usd', 'amount_cop'])]
 #[UseFactory(OfferingFactory::class)]
-class Offering extends Model
+class Offering extends Model implements Sealed
 {
     /** @use HasFactory<OfferingFactory> */
     use HasFactory;
 
     use HasUuids;
+    use SealsRows;
     use SoftDeletes;
 
     /**
@@ -60,5 +63,15 @@ class Offering extends Model
             'legacy_id' => 'integer',
             'offering_date' => 'date',
         ];
+    }
+
+    /**
+     * Every column enters the seal: none changes by a path that no Action records.
+     *
+     * @return list<string>
+     */
+    public static function unsealedColumns(): array
+    {
+        return [];
     }
 }

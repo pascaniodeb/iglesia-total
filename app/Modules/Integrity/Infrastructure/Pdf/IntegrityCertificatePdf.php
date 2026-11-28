@@ -31,7 +31,7 @@ final class IntegrityCertificatePdf
 
     /**
      * @param  array{chain: array<string, mixed>, checks: list<array{id: string, title: string, passed: bool, findings: list<string>}>, passed: bool}  $verification
-     * @param  array{genesis: int, weekly: int, monthly: int, started_at: string|null}  $counts
+     * @param  array{genesis: int, weekly: int, monthly: int, started_at: string|null, anchored: array{ledger: mixed, activity: mixed}}  $counts
      */
     public function render(array $verification, array $counts): string
     {
@@ -102,7 +102,7 @@ final class IntegrityCertificatePdf
 
     /**
      * @param  array<string, mixed>  $chain
-     * @param  array{genesis: int, weekly: int, monthly: int, started_at: string|null}  $counts
+     * @param  array{genesis: int, weekly: int, monthly: int, started_at: string|null, anchored: array{ledger: mixed, activity: mixed}}  $counts
      */
     private function chainData(Document $pdf, float $y, array $chain, array $counts): float
     {
@@ -125,6 +125,15 @@ final class IntegrityCertificatePdf
         }
 
         $y = $this->hash($pdf, $y, 'Huella del último bloque', $chain['head_hash']);
+
+        foreach (['ledger' => 'Último anclaje externo del libro sellado', 'activity' => 'Último anclaje externo de la bitácora'] as $chainKey => $label) {
+            $at = $counts['anchored'][$chainKey];
+            $pdf->SetFont('Helvetica', 'B', 7.5);
+            $pdf->put(self::LEFT, $y + 2, 200, 11, $label.':');
+            $pdf->SetFont('Helvetica', '', 8.5);
+            $pdf->put(self::LEFT + 202, $y + 2, self::WIDTH - 202, 11, is_string($at) ? Carbon::parse($at)->format('d/m/Y H:i').' (confirmado fuera de la iglesia)' : 'ninguno: el anclaje externo no está activo o aún no confirma');
+            $y += 14;
+        }
 
         /** @var array{blocks: int, height: int|null, head_hash: string|null} $legacy */
         $legacy = $chain['legacy'];
