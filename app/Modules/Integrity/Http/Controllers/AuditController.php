@@ -4,14 +4,18 @@ namespace App\Modules\Integrity\Http\Controllers;
 
 use App\Enums\Permission;
 use App\Http\Controllers\Controller;
+use App\Modules\Church\Application\ChurchIdentity;
+use App\Modules\Integrity\Application\ActivityLog;
 use App\Modules\Integrity\Application\Audit\AcknowledgeFinding;
 use App\Modules\Integrity\Application\Audit\EvaluateAudit;
 use App\Modules\Integrity\Application\Audit\RevokeAcknowledgement;
 use App\Modules\Integrity\Application\Audit\RunAudit;
 use App\Modules\Integrity\Infrastructure\Models\Audit;
 use App\Modules\Integrity\Infrastructure\Models\AuditAcknowledgement;
+use App\Modules\Integrity\Infrastructure\Pdf\AuditReportPdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -61,6 +65,25 @@ class AuditController extends Controller
                 ...$this->summary($audit),
                 'checks' => $audit->snapshot['checks'] ?? [],
             ],
+        ]);
+    }
+
+    /**
+     * The report of an audit, drawn from what was recorded when it ran.
+     */
+    public function pdf(Audit $audit, ChurchIdentity $church, AuditReportPdf $document, ActivityLog $activityLog): HttpResponse
+    {
+        if ($church->profile() === null) {
+            abort(409, __('Fill in the church settings first.'));
+        }
+
+        $bytes = $document->render($audit);
+        $activityLog->access('audit.pdf_downloaded', __('Opened the PDF of the audit of :date.', ['date' => $audit->ran_at->format('d/m/Y H:i')]), $audit);
+
+        return response($bytes, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="auditoria-'.$audit->ran_at->format('Y-m-d-His').'.pdf"',
+            'Cache-Control' => 'private, no-cache, must-revalidate',
         ]);
     }
 

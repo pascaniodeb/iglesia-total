@@ -77,7 +77,7 @@ final class SealedLedgerAudit implements AuditCheck
         return array_values(array_map(
             fn (BlockIssue $issue): AuditFinding => new AuditFinding(
                 $issue->periodKey === null ? "#{$issue->height}" : $this->kindLabel($issue->kind).' '.$issue->periodKey,
-                $issue->detail(),
+                __($issue->message, array_map(strval(...), $issue->params)),
             ),
             array_filter($issues, fn (BlockIssue $issue): bool => ($issue->type === BlockIssue::DRIFT) === $wantsDrift),
         ));

@@ -3,8 +3,10 @@
 use App\Enums\Permission;
 use App\Enums\UserRole;
 use App\Modules\Accounting\Infrastructure\Models\AccountingAccount;
+use App\Modules\Church\Infrastructure\Models\ChurchSetting;
 use App\Modules\Integrity\Application\Actions\CreateLedgerGenesis;
 use App\Modules\Integrity\Application\Audit\EvaluateAudit;
+use App\Modules\Integrity\Infrastructure\Models\ActivityLogEntry;
 use App\Modules\Integrity\Infrastructure\Models\Audit;
 use App\Modules\Integrity\Infrastructure\Models\AuditAcknowledgement;
 use App\Modules\Shared\Time\IsoWeek;
@@ -128,4 +130,48 @@ test('a role that may only read sees the page but cannot act', function () {
     signInAs($reader);
     $this->get(route('audits.index'))->assertInertia(fn (Assert $page) => $page->where('can_record', false));
     $this->post(route('audits.store'))->assertForbidden();
+});
+
+test('the audit report PDF prints what was recorded: result, notes, findings and acceptances', function () {
+    ChurchSetting::factory()->create();
+    screenTamper();
+    $this->post(route('audits.acknowledge'), ['fingerprint' => screenFingerprint(), 'reason' => 'Revisado con el tesorero: error de digitación.']);
+    $this->post(route('audits.store'), ['notes' => 'Se revisó todo el mes.']);
+    $audit = Audit::query()->sole();
+
+    $response = $this->get(route('audits.pdf', $audit))->assertOk();
+    $text = pdfText($response->getContent());
+
+    expect($response->headers->get('Content-Type'))->toBe('application/pdf')
+        ->and($text)->toContain('REPORTE DE AUDITORÍA')
+        ->and($text)->toContain('1 HALLAZGO PENDIENTE')
+        ->and($text)->toContain('1 CRÍTICO')
+        ->and($text)->toContain('Se revisó todo el mes.')
+        ->and($text)->toContain('Totales de los cierres semanales')
+        ->and($text)->toContain('2026-W44')
+        ->and($text)->toContain('ACEPTADO')
+        ->and($text)->toContain('Revisado con el tesorero: error de digitación.')
+        ->and($text)->toContain('PENDIENTE')
+        ->and($text)->toContain('Código de verificación')
+        ->and(ActivityLogEntry::query()->where('action', 'audit.pdf_downloaded')->count())->toBe(1);
+});
+
+test('an audit imported without detail prints its result and says so', function () {
+    ChurchSetting::factory()->create();
+    $audit = Audit::query()->create(['legacy_id' => 5, 'ran_at' => '2026-08-22 11:00:00', 'status' => 'clean', 'snapshot' => ['checks' => []], 'notes' => 'Auditoría del sistema anterior.']);
+
+    $text = pdfText($this->get(route('audits.pdf', $audit))->getContent());
+
+    expect($text)->toContain('SIN HALLAZGOS PENDIENTES')
+        ->and($text)->toContain('Auditoría del sistema anterior.')
+        ->and($text)->toContain('sistema anterior');
+});
+
+test('the audit PDF needs the church settings and the audits permission', function () {
+    $audit = Audit::query()->create(['ran_at' => now(), 'status' => 'clean', 'snapshot' => ['checks' => []]]);
+
+    $this->get(route('audits.pdf', $audit))->assertStatus(409);
+
+    signInAs(UserRole::Treasurer);
+    $this->get(route('audits.pdf', $audit))->assertForbidden();
 });

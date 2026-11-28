@@ -49,7 +49,7 @@ export function AuditHistory({ audits }: { audits: AuditSummary[] }) {
                                     <span className="text-xs text-muted-foreground">
                                         {audit.status === 'clean'
                                             ? 'Sin hallazgos pendientes'
-                                            : `${audit.findings_count} pendientes (${audit.critical_count} críticos)`}
+                                            : `${audit.findings_count} ${audit.findings_count === 1 ? 'pendiente' : 'pendientes'} (${audit.critical_count} ${audit.critical_count === 1 ? 'crítico' : 'críticos'})`}
                                         {audit.acknowledged_count > 0
                                             ? ` · ${audit.acknowledged_count} aceptados`
                                             : ''}

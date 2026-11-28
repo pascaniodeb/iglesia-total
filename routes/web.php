@@ -191,6 +191,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 
         Route::get('{audit}', [AuditController::class, 'show'])->whereUuid('audit')->name('show');
+        Route::get('{audit}/pdf', [AuditController::class, 'pdf'])->whereUuid('audit')->middleware('throttle:60,1')->name('pdf');
     });
 
     // The integrity center: the sealed ledger, the old chain's archive and every module's checks.

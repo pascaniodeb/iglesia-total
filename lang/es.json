@@ -374,5 +374,6 @@
     "The audit was recorded: no pending findings.": "Se registró la auditoría: sin hallazgos pendientes.",
     "The audit was recorded with :count pending findings.": "Se registró la auditoría con :count hallazgos pendientes.",
     "The finding was accepted and the reason recorded.": "Se aceptó el hallazgo y quedó anotado el motivo.",
-    "The acceptance was lifted: the finding is pending again.": "Se levantó la aceptación: el hallazgo vuelve a estar pendiente."
+    "The acceptance was lifted: the finding is pending again.": "Se levantó la aceptación: el hallazgo vuelve a estar pendiente.",
+    "Opened the PDF of the audit of :date.": "Abrió el PDF de la auditoría del :date."
 }

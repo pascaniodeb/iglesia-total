@@ -1,12 +1,12 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, CheckCircle2, CircleAlert } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, CircleAlert, FileDown } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { CheckCard } from '@/features/audits/components/check-card';
 import type { AuditSummary, CheckRow } from '@/features/audits/types';
 import { formatDateTime } from '@/lib/date';
 import { cn } from '@/lib/utils';
-import { index as auditsIndex } from '@/routes/audits';
+import { index as auditsIndex, pdf } from '@/routes/audits';
 
 type AuditShowProps = { audit: AuditSummary & { checks: CheckRow[] } };
 
@@ -23,12 +23,24 @@ export default function AuditShow({ audit }: AuditShowProps) {
                     title={formatDateTime(audit.ran_at)}
                     description={`${audit.ran_by ? `La ejecutó ${audit.ran_by}. ` : ''}Esto es lo que se encontró en ese momento, tal como quedó registrado.`}
                     actions={
-                        <Button variant="outline" asChild>
-                            <Link href={auditsIndex()} prefetch>
-                                <ArrowLeft aria-hidden />
-                                Auditoría
-                            </Link>
-                        </Button>
+                        <>
+                            <Button variant="outline" asChild>
+                                <Link href={auditsIndex()} prefetch>
+                                    <ArrowLeft aria-hidden />
+                                    Auditoría
+                                </Link>
+                            </Button>
+                            <Button variant="outline" asChild>
+                                <a
+                                    href={pdf(audit.id).url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <FileDown aria-hidden />
+                                    Ver PDF
+                                </a>
+                            </Button>
+                        </>
                     }
                 />
 
@@ -46,7 +58,7 @@ export default function AuditShow({ audit }: AuditShowProps) {
                         <h2 className="text-xl font-bold tracking-tight text-foreground">
                             {clean
                                 ? 'Sin hallazgos pendientes'
-                                : `${audit.findings_count} pendientes (${audit.critical_count} críticos)`}
+                                : `${audit.findings_count} ${audit.findings_count === 1 ? 'pendiente' : 'pendientes'} (${audit.critical_count} ${audit.critical_count === 1 ? 'crítico' : 'críticos'})`}
                         </h2>
                         <p className="text-sm text-foreground/80">
                             {audit.acknowledged_count} aceptados con su motivo.
